@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "QWERTY Extension",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage",
+    "tabCapture",
+    "sidePanel"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "side_panel": {
+    "default_path": "popup_sp.html"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "host_permissions": [
+    "*://*/*"
+  ]
+}

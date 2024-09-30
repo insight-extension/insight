@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Audio Translation</title>
+  <style>
+    body {
+      background-image: url(white_bg.jpg);
+      background-position: top;
+    }
+    button {
+      margin: 3px;
+    }
+    /* Styles for WebKit browsers */
+    ::-webkit-scrollbar {
+      width: 12px; /* Scrollbar width */
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f0f0f0; /* Scrollbar background color */
+      border-radius: 10px; /* Rounded corners */
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #4CAF50; /* Scrollbar thumb color */
+      border-radius: 10px; /* Rounded corners of the thumb */
+      border: 2px solid #f0f0f0; /* Padding inside the thumb */
+    }
+
+    /* Hover effect */
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #45a049;
+    }
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #transcriptDisplay, #translationDisplay {
+      margin-top: 20px;
+      width: 40vh;
+      height: 35vh;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      overflow-y: scroll;
+      background-color: #f9f9f9c9;
+      box-shadow: 0 0 10px 3px #aeaeae;
+    }
+    #translationDisplay {
+      background-color: #e6ffe6d5;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <button id="connectWallet">Connect Wallet</button>
+    <button id="depositFunds">Deposit Funds</button>
+    <!-- <button id="withdrawFunds">Withdraw Funds</button> -->
+    <p id="wallet-address">No Connected Wallet</p>
+    <p id="balanceDisplay"><strong>Balance: 0.00 USDC</strong></p>
+  </div>
+  <div>
+    <button id="startCapture">Start</button>
+    <button id="stopCapture" disabled>Stop</button>
+  </div>
+  <!-- <button id="openSidebar">Sidebar</button> -->
+  <div id="status">Status: Idle</div>
+  <div id="transcriptDisplay">
+    <p><strong>Transcript:</strong></p>
+  </div>
+  <div id="translationDisplay">
+    <p><strong>Translation:</strong></p>
+  </div>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
