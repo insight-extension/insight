@@ -1,0 +1,21 @@
+{
+  "name": "@repo/shared",
+  "version": "1.0.0",
+  "exports": {
+    "./utils": "./src/utils/index.ts"
+  },
+  "private": true,
+  "scripts": {
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:^",
+    "@turbo/gen": "2.1.3",
+    "@types/eslint": "^8.56.10",
+    "@types/node": "^20.14.2",
+    "eslint": "8.57.0",
+    "typescript": "^5.4.5"
+  }
+}
