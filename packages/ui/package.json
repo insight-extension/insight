@@ -21,10 +21,7 @@
     "./utils": "./src/utils/index.ts"
   },
   "private": true,
-  "scripts": {
-    "generate:component": "turbo gen react-component",
-    "lint": "eslint . --max-warnings 0"
-  },
+  "scripts": {},
   "dependencies": {
     "@project-serum/anchor": "^0.26.0",
     "@repo/tailwind": "workspace:^",

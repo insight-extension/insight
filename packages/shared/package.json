@@ -5,9 +5,7 @@
     "./utils": "./src/utils/index.ts"
   },
   "private": true,
-  "scripts": {
-    "lint": "eslint . --max-warnings 0"
-  },
+  "scripts": {},
   "dependencies": {},
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
