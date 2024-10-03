@@ -28,6 +28,7 @@
     "syncpack:list": "pnpm exec syncpack list",
     "syncpack:list-mismatches": "pnpm exec syncpack list-mismatches",
     "syncpack:update": "pnpm exec syncpack update",
-    "start:server": "turbo run start --filter=server"
+    "start:server": "turbo run start --filter=server",
+    "dev:api": "turbo run start:dev --filter=api"
   }
 }

@@ -5,10 +5,7 @@
     ".": "./src/index.ts"
   },
   "private": true,
-  "scripts": {
-    "generate:component": "turbo gen react-component",
-    "lint": "eslint . --max-warnings 0"
-  },
+  "scripts": {},
   "dependencies": {
     "@repo/shared": "workspace:^",
     "i18next": "^23.11.5",
