@@ -1,6 +1,11 @@
 "use client";
 
-import { WalletProvider as BaseWalletProvider } from "@solana/wallet-adapter-react";
+import {
+  WalletProvider,
+  ConnectionProvider,
+} from "@solana/wallet-adapter-react";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { clusterApiUrl } from "@solana/web3.js";
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
@@ -10,7 +15,7 @@ import { PropsWithChildren, useMemo } from "react";
 
 import { SOLANA_NETWORK } from "@repo/shared/configs";
 
-export const WalletProvider = ({ children }: PropsWithChildren) => {
+export const AppWalletProvider = ({ children }: PropsWithChildren) => {
   // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking and lazy loading --
   // Only the wallets you configure here will be compiled into your application, and only the dependencies
   // of wallets that your users connect to will be loaded
@@ -23,9 +28,13 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
     []
   );
 
+  const endpoint = useMemo(() => clusterApiUrl(SOLANA_NETWORK), []);
+
   return (
-    <BaseWalletProvider wallets={wallets} autoConnect>
-      {children}
-    </BaseWalletProvider>
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
   );
 };

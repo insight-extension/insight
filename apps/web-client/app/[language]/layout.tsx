@@ -3,12 +3,8 @@ import { Zen_Dots } from "next/font/google";
 import { dir } from "i18next";
 import { ReactNode } from "react";
 
-import {
-  ConnectionProvider,
-  WalletModalProvider,
-  WalletProvider,
-} from "@repo/ui/providers";
 import { applicationLanguages } from "@repo/i18n";
+import { AppWalletProvider } from "@repo/ui/providers";
 
 export async function generateStaticParams() {
   return applicationLanguages.map((language) => ({ language }));
@@ -59,11 +55,7 @@ export default async function RootLayout({
   return (
     <html lang={language} dir={dir(language)}>
       <body className={zenDots.className}>
-        <ConnectionProvider>
-          <WalletProvider>
-            <WalletModalProvider>{children}</WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
+        <AppWalletProvider>{children}</AppWalletProvider>
       </body>
     </html>
   );

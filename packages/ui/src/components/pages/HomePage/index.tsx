@@ -1,32 +1,48 @@
-import { useState, useEffect, useMemo } from "react";
+"use client";
 
-import { clusterApiUrl } from "@solana/web3.js";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
-import "@solana/wallet-adapter-react-ui/styles.css";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import "@solana/wallet-adapter-react-ui/styles.css";
 
-import "@repo/tailwind/global-styles";
 import { useTranslationClient } from "@repo/i18n";
-
-const network = WalletAdapterNetwork.Devnet;
+import "@repo/tailwind/global-styles";
+import { useEffect, useState } from "react";
 
 export const HomePage = () => {
   const { t } = useTranslationClient();
 
-  const [isConnected, setIsConnected] = useState(false);
-  const [gameError, setGameError] = useState("");
-  const [gameAccountPublicKey, setGameAccountPublicKey] = useState("");
+  const [isClientSide, setIsClientSide] = useState<boolean>(false);
 
-  const { connected } = useWallet();
-  const wallet = useAnchorWallet();
+  const { publicKey, connected } = useWallet();
 
-  const endpoint = useMemo(() => clusterApiUrl(network), []);
+  useEffect(() => {
+    setIsClientSide(true);
+  }, []);
+
+  useEffect(() => {
+    if (publicKey && connected) {
+      console.log("Public Key:", publicKey?.toBase58());
+    }
+  }, [publicKey, connected]);
 
   return (
-    <div className="flex items-center flex-col sm:p-4 p-1">
-      {/* todo: implement internationalisation with routing  */}
-      {/* <LanguageSwitcher currentLanguage={language} /> */}
-    </div>
+    <main className="flex flex-row justify-between min-h-screen p-10">
+      <h1 className="text-4xl mb-4 font-bold">{t("home.applicationTitle")}</h1>
+
+      <div>
+        {isClientSide ? (
+          <div className="indicator h-fit">
+            <span
+              className={`indicator-item badge ${connected ? "badge-primary" : "badge-secondary"}`}
+            />
+            <WalletMultiButton style={{}} />
+          </div>
+        ) : (
+          <div className="flex w-24 items-center">
+            <span className="loading loading-dots loading-md"></span>
+          </div>
+        )}
+      </div>
+    </main>
   );
 };

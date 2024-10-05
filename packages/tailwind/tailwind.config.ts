@@ -13,7 +13,7 @@ export const config: Config = {
     },
   },
   daisyui: {
-    themes: ["luxury"],
+    themes: ["synthwave"],
   },
   plugins: [daisyui, typography],
 };
