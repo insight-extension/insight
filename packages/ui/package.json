@@ -13,9 +13,7 @@
     "typescript": "^5.4.5"
   },
   "exports": {
-    "./anchor-client": "./src/anchor-client/index.ts",
     "./components": "./src/components/index.ts",
-    "./components/server-rendered": "./src/components/server-rendered/index.ts",
     "./providers": "./src/providers/index.ts",
     "./types": "./src/types/index.ts",
     "./utils": "./src/utils/index.ts"
@@ -26,6 +24,7 @@
     "@project-serum/anchor": "^0.26.0",
     "@repo/tailwind": "workspace:^",
     "@repo/i18n": "workspace:^",
+    "@repo/shared": "workspace:^",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-react-ui": "^0.9.35",

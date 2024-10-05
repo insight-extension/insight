@@ -2,11 +2,14 @@
   "name": "@repo/shared",
   "version": "1.0.0",
   "exports": {
+    "./configs": "./src/configs/index.ts",
     "./utils": "./src/utils/index.ts"
   },
   "private": true,
   "scripts": {},
-  "dependencies": {},
+  "dependencies": {
+    "@solana/wallet-adapter-base": "^0.9.23"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:^",
