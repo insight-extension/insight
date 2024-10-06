@@ -14,6 +14,8 @@ import { Connection, type Language } from "~types";
 
 import "~global.css";
 
+import Logo from "~components/logo";
+
 // todo: replace with real data
 const getBalance = () => 100;
 const getStatus = () => Connection.CONNECTED;
@@ -85,7 +87,7 @@ function IndexPopup() {
     <div className="w-84">
       <div className="p-3 mb-2 bg-accent rounded-b-2xl">
         <div className="flex flex-row items-center justify-between mb-3 p-0 text-primary-foreground">
-          <p className="text-xl">{getMessage("extensionName")}</p>
+          <Logo />
 
           <Button
             size="icon"
@@ -118,16 +120,16 @@ function IndexPopup() {
 
           <DropdownMenu>
             <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary bg-secondary px-3 rounded">
-              <Languages size={16} />
-
               <div className="flex flex-row items-center gap-2">
-                <span className="text-sm">{currentLanguage.name}</span>
+                <Languages size={16} />
 
-                <ChevronsUpDown size={12} />
+                <span className="text-sm">{currentLanguage.name}</span>
               </div>
+
+              <ChevronsUpDown size={12} />
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-500">
+            <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300">
               {supportedLanguages.map(({ flagCode, name: language }) => (
                 <DropdownMenuItem
                   key={flagCode}
@@ -171,9 +173,7 @@ function IndexPopup() {
 
         <TextBlock className="bg-secondary-foreground max-h-44 text-primary rounded-lg text-sm" />
 
-        <Button
-          size="lg"
-          className={`p-3 w-full ${isRecording() ? "bg-muted" : "bg-secondary"}`}>
+        <Button size="lg" variant="secondary">
           {isRecording() ? getMessage("stop") : getMessage("start")}
         </Button>
       </div>

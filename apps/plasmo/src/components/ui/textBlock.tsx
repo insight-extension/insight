@@ -7,7 +7,7 @@ const mockText =
 
 const TextBlock = ({ className, ...props }) => {
   const baseClasses =
-    "p-3 rounded-lg overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-500";
+    "p-3 rounded-lg overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300";
 
   return (
     <div className={cn(baseClasses, className)} {...props}>
