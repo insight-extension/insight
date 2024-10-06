@@ -1,3 +1,1 @@
-export * from "./ConnectionProvider";
-export * from "./WalletProvider";
-export * from "./WalletModalProvider";
+export * from "./AppWalletProvider";

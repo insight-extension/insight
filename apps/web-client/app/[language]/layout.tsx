@@ -1,22 +1,21 @@
 import type { Metadata } from "next";
 import { Zen_Dots } from "next/font/google";
 import { dir } from "i18next";
+import { ReactNode } from "react";
 
-import {
-  ConnectionProvider,
-  WalletModalProvider,
-  WalletProvider,
-} from "@repo/ui/providers";
 import { applicationLanguages } from "@repo/i18n";
+import { AppWalletProvider } from "@repo/ui/providers";
 
 export async function generateStaticParams() {
   return applicationLanguages.map((language) => ({ language }));
 }
 
 export const metadata: Metadata = {
-  title: "Solana dApp",
-  description: "Created with Next.js & Anchor",
+  title: "Insight",
+  description:
+    "Live video translation services powered by #Web3 and #Solana for seamless, decentralized experiences.",
 
+  // todo: implement meta tags and SEO
   //   const metaTitle = "Solana Clicker";
   // const metaDescription =
   //   "Solana Clicker is an open-source game being developed to learn and demonstrate techniques for integrating with Solana programs and Solana NFTs.";
@@ -50,17 +49,13 @@ export default async function RootLayout({
   children,
   params: { language },
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
   params: { language: string };
 }>) {
   return (
     <html lang={language} dir={dir(language)}>
       <body className={zenDots.className}>
-        <ConnectionProvider>
-          <WalletProvider>
-            <WalletModalProvider>{children}</WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
+        <AppWalletProvider>{children}</AppWalletProvider>
       </body>
     </html>
   );
