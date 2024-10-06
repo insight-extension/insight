@@ -2,11 +2,21 @@
   "name": "@repo/shared",
   "version": "1.0.0",
   "exports": {
-    "./utils": "./src/utils/index.ts"
+    "./configs": "./src/configs/index.ts",
+    "./client/http": "./src/client/http/index.ts",
+    "./client/services": "./src/client/services/index.ts",
+    "./types": "./src/types/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./validation": "./src/validation/index.ts"
   },
   "private": true,
   "scripts": {},
-  "dependencies": {},
+  "dependencies": {
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/web3.js": "^1.95.3",
+    "bs58": "^6.0.0",
+    "zod": "^3.23.8"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:^",
