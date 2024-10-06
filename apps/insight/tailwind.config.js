@@ -74,6 +74,10 @@ module.exports = {
       fontFamily: {
         stolzl: ['Stolzl', 'sans-serif'],
       },
+      width: {
+        "38": "9.5rem",
+        '84': '21rem',
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],

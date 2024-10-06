@@ -22,5 +22,13 @@
   "status": {
     "message": "Status",
     "description": "Label for status."
+  },
+  "start": {
+    "message": "Start",
+    "description": "Button to start."
+  },
+  "stop": {
+    "message": "Stop",
+    "description": "Button to stop."
   }
 }

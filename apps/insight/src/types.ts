@@ -3,3 +3,8 @@ export enum Connection {
   CONNECTING = "connecting",
   DISCONNECTED = "disconnected"
 }
+
+export interface Language {
+  name: string;
+  flagCode: string;
+}

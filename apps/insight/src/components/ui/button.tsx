@@ -11,12 +11,13 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-primary-foreground text-primary font-normal shadow hover:bg-primary-foreground/80",
-        link: "text-primary underline-offset-4 hover:underline"
+        secondary: "bg-secondary hover:bg-secondary",
+        raw: ""
       },
       size: {
-        default: "h-8 px-4 py-2 text-xs rounded",
-        md: "h-10 rounded-md px-8",
-        icon: "h-9 w-9"
+        default: "h-9 px-4 py-2 text-sm rounded",
+        lg: "h-10 rounded-md px-8 text-lg",
+        icon: "h-7 w-7 rounded"
       }
     },
     defaultVariants: {
