@@ -1,11 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class ValidateAccountDto {
+export class SaveAccountDto {
   @IsNotEmpty()
   @IsString()
   publicKey: string;
-
-  @IsNotEmpty()
-  @IsString()
-  signature: string;
 }

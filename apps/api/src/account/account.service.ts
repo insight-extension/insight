@@ -1,114 +1,73 @@
 import { sign } from 'tweetnacl';
 import bs58 from 'bs58';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { GetNonceDto } from './dto/get-nonce.dto';
 import { randomBytes } from 'crypto';
-import { AccountDto } from './dto/account.dto';
-import { AccountEntity } from './entity/account.entity';
-import { ValidateAccountDto } from './dto/validate-account.dto';
-import { ValidateAccount } from './interfaces/validate-account.interface';
-
-class AccountWithNonceEntity {
-  publicKey: string;
-  nonce: string;
-}
+import { AccountCandidates } from './interfaces/account-candidates.interface';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ValidateSignatureDto } from './dto/validate-signature.dto';
+import { SaveAccountDto } from './dto/save-account.dto';
 
 @Injectable()
 export class AccountService {
-  //TODO: migrate to database
-  private readonly accounts: AccountEntity[] = [];
-  // cache for account with nonce
-  private readonly accountsWithNonce: AccountWithNonceEntity[] = [];
+  //HACK: use something like redis
+  private accountCandidates: AccountCandidates[] = [];
 
-  async create(dto: AccountDto) {
-    const existingAccount = this.checkAccountWithPublicKey(dto.publicKey);
-    if (existingAccount && existingAccount.verified) {
-      throw new BadRequestException(
-        `User with public key ${dto.publicKey} already exists and verified`,
-      );
-    } else if (existingAccount && !existingAccount.verified) {
-      const nonce = this.generateNonce();
-      this.accountsWithNonce.push({
-        publicKey: existingAccount.publicKey,
-        nonce: nonce,
-      });
-      return {
-        publicKey: existingAccount.publicKey,
-        nonce: nonce,
-      };
-    }
+  constructor(private prisma: PrismaService) {}
 
-    const newAccountWithNonce = new AccountWithNonceEntity();
-    newAccountWithNonce.publicKey = dto.publicKey;
-    newAccountWithNonce.nonce = this.generateNonce();
-
-    this.accountsWithNonce.push(newAccountWithNonce);
-
+  async generateNonceForPublicKey(
+    dto: GetNonceDto,
+  ): Promise<AccountCandidates> {
+    const nonce = this.generateNonce();
+    this.accountCandidates.push({ publicKey: dto.publicKey, nonce });
     return {
-      publicKey: newAccountWithNonce.publicKey,
-      nonce: newAccountWithNonce.nonce,
+      publicKey: dto.publicKey,
+      nonce,
     };
   }
 
-  async validateAccount(dto: ValidateAccountDto): Promise<ValidateAccount> {
-    Logger.log(
-      `Validate account: ${dto.publicKey}, ${dto.signature}`,
-      'AccountService',
-    );
-    const accountWithNonce = this.accountsWithNonce.find(
-      (a) => a.publicKey === dto.publicKey,
-    );
-
-    if (!accountWithNonce) {
-      throw new BadRequestException(
-        'Account with provided public key not found',
-      );
+  async validateSignature(dto: ValidateSignatureDto) {
+    const candidate = this.findCandidate(dto.publicKey);
+    if (!candidate) {
+      throw new BadRequestException('Candidate not found');
     }
 
     const publicKeyUint8 = bs58.decode(dto.publicKey);
-    Logger.log(typeof publicKeyUint8, 'AccountService');
     const signatureUint8 = bs58.decode(dto.signature);
-    Logger.log(typeof signatureUint8, 'AccountService');
-
-    const msgUint8 = new TextEncoder().encode(accountWithNonce.nonce);
-    Logger.log(typeof msgUint8, 'AccountService');
+    const msgUint8 = new TextEncoder().encode(candidate.nonce);
 
     const isValid = sign.detached.verify(
       msgUint8,
       signatureUint8,
       publicKeyUint8,
     );
-    Logger.log(isValid, 'AccountService');
 
     if (!isValid) {
       throw new BadRequestException('Invalid signature');
     }
 
-    let account = this.checkAccountWithPublicKey(dto.publicKey);
-    if (!account) {
-      account = new AccountEntity();
-      account.publicKey = dto.publicKey;
-      account.verified = true;
-      this.accounts.push(account);
-    } else {
-      account.verified = true;
-    }
+    // TODO: REMOVE THIS
+    this.save({ publicKey: dto.publicKey });
 
-    const index = this.accountsWithNonce.findIndex(
-      (a) => a.publicKey === dto.publicKey,
-    );
-    if (index !== -1) {
-      this.accountsWithNonce.splice(index, 1);
-    }
-
-    return { publicKey: account.publicKey, verified: account.verified };
+    return {
+      publicKey: candidate.publicKey,
+    };
   }
 
-  private checkAccountWithPublicKey(publicKey: string): AccountEntity {
-    return this.accounts.find((u) => u.publicKey === publicKey);
+  async save(dto: SaveAccountDto) {
+    return await this.prisma.account.create({
+      data: dto,
+    });
   }
 
   private generateNonce(): string {
     const payload = randomBytes(32).toString('hex');
     return `insight: ${payload}`;
+  }
+
+  private findCandidate(publicKey: string) {
+    return this.accountCandidates.find(
+      (account) => account.publicKey === publicKey,
+    );
   }
 }

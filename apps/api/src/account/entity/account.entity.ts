@@ -1,4 +1,5 @@
 export class AccountEntity {
+  id: string;
   publicKey: string;
-  verified: boolean;
+  createdAt: Date;
 }
