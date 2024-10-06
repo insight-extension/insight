@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccountService } from 'src/account/account.service';
+import { LoginDto } from './dto/login.dto';
+import { VerifyDto } from './dto/verify.dto';
+import { Verify } from './interfaces/verify.interface';
+import { Login } from './interfaces/login.interface';
 
 @Injectable()
 export class AuthService {
@@ -17,12 +21,13 @@ export class AuthService {
   //  return account;
   //}
 
-  async verify(body: any) {
-    const account = await this.accountService.validateSignature(body);
+  async verify(dto: VerifyDto): Promise<Verify> {
+    const account = await this.accountService.validateSignature(dto);
     if (!account) {
       throw new Error('Invalid signature');
     }
-    Logger.log(`---account: ${JSON.stringify(account)}`);
+    //TODO: remove this log
+    Logger.log(`account: ${JSON.stringify(account)}`);
     const accountExists = await this.accountService.findOneByPublicKey(
       account.publicKey,
     );
@@ -30,14 +35,14 @@ export class AuthService {
       this.accountService.save(account);
     }
     return {
-      access_token: this.generateAccessToken({ publicKey: account.publicKey }),
-      refresh_token: this.generateRefreshToken({
+      accessToken: this.generateAccessToken({ publicKey: account.publicKey }),
+      refreshToken: this.generateRefreshToken({
         publicKey: account.publicKey,
       }),
     };
   }
 
-  async login(data: any) {
+  async login(dto: LoginDto): Promise<Login> {
     //const account = await this.accountService.findOneByPublicKey(
     //  data.publicKey,
     //);
@@ -46,7 +51,7 @@ export class AuthService {
     //}
     const { publicKey, nonce } =
       await this.accountService.generateNonceForPublicKey({
-        publicKey: data.publicKey,
+        publicKey: dto.publicKey,
       });
     return {
       publicKey: publicKey,
@@ -54,7 +59,7 @@ export class AuthService {
     };
   }
 
-  async refreshToken(refreshToken: string) {
+  async refreshToken(refreshToken: string): Promise<Verify> {
     try {
       const payload = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_SECRET,
@@ -69,8 +74,8 @@ export class AuthService {
       const newPayload = { publicKey: payload.publicKey };
 
       return {
-        access_token: this.generateAccessToken(newPayload),
-        refresh_token: this.generateRefreshToken(newPayload),
+        accessToken: this.generateAccessToken(newPayload),
+        refreshToken: this.generateRefreshToken(newPayload),
       };
     } catch {
       throw new Error('Invalid refresh token');
