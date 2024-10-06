@@ -1,4 +1,4 @@
-class PCMProcessor extends AudioWorkletProcessor {
+export class PCMProcessor extends AudioWorkletProcessor {
   constructor() {
     super()
   }
@@ -30,5 +30,3 @@ class PCMProcessor extends AudioWorkletProcessor {
     return true
   }
 }
-
-registerProcessor("pcm-processor", PCMProcessor)
