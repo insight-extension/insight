@@ -7,13 +7,18 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 import { LeaderboardItem, anchorCLient } from "@repo/ui/anchor-client";
-import {
-  ClickerButton,
-  LanguageSwitcher,
-  Leaderboard,
-} from "@repo/ui/components";
+import { LanguageSwitcher, Leaderboard } from "@repo/ui/components";
 import "@repo/tailwind/global-styles";
 import { useTranslationClient } from "@repo/i18n";
+
+import {
+  Header,
+  CTA,
+  Footer,
+  Testimonials,
+  Services,
+  Hero,
+} from "../../landing";
 
 const network = WalletAdapterNetwork.Devnet;
 
@@ -34,25 +39,6 @@ export const HomePage = ({ language }: { language: string }) => {
   const wallet = useAnchorWallet();
 
   const endpoint = useMemo(() => clusterApiUrl(network), []);
-
-  const handleClick = async () => {
-    setGameError("");
-
-    if (wallet) {
-      try {
-        await anchorCLient.saveClick({
-          wallet,
-          endpoint,
-          gameAccountPublicKey,
-        });
-
-        setClicks(clicks + 1);
-        setEffect(true);
-      } catch (error: any) {
-        setGameError(error.message);
-      }
-    }
-  };
 
   useEffect(() => {
     setIsConnected(connected);
@@ -129,60 +115,6 @@ export const HomePage = ({ language }: { language: string }) => {
       <div>
         <div className="flex flex-col sm:flex-row gap-5">
           <div className="p-4 flex flex-col items-center gap-3">
-            <div className="flex flex-col items-center p-2">
-              {isGameReady && gameError && (
-                <div className="alert alert-error shadow-lg">
-                  <div>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="stroke-current flex-shrink-0 h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span>{gameError}</span>
-                  </div>
-                </div>
-              )}
-              {isGameReady && (
-                <div
-                  onAnimationEnd={() => {
-                    setEffect(false);
-                  }}
-                  className={`${effect && "animate-wiggle"}`}
-                >
-                  {clicks}
-                </div>
-              )}
-            </div>
-
-            <ClickerButton
-              onClick={handleClick}
-              isGameReady={isGameReady}
-              text={t("home.clickerButton")}
-            />
-
-            {isGameReady && (
-              <div>
-                View game{" "}
-                <a
-                  className="underline"
-                  href={solanaExplorerLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  details
-                </a>{" "}
-                on Solana.
-              </div>
-            )}
-
             {!isConnected && (
               <p className="p-2 text-center">
                 To play game, please click{" "}
@@ -190,31 +122,16 @@ export const HomePage = ({ language }: { language: string }) => {
                 your Solana wallet.
               </p>
             )}
-
-            <p>
-              See{" "}
-              <a className="underline" href="#faqs">
-                FAQs
-              </a>{" "}
-              below for more information.
-            </p>
-
-            {!isGameReady && isConnected && (
-              <div>
-                <p className="p-2">Game initializing...</p>
-              </div>
-            )}
           </div>
-
-          {wallet && (
-            <Leaderboard
-              leaders={leaders}
-              walletPublicKeyString={wallet.publicKey.toBase58()}
-              clicks={clicks}
-            />
-          )}
         </div>
       </div>
+
+      <Header />
+      <Hero />
+      <Services />
+      <Testimonials />
+      <CTA />
+      <Footer />
     </div>
   );
 };
