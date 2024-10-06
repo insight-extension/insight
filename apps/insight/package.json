@@ -1,8 +1,8 @@
 {
   "name": "insight",
-  "displayName": "Insight",
+  "displayName": "__MSG_extensionName__",
   "version": "0.0.1",
-  "description": "Insight's extensions",
+  "description": "__MSG_extensionDescription__",
   "author": "Insight's team",
   "scripts": {
     "dev": "plasmo dev",
