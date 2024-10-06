@@ -46,9 +46,6 @@ export class AccountService {
       throw new BadRequestException('Invalid signature');
     }
 
-    // TODO: REMOVE THIS
-    this.save({ publicKey: dto.publicKey });
-
     return {
       publicKey: candidate.publicKey,
     };
@@ -57,6 +54,14 @@ export class AccountService {
   async save(dto: SaveAccountDto) {
     return await this.prisma.account.create({
       data: dto,
+    });
+  }
+
+  async findOneByPublicKey(publicKey: string) {
+    return await this.prisma.account.findUnique({
+      where: {
+        publicKey,
+      },
     });
   }
 
