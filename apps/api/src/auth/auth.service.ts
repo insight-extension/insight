@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccountService } from 'src/account/account.service';
 import { LoginDto } from './dto/login.dto';
@@ -26,8 +26,6 @@ export class AuthService {
     if (!account) {
       throw new Error('Invalid signature');
     }
-    //TODO: remove this log
-    Logger.log(`account: ${JSON.stringify(account)}`);
     const accountExists = await this.accountService.findOneByPublicKey(
       account.publicKey,
     );
@@ -43,12 +41,6 @@ export class AuthService {
   }
 
   async login(dto: LoginDto): Promise<Login> {
-    //const account = await this.accountService.findOneByPublicKey(
-    //  data.publicKey,
-    //);
-    //if (!account) {
-    //  throw new Error('Account not found');
-    //}
     const { publicKey, nonce } =
       await this.accountService.generateNonceForPublicKey({
         publicKey: dto.publicKey,

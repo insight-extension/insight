@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class LoginDto {
+export class RefreshTokenDto {
   @ApiProperty({
-    description: 'Public key of the account',
+    description: 'Refresh token',
     type: String,
   })
   @IsString()
   @IsNotEmpty()
-  publicKey: string;
+  refreshToken: string;
 }

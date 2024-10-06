@@ -7,6 +7,7 @@ import { AccountCandidates } from './interfaces/account-candidates.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ValidateSignatureDto } from './dto/validate-signature.dto';
 import { SaveAccountDto } from './dto/save-account.dto';
+import { AccountEntity } from './entity/account.entity';
 
 @Injectable()
 export class AccountService {
@@ -18,6 +19,13 @@ export class AccountService {
   async generateNonceForPublicKey(
     dto: GetNonceDto,
   ): Promise<AccountCandidates> {
+    const exists = this.findCandidate(dto.publicKey);
+    if (exists) {
+      return {
+        publicKey: exists.publicKey,
+        nonce: exists.nonce,
+      };
+    }
     const nonce = this.generateNonce();
     this.accountCandidates.push({ publicKey: dto.publicKey, nonce });
     return {
@@ -51,13 +59,13 @@ export class AccountService {
     };
   }
 
-  async save(dto: SaveAccountDto) {
+  async save(dto: SaveAccountDto): Promise<AccountEntity> {
     return await this.prisma.account.create({
       data: dto,
     });
   }
 
-  async findOneByPublicKey(publicKey: string) {
+  async findOneByPublicKey(publicKey: string): Promise<AccountEntity> {
     return await this.prisma.account.findUnique({
       where: {
         publicKey,
