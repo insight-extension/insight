@@ -1,5 +1,61 @@
 {
   "home": {
     "applicationTitle": "Insight ❤️"
+  },
+  "header": {
+    "links": ["How it works?", "Features", "Pricing", "FAQs"],
+    "connectWallet": "Connect Wallet",
+    "start": "Start"
+  },
+  "hero": {
+    "title": "Break Language Barriers with Real Time Translation!",
+    "available": "Available For: ",
+    "download": "Download for Free"
+  },
+  "intro": {
+    "title": "How it works",
+    "step": "step",
+    "stepsContent": [
+      "Install the extension from your browser’s web store.",
+      "Choose your preferred language for translation.",
+      "Start browsing play a video, and watch as it’s translated in real-time.",
+      "Customize settings to fit your needs, whether for professional, casual, or academic use."
+    ]
+  },
+  "about": {
+    "title": "Why Choose Our Browser Extension?",
+    "features": [
+      {
+        "title": "Real-Time Translations:",
+        "description": [
+          "Instant translation of web pages, audio, and video as you browse."
+        ]
+      },
+      {
+        "title": "Customizable Preferences:",
+        "description": [
+          "Instant translation of web pages, audio, and video as you browse."
+        ]
+      },
+      {
+        "title": "Supports Multiple Languages:",
+        "description": ["Translate into 100+ languages with high accuracy."]
+      },
+      {
+        "title": "Seamless Integration:",
+        "description": [
+          "Works directly in your browser without interrupting your workflow."
+        ]
+      },
+      {
+        "title": "Privacy-Focused:",
+        "description": [
+          "All translations occur locally on your device for maximum security."
+        ]
+      }
+    ]
+  },
+  "faq": {
+    "title": "Frequently Asked Questions"
   }
 }
