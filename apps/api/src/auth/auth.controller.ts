@@ -10,12 +10,12 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { LoginDto } from './dto/login.dto';
 import { VerifyDto } from './dto/verify.dto';
 import { Login } from './interfaces/login.interface';
 import { Verify } from './interfaces/verify.interface';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ClaimDto } from './dto/claim.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -28,9 +28,9 @@ export class AuthController {
       'Generates a nonce for the given public key to proceed with the login flow.',
   })
   @HttpCode(HttpStatus.CREATED)
-  @Post('login')
-  async login(@Body(new ValidationPipe()) dto: LoginDto): Promise<Login> {
-    return this.authService.login(dto);
+  @Post('claim')
+  async claim(@Body(new ValidationPipe()) dto: ClaimDto): Promise<Login> {
+    return this.authService.claim(dto);
   }
 
   @ApiResponse({
