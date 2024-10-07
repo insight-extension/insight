@@ -8,13 +8,15 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 import { useTranslationClient } from "@repo/i18n";
 import "@repo/tailwind/global-styles";
 import { SWR_CACHE_KEY, useMutation } from "@repo/ui/fetching";
-import {
+import type {
   CreateAccountRequest,
   CreateAccountResponse,
   StatusResponse,
   ValidateAccountRequest,
 } from "@repo/shared/types";
 import { accountService } from "@repo/shared/client/services";
+
+import Page from "./page";
 
 export const HomePage = () => {
   const { t } = useTranslationClient();
@@ -96,8 +98,8 @@ export const HomePage = () => {
   useEffect(() => {}, [connected, publicKey, signMessage]);
 
   return (
-    <main className="flex flex-col min-h-screen p-10">
-      <div className="flex flex-row">
+    <main className="flex flex-col bg-default min-h-screen">
+      {/* <div className="flex flex-row">
         <h1 className="text-4xl mb-4 font-bold">
           {t("home.applicationTitle")}
         </h1>
@@ -117,6 +119,7 @@ export const HomePage = () => {
           )}
         </div>
       </div>
+
       {authenticationError && (
         <div role="alert" className="alert alert-error">
           <svg
@@ -134,7 +137,9 @@ export const HomePage = () => {
           </svg>
           <span>{authenticationError}</span>
         </div>
-      )}
+      )} */}
+
+      <Page />
     </main>
   );
 };

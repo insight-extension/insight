@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Zen_Dots } from "next/font/google";
 import { dir } from "i18next";
 import { ReactNode } from "react";
 
@@ -39,22 +38,16 @@ export const metadata: Metadata = {
   // </Head>
 };
 
-const zenDots = Zen_Dots({
-  weight: ["400"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
 export default async function RootLayout({
   children,
   params: { language },
 }: Readonly<{
   children: ReactNode;
   params: { language: string };
-}>) {
+}>): Promise<JSX.Element> {
   return (
     <html lang={language} dir={dir(language)}>
-      <body className={zenDots.className}>
+      <body>
         <AppWalletProvider>{children}</AppWalletProvider>
       </body>
     </html>

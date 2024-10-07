@@ -22,6 +22,7 @@
   "scripts": {},
   "dependencies": {
     "@project-serum/anchor": "^0.26.0",
+    "@radix-ui/react-slot": "^1.1.0",
     "@repo/i18n": "workspace:^",
     "@repo/shared": "workspace:^",
     "@repo/tailwind": "workspace:^",
@@ -30,11 +31,16 @@
     "@solana/wallet-adapter-react-ui": "^0.9.35",
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.92.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "encoding": "^0.1.13",
     "lokijs": "1.x",
+    "lucide-react": "^0.447.0",
     "next": "14.2.3",
     "pino-pretty": "^11.1.0",
     "react": "18.2.0",
-    "swr": "^2.2.5"
+    "swr": "^2.2.5",
+    "tailwind-merge": "^2.5.3",
+    "tailwindcss-animate": "^1.0.7"
   }
 }
