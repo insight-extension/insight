@@ -21,6 +21,7 @@
     "incremental": true,
     "esModuleInterop": true,
     "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "declaration": false,
     "declarationMap": false,
@@ -30,7 +31,6 @@
     "preserveWatchOutput": true,
     "verbatimModuleSyntax": true,
     "jsx": "preserve",
-    "moduleResolution": "node",
     "outDir": "dist",
     "rootDir": "./src"
   },
