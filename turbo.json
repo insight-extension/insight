@@ -33,6 +33,10 @@
     "start:dev": {
       "cache": false,
       "persistent": true
+    },
+    "start:prod": {
+      "cache": false,
+      "persistent": true
     }
   }
 }
