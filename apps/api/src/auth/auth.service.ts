@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccountService } from 'src/account/account.service';
-import { LoginDto } from './dto/login.dto';
 import { VerifyDto } from './dto/verify.dto';
 import { Verify } from './interfaces/verify.interface';
 import { Login } from './interfaces/login.interface';
+import { ClaimDto } from './dto/claim.dto';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +40,7 @@ export class AuthService {
     };
   }
 
-  async login(dto: LoginDto): Promise<Login> {
+  async claim(dto: ClaimDto): Promise<Login> {
     const { publicKey, nonce } =
       await this.accountService.generateNonceForPublicKey({
         publicKey: dto.publicKey,
