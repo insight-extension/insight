@@ -13,6 +13,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
+    "../my-next-app/app/layout.tsx",
+    "../my-next-app/app/page.tsx",
   ],
   "exclude": [
     "node_modules"

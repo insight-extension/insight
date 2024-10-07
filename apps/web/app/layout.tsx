@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
-import { Zen_Dots } from "next/font/google";
-import { dir } from "i18next";
 import { ReactNode } from "react";
 
-import { applicationLanguages } from "@repo/i18n";
 import { AppWalletProvider } from "@repo/ui/providers";
-
-export async function generateStaticParams() {
-  return applicationLanguages.map((language) => ({ language }));
-}
 
 export const metadata: Metadata = {
   title: "Insight",
@@ -39,12 +32,6 @@ export const metadata: Metadata = {
   // </Head>
 };
 
-const zenDots = Zen_Dots({
-  weight: ["400"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
 export default async function RootLayout({
   children,
   params: { language },
@@ -53,8 +40,8 @@ export default async function RootLayout({
   params: { language: string };
 }>): Promise<JSX.Element> {
   return (
-    <html lang={language} dir={dir(language)}>
-      <body className={zenDots.className}>
+    <html lang={language}>
+      <body>
         <AppWalletProvider>{children}</AppWalletProvider>
       </body>
     </html>
