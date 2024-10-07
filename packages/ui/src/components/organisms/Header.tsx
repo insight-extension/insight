@@ -1,8 +1,7 @@
-import { useTranslationClient } from "@repo/i18n";
-import { Button } from "@repo/ui/components/atoms/button";
-import Logo from "@repo/ui/components/atoms/logo";
-
 import React from "react";
+
+import { useTranslationClient } from "@repo/i18n";
+import { Logo, Button } from "@repo/ui/components";
 
 interface HeaderProps {
   translationPrefix?: string;

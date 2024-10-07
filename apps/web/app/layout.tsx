@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import { dir } from "i18next";
 import { ReactNode } from "react";
 
-import { applicationLanguages } from "@repo/i18n";
 import { AppWalletProvider } from "@repo/ui/providers";
-
-export async function generateStaticParams() {
-  return applicationLanguages.map((language) => ({ language }));
-}
 
 export const metadata: Metadata = {
   title: "Insight",
@@ -46,7 +40,7 @@ export default async function RootLayout({
   params: { language: string };
 }>): Promise<JSX.Element> {
   return (
-    <html lang={language} dir={dir(language)}>
+    <html lang={language}>
       <body>
         <AppWalletProvider>{children}</AppWalletProvider>
       </body>

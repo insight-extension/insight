@@ -1,14 +1,13 @@
 import React from "react";
 
+import { Heading2, Container } from "@repo/ui/components";
 import { useTranslationClient } from "@repo/i18n";
-import Container from "@repo/ui/components/atoms/container";
-import { Heading2 } from "@repo/ui/components/atoms/heading";
 
-interface IntroProps {
+interface FAQProps {
   translationPrefix?: string;
 }
 
-export const Intro = ({ translationPrefix = "intro" }: IntroProps) => {
+export const FAQ = ({ translationPrefix = "about" }: FAQProps) => {
   const { t } = useTranslationClient();
 
   return (
@@ -20,17 +19,20 @@ export const Intro = ({ translationPrefix = "intro" }: IntroProps) => {
 
         <div className="grid grid-rows-2 grid-cols-2 gap-10">
           {(
-            t(`${translationPrefix}.stepsContent`, {
+            t(`${translationPrefix}.features`, {
               returnObjects: true,
-            }) as string[]
-          ).map((step, index) => (
-            <div key={step} className="bg-accent p-7 rounded-lg w-full">
+            }) as { title: string; description: string }[]
+          ).map((feature, index) => (
+            <div
+              key={feature.title}
+              className="bg-accent p-7 rounded-lg w-full"
+            >
               <p className="text-primary-foreground py-1 px-2.5 rounded-xl capitalize text-xl">
-                {t(`${translationPrefix}.step`)} {index + 1}
+                {feature.title}
               </p>
 
               <p className="text-primary-foreground py-1 px-2.5 rounded-xl capitalize">
-                {step}
+                {feature.description}
               </p>
             </div>
           ))}

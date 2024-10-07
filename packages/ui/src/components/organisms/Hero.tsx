@@ -1,9 +1,7 @@
 import React from "react";
 
 import { useTranslationClient } from "@repo/i18n";
-import { Button } from "@repo/ui/components/atoms/button";
-import Container from "@repo/ui/components/atoms/container";
-import { Heading1 } from "@repo/ui/components/atoms/heading";
+import { Heading1, Button, Container } from "@repo/ui/components";
 
 interface HeroProps {
   translationPrefix?: string;
