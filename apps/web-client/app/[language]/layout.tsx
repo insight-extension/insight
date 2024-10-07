@@ -51,7 +51,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode;
   params: { language: string };
-}>) {
+}>): Promise<JSX.Element> {
   return (
     <html lang={language} dir={dir(language)}>
       <body className={zenDots.className}>

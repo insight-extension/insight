@@ -1,6 +1,9 @@
 {
   "name": "@repo/tailwind",
   "version": "1.0.0",
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.13"
+  },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.12.2",
@@ -12,8 +15,5 @@
     "./postcss-config": "./postcss.config.mjs",
     "./tailwind-config": "./tailwind.config.ts"
   },
-  "private": true,
-  "dependencies": {
-    "@tailwindcss/typography": "^0.5.13"
-  }
+  "private": true
 }
