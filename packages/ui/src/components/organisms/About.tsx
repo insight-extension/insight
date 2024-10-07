@@ -1,7 +1,7 @@
 import React from "react";
 
-import Container from "@repo/ui/components/atoms/container";
-import { Heading2 } from "@repo/ui/components/atoms/heading";
+import { Heading2, Container } from "@repo/ui/components";
+
 import { useTranslationClient } from "@repo/i18n";
 
 interface AboutProps {

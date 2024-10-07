@@ -16,7 +16,7 @@ import type {
 } from "@repo/shared/types";
 import { accountService } from "@repo/shared/client/services";
 
-import Page from "./page";
+import { About, Header, Hero, Intro } from "@repo/ui/components";
 
 export const HomePage = () => {
   const { t } = useTranslationClient();
@@ -99,7 +99,7 @@ export const HomePage = () => {
 
   return (
     <main className="flex flex-col bg-default min-h-screen">
-      {/* <div className="flex flex-row">
+      <div className="flex flex-row">
         <h1 className="text-4xl mb-4 font-bold">
           {t("home.applicationTitle")}
         </h1>
@@ -137,9 +137,12 @@ export const HomePage = () => {
           </svg>
           <span>{authenticationError}</span>
         </div>
-      )} */}
+      )}
 
-      <Page />
+      <Header />
+      <Hero />
+      <Intro />
+      <About />
     </main>
   );
 };

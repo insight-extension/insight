@@ -2,14 +2,15 @@ import React from "react";
 
 interface LogoProps {}
 
-const Logo: React.FC<LogoProps> = () => {
+export const Logo: React.FC<LogoProps> = () => {
   return (
     <svg
       width="70"
       height="32"
       viewBox="0 0 53 16"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg">
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M2.31249 1.10706C2.31249 1.76433 1.82437 2.24604 1.14842 2.24604C0.472459 2.24604 0 1.76433 0 1.10706C0 0.449788 0.503766 0 1.14842 0C1.82437 0 2.31249 0.465748 2.31249 1.10706ZM0.267537 3.977H2.04495V12.7972H0.267537V3.977Z"
         fill="white"
@@ -45,5 +46,3 @@ const Logo: React.FC<LogoProps> = () => {
     </svg>
   );
 };
-
-export default Logo;
