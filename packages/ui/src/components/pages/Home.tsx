@@ -105,7 +105,7 @@ export const HomePage = () => {
 
   return (
     <main className="flex flex-col bg-default min-h-screen">
-      <div className="flex flex-row">
+      {/* <div className="flex flex-row">
         {isClientSide ? (
           <div className="indicator h-fit">
             <span
@@ -118,7 +118,7 @@ export const HomePage = () => {
             <span className="loading loading-dots loading-md" />
           </div>
         )}
-      </div>
+      </div> */}
 
       {authenticationError && (
         <div role="alert" className="alert alert-error">
