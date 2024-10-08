@@ -56,6 +56,28 @@
     ]
   },
   "faq": {
-    "title": "Frequently Asked Questions"
+    "title": "Frequently Asked Questions",
+    "questions": [
+      {
+        "title": "How does the browser extension work?",
+        "answer": ""
+      },
+      {
+        "title": "What languages are supported?",
+        "answer": ""
+      },
+      {
+        "title": "Is my data safe while using the extension?",
+        "answer": ""
+      },
+      {
+        "title": "Can I use this on multiple devices?",
+        "answer": ""
+      },
+      {
+        "title": "How accurate are the translations?",
+        "answer": ""
+      }
+    ]
   }
 }

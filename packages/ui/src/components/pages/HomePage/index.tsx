@@ -16,7 +16,7 @@ import type {
 } from "@repo/shared/types";
 import { accountService } from "@repo/shared/client/services";
 
-import { About, Header, Hero, Intro } from "@repo/ui/components";
+import { About, FAQ, Header, Hero, Intro } from "@repo/ui/components";
 
 export const HomePage = () => {
   const { t } = useTranslationClient();
@@ -143,6 +143,7 @@ export const HomePage = () => {
       <Hero />
       <Intro />
       <About />
+      <FAQ />
     </main>
   );
 };
