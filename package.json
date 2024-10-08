@@ -21,6 +21,7 @@
     "dev:api": "turbo run start:dev --filter=api",
     "dev:plasmo": "turbo run dev --filter=plasmo",
     "dev:web": "turbo run dev --filter=web",
+    "deploy:web": "turbo run deploy --filter=web",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo lint",
     "preinstall": "npx only-allow pnpm",
