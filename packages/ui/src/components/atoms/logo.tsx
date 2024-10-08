@@ -1,8 +1,6 @@
 import React from "react";
 
-interface LogoProps {}
-
-export const Logo: React.FC<LogoProps> = () => {
+export const Logo = () => {
   return (
     <svg
       width="70"

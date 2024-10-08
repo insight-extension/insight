@@ -25,4 +25,14 @@ const Heading2: React.FC<HeadingProps> = ({ children, className }) => {
   );
 };
 
-export { Heading1, Heading2 };
+const Heading4: React.FC<HeadingProps> = ({ children, className }) => {
+  return (
+    <h4
+      className={cn("text-primary-foreground font-medium text-md", className)}
+    >
+      {children}
+    </h4>
+  );
+};
+
+export { Heading1, Heading2, Heading4 };

@@ -37,6 +37,7 @@
     "typescript": "^5.4.5"
   },
   "exports": {
+    "./assets": "./src/assets/index.ts",
     "./components": "./src/components/index.ts",
     "./providers": "./src/providers/index.ts",
     "./fetching": "./src/fetching/index.ts",

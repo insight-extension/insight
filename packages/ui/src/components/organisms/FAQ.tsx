@@ -18,7 +18,7 @@ export const FAQ = ({ translationPrefix = "faq" }: FAQProps) => {
   const { t } = useTranslationClient();
 
   return (
-    <section className="py-10">
+    <section className="py-10" id="faq">
       <Container>
         <Heading2 className="leading-[3rem] mb-2">
           {t(`${translationPrefix}.title`)}

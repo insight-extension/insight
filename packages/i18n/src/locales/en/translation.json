@@ -1,9 +1,25 @@
 {
-  "home": {
-    "applicationTitle": "Insight ❤️"
-  },
   "header": {
-    "links": ["How it works?", "Features", "Pricing", "FAQs"],
+    "navigation": {
+      "links": [
+        {
+          "title": "How it works?",
+          "href": "about"
+        },
+        {
+          "title": "Features",
+          "href": "features"
+        },
+        {
+          "title": "Pricing",
+          "href": "pricing"
+        },
+        {
+          "title": "FAQs",
+          "href": "faq"
+        }
+      ]
+    },
     "connectWallet": "Connect Wallet",
     "start": "Start"
   },
@@ -12,7 +28,7 @@
     "available": "Available For: ",
     "download": "Download for Free"
   },
-  "intro": {
+  "about": {
     "title": "How it works",
     "step": "step",
     "stepsContent": [
@@ -22,7 +38,7 @@
       "Customize settings to fit your needs, whether for professional, casual, or academic use."
     ]
   },
-  "about": {
+  "features": {
     "title": "Why Choose Our Browser Extension?",
     "features": [
       {
@@ -79,5 +95,38 @@
         "answer": ""
       }
     ]
+  },
+  "footer": {
+    "groupMember": "Group Member:",
+    "subscribe": {
+      "title": "Subscribe to get the latest updates",
+      "email": "Enter your email"
+    },
+    "navigation": {
+      "title": "Quick Links",
+      "links": [
+        {
+          "title": "How it works?",
+          "href": "about"
+        },
+        {
+          "title": "Features",
+          "href": "features"
+        },
+        {
+          "title": "Pricing",
+          "href": "pricing"
+        },
+        {
+          "title": "FAQs",
+          "href": "faq"
+        }
+      ]
+    },
+    "bottom": {
+      "title": "© 2024 Insight Web3",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    }
   }
 }

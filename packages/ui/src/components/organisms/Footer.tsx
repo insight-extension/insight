@@ -1,110 +1,100 @@
 import React from "react";
+import Image from "next/image";
 
-export const Footer = () => {
+import {
+  NavigationContainer,
+  Facebook,
+  LinkedIn,
+  Logo,
+  Heading4,
+  Input,
+} from "@repo/ui/components";
+import { KumekaLogo, SolanaLogo } from "@repo/ui/assets";
+import { useTranslationClient } from "@repo/i18n";
+
+interface FooterProps {
+  translationPrefix?: string;
+}
+
+export const Footer = ({ translationPrefix = "footer" }: FooterProps) => {
+  const { t } = useTranslationClient();
+
   return (
-    <footer className="bg-base-200 text-base-content ">
-      <div className="container ">
-        <div className="footer py-10 md:py-16 grid-cols-2 sm:grid-cols-4 lg:grid-cols-auto">
-          <div>
-            <span className="footer-title">Solutions</span>
-            <a href="#!" className="link link-hover">
-              Marketing
-            </a>
-            <a href="#!" className="link link-hover">
-              Analytics
-            </a>
-            <a href="#!" className="link link-hover">
-              Commerce
-            </a>
-            <a href="#!" className="link link-hover">
-              Insights
-            </a>
-          </div>
-          <div>
-            <span className="footer-title">Services</span>
-            <a href="#!" className="link link-hover">
-              Branding
-            </a>
-            <a href="#!" className="link link-hover">
-              Design
-            </a>
-            <a href="#!" className="link link-hover">
-              Marketing
-            </a>
-            <a href="#!" className="link link-hover">
-              Advertisement
-            </a>
-          </div>
-          <div>
-            <span className="footer-title">Company</span>
-            <a href="#!" className="link link-hover">
-              About us
-            </a>
-            <a href="#!" className="link link-hover">
-              Contact
-            </a>
-            <a href="#!" className="link link-hover">
-              Jobs
-            </a>
-            <a href="#!" className="link link-hover">
-              Press kit
-            </a>
-          </div>
-          <div>
-            <span className="footer-title">Legal</span>
-            <a href="#!" className="link link-hover">
-              Terms of use
-            </a>
-            <a href="#!" className="link link-hover">
-              Privacy policy
-            </a>
-            <a href="#!" className="link link-hover">
-              Cookie policy
-            </a>
-          </div>
-          <div className="w-full col-span-full md:col-auto">
-            <span className="footer-title">Newsletter</span>
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Enter your email address</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="user@site.com"
-                  className="input input-bordered w-full pr-16"
+    <footer className="py-10">
+      <NavigationContainer>
+        <div className="grid grid-cols-3 grid-rows-1">
+          <div className="flex flex-col gap-4">
+            <Logo />
+
+            <div className="flex flex-col gap-2">
+              <Heading4>{t(`${translationPrefix}.groupMember`)}</Heading4>
+
+              <div className="flex flex-row gap-4">
+                <Image
+                  width={100}
+                  height={100}
+                  src={KumekaLogo}
+                  alt="Kumeka Logo"
                 />
-                <button className="btn btn-primary absolute top-0 right-0 rounded-l-none">
-                  Subscribe
-                </button>
+                <Image
+                  width={100}
+                  height={100}
+                  src={SolanaLogo}
+                  alt="Solana Logo"
+                />
               </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <Heading4>{t(`${translationPrefix}.navigation.title`)}</Heading4>
+
+            <nav className="flex flex-col gap-1">
+              {(
+                t(`${translationPrefix}.navigation.links`, {
+                  returnObjects: true,
+                }) as { title: string; href: string }[]
+              ).map((link) => (
+                <a
+                  key={link.title}
+                  className="text-primary-foreground px-8 py-2"
+                  href={`#${link.href}`}
+                >
+                  {link.title}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <Heading4>{t(`${translationPrefix}.subscribe`)}</Heading4>
+
+            <Input
+              type="email"
+              placeholder={t(`${translationPrefix}.subscribe.email`)}
+            />
+            <div className="flex flex-row gap-2">
+              <LinkedIn />
+              <Facebook />
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center border-t border-base-300 py-4 gap-2">
-          <div className="flex-grow text-center sm:text-start">
-            <p>© 2022 Company, Inc. All rights reserved.</p>
-          </div>
-          <div className="grid grid-flow-col gap-4">
-            <a className="link link-secondary" href="#!">
-              <i className="bi bi-facebook text-xl"></i>
-            </a>
-            <a className="link link-secondary" href="#!">
-              <i className="bi bi-instagram text-xl"></i>
-            </a>
-            <a className="link link-secondary" href="#!">
-              <i className="bi bi-twitter text-xl"></i>
-            </a>
-            <a className="link link-secondary" href="#!">
-              <i className="bi bi-github text-xl"></i>
-            </a>
-            <a className="link link-secondary" href="#!">
-              <i className="bi bi-dribbble text-xl"></i>
-            </a>
+        <div className="flex justify-between py-4">
+          <p className="text-primary-foreground text-xs">
+            {t(`${translationPrefix}.bottom.title`)}
+          </p>
+
+          <div className="flex gap-4 justify-center">
+            <p className="text-primary-foreground text-xs">
+              {t(`${translationPrefix}.bottom.terms`)}
+            </p>
+            <p className="text-primary-foreground text-xs">
+              {t(`${translationPrefix}.bottom.privacy`)}
+            </p>
           </div>
         </div>
-      </div>
+      </NavigationContainer>
     </footer>
   );
 };
