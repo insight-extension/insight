@@ -29,22 +29,26 @@ export const Footer = ({ translationPrefix = "footer" }: FooterProps) => {
               <Heading4>{t(`${translationPrefix}.groupMember`)}</Heading4>
 
               <div className="flex flex-row gap-4">
-                <Image
-                  quality={100}
-                  style={{ objectFit: "contain" }}
-                  width={60}
-                  height={60}
-                  src={KumekaLogo}
-                  alt="Kumeka Logo"
-                />
+                <Link href="https://solana.com/">
+                  <Image
+                    quality={100}
+                    width={40}
+                    height={40}
+                    src={SolanaLogo}
+                    alt="Solana Logo"
+                  />
+                </Link>
 
-                <Image
-                  quality={100}
-                  width={60}
-                  height={60}
-                  src={SolanaLogo}
-                  alt="Solana Logo"
-                />
+                <Link href="https://www.linkedin.com/company/kumeka-team/">
+                  <Image
+                    quality={100}
+                    style={{ objectFit: "cover" }}
+                    width={40}
+                    height={40}
+                    src={KumekaLogo}
+                    alt="Kumeka Logo"
+                  />
+                </Link>
               </div>
             </div>
           </div>
