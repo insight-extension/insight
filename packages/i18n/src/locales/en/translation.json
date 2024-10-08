@@ -1,4 +1,10 @@
 {
+  "home": {
+    "authenticationError": {
+      "title": "Error",
+      "message": "Authentication failed. Please try again."
+    }
+  },
   "header": {
     "navigation": {
       "links": [

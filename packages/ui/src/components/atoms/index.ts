@@ -4,3 +4,4 @@ export * from "./Heading";
 export * from "./Logo";
 export * from "./Accordion";
 export * from "./Input";
+export * from "./Alert";
