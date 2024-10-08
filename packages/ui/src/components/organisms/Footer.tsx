@@ -1,15 +1,14 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import {
   NavigationContainer,
-  Facebook,
-  LinkedIn,
   Logo,
   Heading4,
   Input,
 } from "@repo/ui/components";
-import { KumekaLogo, SolanaLogo } from "@repo/ui/assets";
+import { KumekaLogo, SolanaLogo, Twitter, LinkedIn } from "@repo/ui/assets";
 import { useTranslationClient } from "@repo/i18n";
 
 interface FooterProps {
@@ -23,22 +22,26 @@ export const Footer = ({ translationPrefix = "footer" }: FooterProps) => {
     <footer className="py-10">
       <NavigationContainer>
         <div className="grid grid-cols-3 grid-rows-1">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-8">
             <Logo />
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <Heading4>{t(`${translationPrefix}.groupMember`)}</Heading4>
 
               <div className="flex flex-row gap-4">
                 <Image
-                  width={100}
-                  height={100}
+                  quality={100}
+                  style={{ objectFit: "contain" }}
+                  width={60}
+                  height={60}
                   src={KumekaLogo}
                   alt="Kumeka Logo"
                 />
+
                 <Image
-                  width={100}
-                  height={100}
+                  quality={100}
+                  width={60}
+                  height={60}
                   src={SolanaLogo}
                   alt="Solana Logo"
                 />
@@ -46,10 +49,12 @@ export const Footer = ({ translationPrefix = "footer" }: FooterProps) => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <Heading4>{t(`${translationPrefix}.navigation.title`)}</Heading4>
+          <div className="flex flex-col gap-8">
+            <Heading4 className="text-xl">
+              {t(`${translationPrefix}.navigation.title`)}
+            </Heading4>
 
-            <nav className="flex flex-col gap-1">
+            <nav className="flex flex-col gap-6">
               {(
                 t(`${translationPrefix}.navigation.links`, {
                   returnObjects: true,
@@ -57,7 +62,7 @@ export const Footer = ({ translationPrefix = "footer" }: FooterProps) => {
               ).map((link) => (
                 <a
                   key={link.title}
-                  className="text-primary-foreground px-8 py-2"
+                  className="text-primary-foreground"
                   href={`#${link.href}`}
                 >
                   {link.title}
@@ -66,16 +71,24 @@ export const Footer = ({ translationPrefix = "footer" }: FooterProps) => {
             </nav>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <Heading4>{t(`${translationPrefix}.subscribe`)}</Heading4>
+          <div className="flex flex-col gap-8">
+            <Heading4 className="text-xl">
+              {t(`${translationPrefix}.subscribe.title`)}
+            </Heading4>
 
             <Input
+              className="h-16 text-lg px-6 text-primary-foreground"
               type="email"
               placeholder={t(`${translationPrefix}.subscribe.email`)}
             />
-            <div className="flex flex-row gap-2">
-              <LinkedIn />
-              <Facebook />
+            <div className="flex flex-row gap-3">
+              <Link href="https://x.com/1nsight_xyz">
+                <Image height={30} width={30} src={Twitter} alt="Twitter" />
+              </Link>
+
+              <Link href="https://www.linkedin.com/company/insight-xyz">
+                <Image height={32} width={32} src={LinkedIn} alt="Twitter" />
+              </Link>
             </div>
           </div>
         </div>
@@ -85,7 +98,7 @@ export const Footer = ({ translationPrefix = "footer" }: FooterProps) => {
             {t(`${translationPrefix}.bottom.title`)}
           </p>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-8 justify-center">
             <p className="text-primary-foreground text-xs">
               {t(`${translationPrefix}.bottom.terms`)}
             </p>

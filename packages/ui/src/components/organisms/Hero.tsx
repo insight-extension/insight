@@ -14,10 +14,10 @@ export const Hero = ({ translationPrefix = "hero" }: HeroProps) => {
   const getSupportedBrowsers = () => ["Chrome", "Firefox", "Safari"];
 
   return (
-    <section className="py-40">
+    <section className="pt-24 pb-40">
       <Container>
-        <div className="max-w-96">
-          <Heading1 className="leading-[3rem] mb-2">
+        <div className="max-w-[35rem]">
+          <Heading1 className="leading-[5rem] mb-2">
             {t(`${translationPrefix}.title`)}
           </Heading1>
 
@@ -26,7 +26,7 @@ export const Hero = ({ translationPrefix = "hero" }: HeroProps) => {
             {getSupportedBrowsers().join(", ")}
           </p>
 
-          <Button className="w-52" size="lg" variant="secondary">
+          <Button className="w-52 h-12" size="lg" variant="secondary">
             {t(`${translationPrefix}.download`)}
           </Button>
         </div>

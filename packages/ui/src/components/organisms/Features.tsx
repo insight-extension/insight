@@ -12,13 +12,13 @@ export const Features = ({ translationPrefix = "features" }: FeaturesProps) => {
   const { t } = useTranslationClient();
 
   return (
-    <section className="py-10" id="features">
+    <section className="py-40" id="features">
       <Container>
-        <Heading2 className="leading-[3rem] mb-2">
+        <Heading2 className="leading-[3rem] mb-16 text-center">
           {t(`${translationPrefix}.title`)}
         </Heading2>
 
-        <div className="grid grid-rows-2 grid-cols-2 gap-10">
+        <div className="grid grid-rows-3 grid-cols-4 gap-10">
           {(
             t(`${translationPrefix}.features`, {
               returnObjects: true,
@@ -26,13 +26,13 @@ export const Features = ({ translationPrefix = "features" }: FeaturesProps) => {
           ).map((feature, index) => (
             <div
               key={feature.title}
-              className="bg-accent p-7 rounded-lg w-full"
+              className={`bg-secondary p-7 rounded-lg justify-self-center ${index === 2 ? "w-1/2" : "w-full"} text-primary ${index === 2 ? "col-span-4" : "col-span-2"}`}
             >
-              <p className="text-primary-foreground py-1 px-2.5 rounded-xl capitalize text-xl">
+              <h5 className="py-1 px-2.5 rounded-xl capitalize text-2xl font-medium">
                 {feature.title}
-              </p>
+              </h5>
 
-              <p className="text-primary-foreground py-1 px-2.5 rounded-xl capitalize">
+              <p className="py-1 px-2.5 rounded-xl capitalize text-md">
                 {feature.description}
               </p>
             </div>

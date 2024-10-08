@@ -104,7 +104,7 @@ export const HomePage = () => {
   useEffect(() => {}, [connected, publicKey, signMessage]);
 
   return (
-    <main className="flex flex-col bg-default min-h-screen">
+    <main className="flex flex-col min-h-screen bg-[url('/background.png')] bg-cover">
       {/* <div className="flex flex-row">
         {isClientSide ? (
           <div className="indicator h-fit">

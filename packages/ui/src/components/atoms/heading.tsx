@@ -8,7 +8,7 @@ interface HeadingProps {
 const Heading1: React.FC<HeadingProps> = ({ children, className }) => {
   return (
     <h1
-      className={cn("text-primary-foreground font-medium text-4xl", className)}
+      className={cn("text-primary-foreground font-medium text-6xl", className)}
     >
       {children}
     </h1>
@@ -18,7 +18,7 @@ const Heading1: React.FC<HeadingProps> = ({ children, className }) => {
 const Heading2: React.FC<HeadingProps> = ({ children, className }) => {
   return (
     <h2
-      className={cn("text-primary-foreground font-medium text-3xl", className)}
+      className={cn("text-primary-foreground font-medium text-5xl", className)}
     >
       {children}
     </h2>

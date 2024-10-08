@@ -11,7 +11,7 @@ export const Header = ({ translationPrefix = "header" }: HeaderProps) => {
   const { t } = useTranslationClient();
 
   return (
-    <header className="py-4">
+    <header className="py-10">
       <NavigationContainer className="flex flew-row flex-wrap justify-between items-center">
         <Logo />
 
@@ -32,11 +32,11 @@ export const Header = ({ translationPrefix = "header" }: HeaderProps) => {
         </nav>
 
         <div className="flex gap-8">
-          <Button variant="default" className="w-52">
+          <Button variant="default" className="w-52 h-12 text-md">
             {t(`${translationPrefix}.connectWallet`)}
           </Button>
 
-          <Button className="w-52" variant="accent">
+          <Button className="w-52 h-12 text-md" variant="accent">
             {t(`${translationPrefix}.start`)}
           </Button>
         </div>

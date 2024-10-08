@@ -18,9 +18,9 @@ export const FAQ = ({ translationPrefix = "faq" }: FAQProps) => {
   const { t } = useTranslationClient();
 
   return (
-    <section className="py-10" id="faq">
+    <section className="py-40" id="faq">
       <Container>
-        <Heading2 className="leading-[3rem] mb-2">
+        <Heading2 className="leading-[3rem] mb-16 text-center">
           {t(`${translationPrefix}.title`)}
         </Heading2>
 
@@ -30,8 +30,8 @@ export const FAQ = ({ translationPrefix = "faq" }: FAQProps) => {
               returnObjects: true,
             }) as { title: string; answer: string }[]
           ).map((question, index) => (
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-primary-foreground font-medium">
+            <AccordionItem value={question.title}>
+              <AccordionTrigger className="text-primary-foreground font-medium text-lg">
                 {`${index + 1}. ${question.title}`}
               </AccordionTrigger>
 
