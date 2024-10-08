@@ -1,9 +1,15 @@
 {
+  "home": {
+    "authenticationError": {
+      "title": "Error",
+      "message": "Authentication failed. Please try again."
+    }
+  },
   "header": {
     "navigation": {
       "links": [
         {
-          "title": "How it works?",
+          "title": "How it works",
           "href": "about"
         },
         {
@@ -34,8 +40,7 @@
     "stepsContent": [
       "Install the extension from your browser’s web store.",
       "Choose your preferred language for translation.",
-      "Start browsing play a video, and watch as it’s translated in real-time.",
-      "Customize settings to fit your needs, whether for professional, casual, or academic use."
+      "Start browsing play a video, and watch as it’s translated in real-time."
     ]
   },
   "features": {
@@ -106,7 +111,7 @@
       "title": "Quick Links",
       "links": [
         {
-          "title": "How it works?",
+          "title": "How it works",
           "href": "about"
         },
         {
