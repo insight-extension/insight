@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@project-serum/anchor": "^0.26.0",
+    "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@repo/i18n": "workspace:^",
     "@repo/shared": "workspace:^",
@@ -36,6 +37,7 @@
     "typescript": "^5.4.5"
   },
   "exports": {
+    "./assets": "./src/assets/index.ts",
     "./components": "./src/components/index.ts",
     "./providers": "./src/providers/index.ts",
     "./fetching": "./src/fetching/index.ts",

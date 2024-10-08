@@ -15,8 +15,14 @@ import type {
   ValidateAccountRequest,
 } from "@repo/shared/types";
 import { accountService } from "@repo/shared/client/services";
-
-import { About, Header, Hero, Intro } from "@repo/ui/components";
+import {
+  About,
+  FAQ,
+  Features,
+  Footer,
+  Header,
+  Hero,
+} from "@repo/ui/components";
 
 export const HomePage = () => {
   const { t } = useTranslationClient();
@@ -99,26 +105,20 @@ export const HomePage = () => {
 
   return (
     <main className="flex flex-col bg-default min-h-screen">
-      <div className="flex flex-row">
-        <h1 className="text-4xl mb-4 font-bold">
-          {t("home.applicationTitle")}
-        </h1>
-
-        <div>
-          {isClientSide ? (
-            <div className="indicator h-fit">
-              <span
-                className={`indicator-item badge ${connected ? "badge-primary" : "badge-secondary"}`}
-              />
-              <WalletMultiButton style={{}} />
-            </div>
-          ) : (
-            <div className="flex w-24 items-center">
-              <span className="loading loading-dots loading-md"></span>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* <div className="flex flex-row">
+        {isClientSide ? (
+          <div className="indicator h-fit">
+            <span
+              className={`indicator-item badge ${connected ? "badge-primary" : "badge-secondary"}`}
+            />
+            <WalletMultiButton style={{}} />
+          </div>
+        ) : (
+          <div className="flex w-24 items-center">
+            <span className="loading loading-dots loading-md" />
+          </div>
+        )}
+      </div> */}
 
       {authenticationError && (
         <div role="alert" className="alert alert-error">
@@ -141,8 +141,10 @@ export const HomePage = () => {
 
       <Header />
       <Hero />
-      <Intro />
       <About />
+      <Features />
+      <FAQ />
+      <Footer />
     </main>
   );
 };

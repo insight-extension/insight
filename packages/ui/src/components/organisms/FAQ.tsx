@@ -1,42 +1,46 @@
 import React from "react";
 
-import { Heading2, Container } from "@repo/ui/components";
+import {
+  Heading2,
+  Container,
+  AccordionItem,
+  AccordionContent,
+  AccordionTrigger,
+  Accordion,
+} from "@repo/ui/components";
 import { useTranslationClient } from "@repo/i18n";
 
 interface FAQProps {
   translationPrefix?: string;
 }
 
-export const FAQ = ({ translationPrefix = "about" }: FAQProps) => {
+export const FAQ = ({ translationPrefix = "faq" }: FAQProps) => {
   const { t } = useTranslationClient();
 
   return (
-    <section className="py-10">
+    <section className="py-10" id="faq">
       <Container>
         <Heading2 className="leading-[3rem] mb-2">
           {t(`${translationPrefix}.title`)}
         </Heading2>
 
-        <div className="grid grid-rows-2 grid-cols-2 gap-10">
+        <Accordion type="single" collapsible>
           {(
-            t(`${translationPrefix}.features`, {
+            t(`${translationPrefix}.questions`, {
               returnObjects: true,
-            }) as { title: string; description: string }[]
-          ).map((feature, index) => (
-            <div
-              key={feature.title}
-              className="bg-accent p-7 rounded-lg w-full"
-            >
-              <p className="text-primary-foreground py-1 px-2.5 rounded-xl capitalize text-xl">
-                {feature.title}
-              </p>
+            }) as { title: string; answer: string }[]
+          ).map((question, index) => (
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-primary-foreground font-medium">
+                {`${index + 1}. ${question.title}`}
+              </AccordionTrigger>
 
-              <p className="text-primary-foreground py-1 px-2.5 rounded-xl capitalize">
-                {feature.description}
-              </p>
-            </div>
+              <AccordionContent className="text-primary-foreground">
+                {question.answer}
+              </AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </Container>
     </section>
   );

@@ -1,17 +1,18 @@
 import React from "react";
 
-import { useTranslationClient } from "@repo/i18n";
 import { Heading2, Container } from "@repo/ui/components";
 
-interface IntroProps {
+import { useTranslationClient } from "@repo/i18n";
+
+interface FeaturesProps {
   translationPrefix?: string;
 }
 
-export const Intro = ({ translationPrefix = "intro" }: IntroProps) => {
+export const Features = ({ translationPrefix = "features" }: FeaturesProps) => {
   const { t } = useTranslationClient();
 
   return (
-    <section className="py-10">
+    <section className="py-10" id="features">
       <Container>
         <Heading2 className="leading-[3rem] mb-2">
           {t(`${translationPrefix}.title`)}
@@ -19,17 +20,20 @@ export const Intro = ({ translationPrefix = "intro" }: IntroProps) => {
 
         <div className="grid grid-rows-2 grid-cols-2 gap-10">
           {(
-            t(`${translationPrefix}.stepsContent`, {
+            t(`${translationPrefix}.features`, {
               returnObjects: true,
-            }) as string[]
-          ).map((step, index) => (
-            <div key={step} className="bg-accent p-7 rounded-lg w-full">
+            }) as { title: string; description: string }[]
+          ).map((feature, index) => (
+            <div
+              key={feature.title}
+              className="bg-accent p-7 rounded-lg w-full"
+            >
               <p className="text-primary-foreground py-1 px-2.5 rounded-xl capitalize text-xl">
-                {t(`${translationPrefix}.step`)} {index + 1}
+                {feature.title}
               </p>
 
               <p className="text-primary-foreground py-1 px-2.5 rounded-xl capitalize">
-                {step}
+                {feature.description}
               </p>
             </div>
           ))}
