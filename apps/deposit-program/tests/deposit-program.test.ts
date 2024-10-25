@@ -2,7 +2,12 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { DepositProgram } from "../target/types/deposit_program";
 import { airdropIfRequired } from "@solana-developers/helpers";
-import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import {
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+} from "@solana/web3.js";
 import {
   createAssociatedTokenAccount,
   createMint,
@@ -13,99 +18,121 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 
-const TOKEN_PROGRAM: typeof TOKEN_2022_PROGRAM_ID | typeof TOKEN_PROGRAM_ID =
-  TOKEN_2022_PROGRAM_ID;
+const TOKEN_PROGRAM = TOKEN_2022_PROGRAM_ID;
 
 describe("Deposit Program", () => {
-  // Set the provider for Anchor
   anchor.setProvider(anchor.AnchorProvider.env());
   const provider = anchor.getProvider();
   const connection = provider.connection;
   const program = anchor.workspace.DepositProgram as Program<DepositProgram>;
+
+  const withdrawWallet = new PublicKey(
+    "71q6LEWUkPZhYChjAcZcuxVVyDqdEyjf95etzte2PzwK"
+  );
   const user = Keypair.generate();
 
   let usdcMint: PublicKey;
   let userUsdcAccount: PublicKey;
-  const userUsdcDeposit = new anchor.BN(9_000_000); // 9 USDC in smallest units
+  let userInfoAddress: PublicKey;
+  let vault: PublicKey;
+  const userUsdcBalance = new anchor.BN(100_000_000);
+  const userUsdcDeposit = new anchor.BN(6_000_000);
+
+  const getTokenBalance = async (
+    tokenAccountAddress: PublicKey
+  ): Promise<anchor.BN> => {
+    const tokenBalance = await connection.getTokenAccountBalance(
+      tokenAccountAddress
+    );
+    return new anchor.BN(tokenBalance.value.amount);
+  };
 
   beforeAll(async () => {
     console.log(`User public key: ${user.publicKey}`);
 
-    // Airdrop SOL to user for fees
-    await airdropIfRequired(
-      provider.connection,
-      user.publicKey,
-      5 * LAMPORTS_PER_SOL,
-      5 * LAMPORTS_PER_SOL
-    );
+    // Airdrop SOL to user for fees and to withdraw wallet
+    await Promise.all([
+      airdropIfRequired(
+        provider.connection,
+        user.publicKey,
+        5 * LAMPORTS_PER_SOL,
+        5 * LAMPORTS_PER_SOL
+      ),
+      airdropIfRequired(
+        provider.connection,
+        withdrawWallet,
+        5 * LAMPORTS_PER_SOL,
+        5 * LAMPORTS_PER_SOL
+      ),
+    ]);
 
-    // Create mock USDC mint
+    // Create mock USDC mint and user's ATA (associated token account)
     usdcMint = await createMint(
       connection,
-      user, // payer for transaction fees
+      user, // fee payer
       user.publicKey, // mint authority
-      null, // freeze authority (optional)
-      6, // decimal places for USDC
+      null, // freeze authority
+      6, // decimal places
       Keypair.generate(),
       null,
       TOKEN_PROGRAM
     );
 
-    // Get or create the ATA for the user's USDC account
     userUsdcAccount = await getAssociatedTokenAddress(
       usdcMint,
       user.publicKey,
       false,
       TOKEN_PROGRAM
     );
+
+    // Ensure user's ATA is created and mint USDC to it
     try {
-      // Check if account exists by fetching it
       await getAccount(connection, userUsdcAccount, null, TOKEN_PROGRAM);
-    } catch (error) {
-      // If the account doesn't exist, create it
+    } catch {
       await createAssociatedTokenAccount(
         connection,
         user, // fee payer
         usdcMint, // USDC mint
-        user.publicKey, // user's public key
+        user.publicKey, // owner
         null,
         TOKEN_PROGRAM
       );
       console.log(`Created user USDC account: ${userUsdcAccount}`);
     }
 
-    // Mint 9 USDC to user's ATA
     await mintTo(
       connection,
       user, // fee payer
       usdcMint, // USDC mint
       userUsdcAccount, // user's ATA
       user.publicKey, // mint authority
-      userUsdcDeposit.toNumber(), // 9 USDC in smallest units
+      userUsdcBalance.toNumber(),
       [],
       null,
       TOKEN_PROGRAM
     );
-
-    console.log(`Minted 9 USDC to user's account: ${userUsdcAccount}`);
+    console.log(
+      `Minted ${userUsdcBalance} USDC to user's account: ${userUsdcAccount}`
+    );
   });
 
-  test("Subscribes by transferring USDC to vault and storing user info", async () => {
-    const [userInfoAddress, userInfoBump] = PublicKey.findProgramAddressSync(
+  beforeEach(async () => {
+    // Find addresses for userInfo and vault accounts
+    [userInfoAddress] = PublicKey.findProgramAddressSync(
       [Buffer.from("user_info"), user.publicKey.toBuffer()],
       program.programId
     );
-
-    const vault = await getAssociatedTokenAddress(
+    vault = await getAssociatedTokenAddress(
       usdcMint,
       userInfoAddress,
       true,
       TOKEN_PROGRAM
     );
+  });
 
+  test("Subscribes by transferring USDC to vault and storing user info", async () => {
     let tx: string | null = null;
     try {
-      // Attempt to subscribe by transferring USDC to vault
       tx = await program.methods
         .subscribe(userUsdcDeposit)
         .accounts({
@@ -120,22 +147,39 @@ describe("Deposit Program", () => {
     }
     console.log(`Transaction: ${tx}`);
 
-    // Confirm that the transaction was successful
+    // Check that transaction was successful
     expect(tx).not.toBeNull();
-
-    // Additional checks can be added here, such as checking balances, state, etc.
-    const userUsdcAccountInfo = await getAccount(
-      connection,
-      userUsdcAccount,
-      null,
-      TOKEN_PROGRAM
-    );
-    console.log(`User USDC Account Info: `, userUsdcAccountInfo);
-
     const userInfo = await program.account.userInfo.fetch(userInfoAddress);
-    console.log(`User Info: `, userInfo);
+    expect(userInfo.availableBalance.toNumber()).toEqual(1_000_000);
+    expect(await getTokenBalance(vault)).toEqual(new anchor.BN(6_000_000));
+  });
 
-    const vaultInfo = await getAccount(connection, vault, null, TOKEN_PROGRAM);
-    console.log(`Vault Info: `, vaultInfo);
+  test("Fails on second subscription attempt with AlreadySubscribed error", async () => {
+    // Attempt to subscribe again and expect an error
+    let txError: Error | null = null;
+    try {
+      await program.methods
+        .subscribe(new anchor.BN(11_000_000))
+        .accounts({
+          user: user.publicKey,
+          token: usdcMint,
+          tokenProgram: TOKEN_PROGRAM,
+        })
+        .signers([user])
+        .rpc();
+    } catch (error) {
+      txError = error;
+    }
+
+    expect(txError).not.toBeNull();
+    console.log(`Error: ${txError}`);
+    expect(txError.message).toContain("Already subscribed.");
+
+    // Verify the vault balance is correct
+    //   console.log
+    //vault: 6000000
+    // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
+    console.log(`vault: ${await getTokenBalance(vault)}`);
+    expect(await getTokenBalance(vault)).toEqual(new anchor.BN(11_000_000));
   });
 });
