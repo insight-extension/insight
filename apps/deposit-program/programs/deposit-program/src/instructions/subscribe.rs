@@ -5,7 +5,7 @@ use anchor_spl::{
     token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked},
 };
 
-use crate::{error::SubscribeErrorCode, UserInfo, SUBSCRIPTION_LEVELS, USER_INFO_SEED};
+use crate::{error::ErrorCode, UserInfo, SUBSCRIPTION_LEVELS, USER_INFO_SEED};
 
 #[derive(Accounts)]
 pub struct Subscribe<'info> {
@@ -58,7 +58,7 @@ pub fn handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
         .find(|(cost, _)| amount >= *cost)
     {
         Some(level) => *level,
-        None => return Err(SubscribeErrorCode::InsufficientBalance.into()),
+        None => return Err(ErrorCode::InsufficientBalance.into()),
     };
 
     // Calculate the amount to send to the vault

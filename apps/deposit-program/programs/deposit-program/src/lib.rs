@@ -19,8 +19,7 @@ pub mod deposit_program {
         instructions::subscribe::handler(ctx, amount)
     }
 
-    // TODO
-    //pub fn refund_balance(ctx: Context<RefundBalance>) -> Result<()> {
-    //    instructions::refund_balance::handler(ctx)
-    //}
+    pub fn refund_balance(ctx: Context<RefundBalance>) -> Result<()> {
+        instructions::refund_balance::handler(ctx)
+    }
 }

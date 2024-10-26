@@ -29,7 +29,7 @@ describe("Deposit Program", () => {
   let userUsdcAccount: PublicKey;
   let userInfoAddress: PublicKey;
   let vault: PublicKey;
-  const userUsdcBalance = new anchor.BN(100_000_000);
+  const userUsdcBalance = new anchor.BN(20_000_000);
 
   const getTokenBalance = async (
     tokenAccountAddress: PublicKey
@@ -202,6 +202,41 @@ describe("Deposit Program", () => {
     expect(await getTokenBalance(vault)).toEqual(new anchor.BN(6_000_000));
     expect(await getTokenBalance(masterWalletUsdcAccount)).toEqual(
       new anchor.BN(5_000_000)
+    );
+  });
+
+  test("Successful Refund Balance from Vault", async () => {
+    let userInfo = await program.account.userInfo.fetch(userInfoAddress);
+    expect(userInfo.availableBalance.toNumber()).toEqual(6_000_000);
+
+    let tx: string | null = null;
+    try {
+      tx = await program.methods
+        .refundBalance() // Call the refund method
+        .accounts({
+          user: user.publicKey,
+          token: usdcMint,
+          tokenProgram: TOKEN_PROGRAM,
+        })
+        .signers([user])
+        .rpc();
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+    console.log(`Transaction: ${tx}`);
+
+    expect(tx).not.toBeNull();
+
+    // Check that the user's available balance is now zero
+    userInfo = await program.account.userInfo.fetch(userInfoAddress);
+    expect(userInfo.availableBalance.toNumber()).toEqual(0);
+
+    console.log(
+      `User's USDC balance: ${await getTokenBalance(userUsdcAccount)}`
+    );
+    // Check that the funds have been returned to the user's account
+    expect(await getTokenBalance(userUsdcAccount)).toEqual(
+      new anchor.BN(15_000_000)
     );
   });
 });
