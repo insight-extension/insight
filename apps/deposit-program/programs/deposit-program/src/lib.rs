@@ -16,8 +16,7 @@ pub mod deposit_program {
     use super::*;
 
     pub fn subscribe(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
-        instructions::subscribe::send_to_vault(&ctx, amount)?;
-        instructions::subscribe::save_user_info(ctx, amount)
+        instructions::subscribe::handler(ctx, amount)
     }
 
     // TODO

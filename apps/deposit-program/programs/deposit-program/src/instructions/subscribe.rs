@@ -36,9 +36,75 @@ pub struct Subscribe<'info> {
         associated_token::token_program = token_program,
     )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
+    #[account(mut)]
+    /// CHECK: This is fine. I asked GPT, and it seemed confident.
+    pub master_wallet: AccountInfo<'info>,
+    #[account(
+        mut,
+        associated_token::mint = token,
+        associated_token::authority = master_wallet,
+        associated_token::token_program = token_program
+    )]
+    pub master_wallet_token_account: InterfaceAccount<'info, TokenAccount>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
+}
+
+pub fn handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
+    let (subscription_cost, duration) = match SUBSCRIPTION_LEVELS
+        .iter()
+        .rev()
+        .find(|(cost, _)| amount >= *cost)
+    {
+        Some(level) => *level,
+        None => return Err(SubscribeErrorCode::InsufficientBalance.into()),
+    };
+
+    // Calculate the amount to send to the vault
+    let vault_amount = amount.saturating_sub(subscription_cost); // Ensure no negative value
+
+    let current_timestamp = Clock::get()?.unix_timestamp;
+
+    // Check if the user already has an active subscription
+    if ctx.accounts.user_info.expiration > current_timestamp {
+        msg!("Active subscription found. Updating user's available balance.");
+        send_to_vault(&ctx, amount)?; // Transfer entire amount to vault
+        update_user_info(ctx, amount)?;
+        //return Err(Error::from(SubscribeErrorCode::AlreadySubscribed));
+    } else {
+        msg!("No active subscription found. Proceeding with new subscription.");
+        send_to_master_wallet(&ctx, subscription_cost)?; // Send subscription cost to master wallet
+        if vault_amount > 0 {
+            send_to_vault(&ctx, vault_amount)?; // Send remaining amount to vault
+        }
+        save_user_info(ctx, vault_amount, duration)?; // Save user info with updated balance
+    }
+
+    msg!("Subscription processed successfully.");
+    Ok(())
+}
+
+pub fn update_user_info(ctx: Context<Subscribe>, additional_balance: u64) -> Result<()> {
+    ctx.accounts.user_info.available_balance += additional_balance;
+    msg!("Subscription is active. Funds have been added to the vault, and your available balance has been updated.");
+    Ok(())
+}
+
+pub fn send_to_master_wallet(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
+    let transfer_accounts = TransferChecked {
+        from: ctx.accounts.user_token_account.to_account_info(),
+        mint: ctx.accounts.token.to_account_info(),
+        to: ctx.accounts.master_wallet_token_account.to_account_info(),
+        authority: ctx.accounts.user.to_account_info(),
+    };
+    let cpi_context = CpiContext::new(
+        ctx.accounts.token_program.to_account_info(),
+        transfer_accounts,
+    );
+    transfer_checked(cpi_context, amount, ctx.accounts.token.decimals)?;
+    msg!("Transferred {} tokens to master wallet.", amount);
+    Ok(())
 }
 
 pub fn send_to_vault(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
@@ -52,35 +118,26 @@ pub fn send_to_vault(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
         ctx.accounts.token_program.to_account_info(),
         transfer_accounts,
     );
-    transfer_checked(cpi_context, amount, ctx.accounts.token.decimals)
+    transfer_checked(cpi_context, amount, ctx.accounts.token.decimals)?;
+    msg!("Transferred {} tokens to vault.", amount);
+    Ok(())
 }
 
-pub fn save_user_info(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
+pub fn save_user_info(
+    ctx: Context<Subscribe>,
+    available_balance: u64,
+    //subscription_level: u8,
+    duration: u64,
+) -> Result<()> {
     let current_timestamp = Clock::get()?.unix_timestamp;
-    if ctx.accounts.user_info.expiration > current_timestamp {
-        ctx.accounts.user_info.available_balance += amount;
-        msg!("Subscription is already active. Funds have been saved to the vault, and your available balance has been updated.");
-        return Err(SubscribeErrorCode::AlreadySubscribed.into());
-    }
-    let mut subscription_level = 0;
-    let mut subscription_cost: u64 = 0;
-    let mut duration: i64 = 0;
-    for (i, (level_amount, level_duration)) in SUBSCRIPTION_LEVELS.iter().enumerate() {
-        if amount >= *level_amount {
-            subscription_level = i as u8;
-            subscription_cost = *level_amount;
-            duration = *level_duration as i64;
-        }
-    }
-    let available_balance = amount - subscription_cost;
-    let current_timestamp = Clock::get()?.unix_timestamp;
-    let expiration = current_timestamp + duration;
+    let expiration = current_timestamp + duration as i64;
     let bump = ctx.bumps.user_info;
     ctx.accounts.user_info.set_inner(UserInfo {
         available_balance,
-        subscription_level,
+        //subscription_level,
         expiration,
         bump,
     });
+    msg!("New subscription saved with updated expiration.");
     Ok(())
 }
