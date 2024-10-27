@@ -7,5 +7,6 @@ pub const SUBSCRIPTION_LEVELS: [(u64, u64); 3] = [
     (10_000_000, 90 * 24 * 60 * 60),  // 10 USDC, 90 days
     (20_000_000, 180 * 24 * 60 * 60), // 20 USDC, 180 days
 ];
+// Master Wallet for testing.
 pub const MASTER_WALLET: &str = "71q6LEWUkPZhYChjAcZcuxVVyDqdEyjf95etzte2PzwK";
 pub const USER_INFO_SEED: &[u8] = b"user_info";

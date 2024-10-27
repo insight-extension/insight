@@ -60,12 +60,9 @@ pub fn handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
         Some(level) => *level,
         None => return Err(ErrorCode::InsufficientBalance.into()),
     };
-
     // Calculate the amount to send to the vault
     let vault_amount = amount.saturating_sub(subscription_cost); // Ensure no negative value
-
     let current_timestamp = Clock::get()?.unix_timestamp;
-
     // Check if the user already has an active subscription
     if ctx.accounts.user_info.expiration > current_timestamp {
         msg!("Active subscription found. Updating user's available balance.");
@@ -80,7 +77,6 @@ pub fn handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
         }
         save_user_info(ctx, vault_amount, duration)?; // Save user info with updated balance
     }
-
     msg!("Subscription processed successfully.");
     Ok(())
 }

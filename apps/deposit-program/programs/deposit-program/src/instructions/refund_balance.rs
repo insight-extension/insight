@@ -49,7 +49,7 @@ pub fn handler(ctx: Context<RefundBalance>) -> Result<()> {
     Ok(())
 }
 
-fn send_to_user(ctx: &Context<RefundBalance>, amount: u64) -> Result<()> {
+pub fn send_to_user(ctx: &Context<RefundBalance>, amount: u64) -> Result<()> {
     let user_key = ctx.accounts.user.key();
     let seeds = &[
         USER_INFO_SEED,

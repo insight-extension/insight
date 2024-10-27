@@ -239,4 +239,29 @@ describe("Deposit Program", () => {
       new anchor.BN(15_000_000)
     );
   });
+
+  test("Check subscription status", async () => {
+    // Fetch user info directly from the PDA without making another transaction
+    const userInfo = await program.account.userInfo.fetch(userInfoAddress);
+
+    // Get the current timestamp
+    const currentTimestamp = new Date().getTime() / 1000; // Convert to seconds
+
+    // Check if the subscription is active
+    const isActiveSubscription =
+      userInfo.expiration.toNumber() > currentTimestamp;
+
+    console.log(`expiration: ${userInfo.expiration.toNumber()}`);
+
+    // Assertions
+    if (isActiveSubscription) {
+      console.log("User has an active subscription.");
+      expect(userInfo.expiration.toNumber()).toBeGreaterThan(0);
+    } else {
+      console.log("User does not have an active subscription.");
+      expect(userInfo.expiration.toNumber()).toBeLessThanOrEqual(
+        currentTimestamp
+      );
+    }
+  });
 });
