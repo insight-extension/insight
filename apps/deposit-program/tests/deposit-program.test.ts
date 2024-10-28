@@ -163,7 +163,7 @@ describe("Deposit Program", () => {
         .accounts({
           user: user.publicKey,
           token: usdcMint,
-          masterWallet: masterWallet,
+          //masterWallet: masterWallet,
           tokenProgram: TOKEN_PROGRAM,
         })
         .signers([user])
@@ -190,7 +190,7 @@ describe("Deposit Program", () => {
         .accounts({
           user: user.publicKey,
           token: usdcMint,
-          masterWallet: masterWallet,
+          //masterWallet: masterWallet,
           tokenProgram: TOKEN_PROGRAM,
         })
         .signers([user])

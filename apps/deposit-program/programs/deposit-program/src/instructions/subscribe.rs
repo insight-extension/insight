@@ -5,7 +5,7 @@ use anchor_spl::{
     token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked},
 };
 
-use crate::{error::ErrorCode, UserInfo, SUBSCRIPTION_LEVELS, USER_INFO_SEED};
+use crate::{error::ErrorCode, UserInfo, LOCAL_MASTER_WALLET, SUBSCRIPTION_LEVELS, USER_INFO_SEED};
 
 #[derive(Accounts)]
 pub struct Subscribe<'info> {
@@ -36,9 +36,13 @@ pub struct Subscribe<'info> {
         associated_token::token_program = token_program,
     )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
-    #[account(mut)]
-    /// CHECK: This is fine. I asked GPT, and it seemed confident.
-    pub master_wallet: AccountInfo<'info>,
+    /// See Anchor example:
+    /// https://github.com/solana-developers/anchor-examples/blob/main/account-constraints/address/programs/example/src/lib.rs
+    /// CHECK: Restricts `master_wallet` to the `MASTER_WALLET` address.
+    #[account(
+        address = LOCAL_MASTER_WALLET
+    )]
+    pub master_wallet: UncheckedAccount<'info>,
     #[account(
         mut,
         associated_token::mint = token,
@@ -122,7 +126,6 @@ pub fn send_to_vault(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
 pub fn save_user_info(
     ctx: Context<Subscribe>,
     available_balance: u64,
-    //subscription_level: u8,
     duration: u64,
 ) -> Result<()> {
     let current_timestamp = Clock::get()?.unix_timestamp;
@@ -130,7 +133,6 @@ pub fn save_user_info(
     let bump = ctx.bumps.user_info;
     ctx.accounts.user_info.set_inner(UserInfo {
         available_balance,
-        //subscription_level,
         expiration,
         bump,
     });
