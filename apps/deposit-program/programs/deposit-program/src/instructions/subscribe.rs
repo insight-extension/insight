@@ -2,10 +2,10 @@ use anchor_lang::prelude::*;
 
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked},
+    token_interface::{Mint, TokenAccount, TokenInterface},
 };
 
-use crate::{error::ErrorCode, UserInfo, LOCAL_MASTER_WALLET, SUBSCRIPTION_LEVELS, USER_INFO_SEED};
+use crate::{get_subscription_level, send_tokens, UserInfo, LOCAL_MASTER_WALLET, USER_INFO_SEED};
 
 #[derive(Accounts)]
 pub struct Subscribe<'info> {
@@ -42,7 +42,7 @@ pub struct Subscribe<'info> {
     #[account(
         address = LOCAL_MASTER_WALLET
     )]
-    pub master_wallet: UncheckedAccount<'info>,
+    pub master_wallet: SystemAccount<'info>,
     #[account(
         mut,
         associated_token::mint = token,
@@ -55,15 +55,8 @@ pub struct Subscribe<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
-    let (subscription_cost, duration) = match SUBSCRIPTION_LEVELS
-        .iter()
-        .rev()
-        .find(|(cost, _)| amount >= *cost)
-    {
-        Some(level) => *level,
-        None => return Err(ErrorCode::InsufficientBalance.into()),
-    };
+pub fn subscribe_handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
+    let (subscription_cost, duration) = get_subscription_level(amount)?;
     // Calculate the amount to send to the vault
     let vault_amount = amount.saturating_sub(subscription_cost); // Ensure no negative value
     let current_timestamp = Clock::get()?.unix_timestamp;
@@ -85,49 +78,41 @@ pub fn handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
     Ok(())
 }
 
-pub fn update_user_info(ctx: Context<Subscribe>, additional_balance: u64) -> Result<()> {
+fn update_user_info(ctx: Context<Subscribe>, additional_balance: u64) -> Result<()> {
     ctx.accounts.user_info.available_balance += additional_balance;
     msg!("Subscription is active. Funds have been added to the vault, and your available balance has been updated.");
     Ok(())
 }
 
-pub fn send_to_master_wallet(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
-    let transfer_accounts = TransferChecked {
-        from: ctx.accounts.user_token_account.to_account_info(),
-        mint: ctx.accounts.token.to_account_info(),
-        to: ctx.accounts.master_wallet_token_account.to_account_info(),
-        authority: ctx.accounts.user.to_account_info(),
-    };
-    let cpi_context = CpiContext::new(
+fn send_to_master_wallet(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
+    send_tokens(
+        ctx.accounts.user_token_account.to_account_info(),
+        ctx.accounts.token.to_account_info(),
+        ctx.accounts.master_wallet_token_account.to_account_info(),
+        ctx.accounts.user.to_account_info(),
         ctx.accounts.token_program.to_account_info(),
-        transfer_accounts,
-    );
-    transfer_checked(cpi_context, amount, ctx.accounts.token.decimals)?;
+        ctx.accounts.token.decimals,
+        amount,
+    )?;
     msg!("Transferred {} tokens to master wallet.", amount);
     Ok(())
 }
 
-pub fn send_to_vault(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
-    let transfer_accounts = TransferChecked {
-        from: ctx.accounts.user_token_account.to_account_info(),
-        mint: ctx.accounts.token.to_account_info(),
-        to: ctx.accounts.vault.to_account_info(),
-        authority: ctx.accounts.user.to_account_info(),
-    };
-    let cpi_context = CpiContext::new(
+fn send_to_vault(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
+    send_tokens(
+        ctx.accounts.user_token_account.to_account_info(),
+        ctx.accounts.token.to_account_info(),
+        ctx.accounts.vault.to_account_info(),
+        ctx.accounts.user.to_account_info(),
         ctx.accounts.token_program.to_account_info(),
-        transfer_accounts,
-    );
-    transfer_checked(cpi_context, amount, ctx.accounts.token.decimals)?;
+        ctx.accounts.token.decimals,
+        amount,
+    )?;
     msg!("Transferred {} tokens to vault.", amount);
     Ok(())
 }
 
-pub fn save_user_info(
-    ctx: Context<Subscribe>,
-    available_balance: u64,
-    duration: u64,
-) -> Result<()> {
+fn save_user_info(ctx: Context<Subscribe>, available_balance: u64, duration: u64) -> Result<()> {
     let current_timestamp = Clock::get()?.unix_timestamp;
     let expiration = current_timestamp + duration as i64;
     let bump = ctx.bumps.user_info;
