@@ -163,7 +163,6 @@ describe("Deposit Program", () => {
         .accounts({
           user: user.publicKey,
           token: usdcMint,
-          //masterWallet: masterWallet,
           tokenProgram: TOKEN_PROGRAM,
         })
         .signers([user])
@@ -190,7 +189,6 @@ describe("Deposit Program", () => {
         .accounts({
           user: user.publicKey,
           token: usdcMint,
-          //masterWallet: masterWallet,
           tokenProgram: TOKEN_PROGRAM,
         })
         .signers([user])
@@ -263,5 +261,31 @@ describe("Deposit Program", () => {
         currentTimestamp
       );
     }
+  });
+
+  test("Successful Deposit to Vault and Balance Update", async () => {
+    let tx: string | null = null;
+    try {
+      tx = await program.methods
+        .depositToVault(new anchor.BN(1_000_000))
+        .accounts({
+          user: user.publicKey,
+          token: usdcMint,
+          tokenProgram: TOKEN_PROGRAM,
+        })
+        .signers([user])
+        .rpc();
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+    console.log(`Transaction: ${tx}`);
+
+    expect(tx).not.toBeNull();
+
+    const userInfo = await program.account.userInfo.fetch(userInfoAddress);
+    expect(userInfo.availableBalance.toNumber()).toEqual(1_000_000);
+
+    const vaultBalance = await getTokenBalance(vault);
+    expect(vaultBalance).toEqual(new anchor.BN(1_000_000));
   });
 });
