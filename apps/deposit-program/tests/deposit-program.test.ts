@@ -155,6 +155,30 @@ describe("Deposit Program", () => {
     );
   });
 
+  test("Insufficient Balance", async () => {
+    let txError: Error | null = null;
+    try {
+      await program.methods
+        .subscribe(new anchor.BN(4_000_000))
+        .accounts({
+          user: user.publicKey,
+          token: usdcMint,
+          tokenProgram: TOKEN_PROGRAM,
+        })
+        .signers([user])
+        .rpc();
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      txError = error;
+    }
+    console.log(`Transaction: ${txError}`);
+    expect(txError).not.toBeNull();
+    expect(txError.message).toContain("Insufficient balance");
+    expect(await getTokenBalance(userUsdcAccount)).toEqual(
+      new anchor.BN(20_000_000)
+    );
+  });
+
   test("Successful Subscription and Balance Verification", async () => {
     let tx: string | null = null;
     try {
@@ -267,7 +291,7 @@ describe("Deposit Program", () => {
     let tx: string | null = null;
     try {
       tx = await program.methods
-        .depositToVault(new anchor.BN(1_000_000))
+        .depositToVault(new anchor.BN(5_000_000))
         .accounts({
           user: user.publicKey,
           token: usdcMint,
@@ -283,9 +307,9 @@ describe("Deposit Program", () => {
     expect(tx).not.toBeNull();
 
     const userInfo = await program.account.userInfo.fetch(userInfoAddress);
-    expect(userInfo.availableBalance.toNumber()).toEqual(1_000_000);
+    expect(userInfo.availableBalance.toNumber()).toEqual(5_000_000);
 
     const vaultBalance = await getTokenBalance(vault);
-    expect(vaultBalance).toEqual(new anchor.BN(1_000_000));
+    expect(vaultBalance).toEqual(new anchor.BN(5_000_000));
   });
 });
