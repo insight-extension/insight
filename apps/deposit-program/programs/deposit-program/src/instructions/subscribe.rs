@@ -5,7 +5,10 @@ use anchor_spl::{
     token_interface::{Mint, TokenAccount, TokenInterface},
 };
 
-use crate::{get_subscription_level, send_tokens, UserInfo, LOCAL_MASTER_WALLET, USER_INFO_SEED};
+use crate::{
+    error::ErrorCode, get_subscription_level, send_tokens, UserInfo, LOCAL_MASTER_WALLET,
+    USER_INFO_SEED,
+};
 
 #[derive(Accounts)]
 pub struct Subscribe<'info> {
@@ -38,7 +41,6 @@ pub struct Subscribe<'info> {
     pub vault: InterfaceAccount<'info, TokenAccount>,
     /// See Anchor example:
     /// https://github.com/solana-developers/anchor-examples/blob/main/account-constraints/address/programs/example/src/lib.rs
-    /// CHECK: Restricts `master_wallet` to the `MASTER_WALLET` address.
     #[account(
         address = LOCAL_MASTER_WALLET
     )]
@@ -58,13 +60,15 @@ pub struct Subscribe<'info> {
 pub fn subscribe_handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
     let (subscription_cost, duration) = get_subscription_level(amount)?;
     // Calculate the amount to send to the vault
-    let vault_amount = amount.saturating_sub(subscription_cost); // Ensure no negative value
+    let vault_amount = amount - subscription_cost;
     let current_timestamp = Clock::get()?.unix_timestamp;
     // Check if the user already has an active subscription
     if ctx.accounts.user_info.expiration > current_timestamp {
-        msg!("Active subscription found. Updating user's available balance.");
-        send_to_vault(&ctx, amount)?; // Transfer entire amount to vault
-        update_user_info(ctx, amount)?;
+        msg!("User already has an active subscription.");
+        return Err(ErrorCode::AlreadySubscribed.into());
+        //msg!("Active subscription found. Updating user's available balance.");
+        //send_to_vault(&ctx, amount)?; // Transfer entire amount to vault
+        //update_user_info(ctx, amount)?;
         //return Err(Error::from(SubscribeErrorCode::AlreadySubscribed));
     } else {
         msg!("No active subscription found. Proceeding with new subscription.");
@@ -78,11 +82,11 @@ pub fn subscribe_handler(ctx: Context<Subscribe>, amount: u64) -> Result<()> {
     Ok(())
 }
 
-fn update_user_info(ctx: Context<Subscribe>, additional_balance: u64) -> Result<()> {
-    ctx.accounts.user_info.available_balance += additional_balance;
-    msg!("Subscription is active. Funds have been added to the vault, and your available balance has been updated.");
-    Ok(())
-}
+//fn update_user_info(ctx: Context<Subscribe>, additional_balance: u64) -> Result<()> {
+//    ctx.accounts.user_info.available_balance += additional_balance;
+//    msg!("Subscription is active. Funds have been added to the vault, and your available balance has been updated.");
+//    Ok(())
+//}
 
 fn send_to_master_wallet(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
     send_tokens(
@@ -108,7 +112,6 @@ fn send_to_vault(ctx: &Context<Subscribe>, amount: u64) -> Result<()> {
         ctx.accounts.token.decimals,
         amount,
     )?;
-    msg!("Transferred {} tokens to vault.", amount);
     Ok(())
 }
 
@@ -121,6 +124,5 @@ fn save_user_info(ctx: Context<Subscribe>, available_balance: u64, duration: u64
         expiration,
         bump,
     });
-    msg!("New subscription saved with updated expiration.");
     Ok(())
 }

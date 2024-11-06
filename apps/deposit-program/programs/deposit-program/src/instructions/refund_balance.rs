@@ -5,13 +5,15 @@ use anchor_spl::{
 };
 
 use crate::{error::ErrorCode, UserInfo, USER_INFO_SEED};
+
 #[derive(Accounts)]
 pub struct RefundBalance<'info> {
     #[account(mut)]
     pub user: Signer<'info>, // User must sign the transaction
     #[account(mint::token_program = token_program)]
     pub token: InterfaceAccount<'info, Mint>,
-    #[account(mut,
+    #[account(
+        mut,
         seeds = [USER_INFO_SEED, user.key().as_ref()],
         bump = user_info.bump
     )]

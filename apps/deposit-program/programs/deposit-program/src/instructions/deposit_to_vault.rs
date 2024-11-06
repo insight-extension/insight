@@ -51,13 +51,13 @@ pub fn deposit_to_vault_handler(ctx: Context<DepositToVault>, amount: u64) -> Re
         ctx.accounts.token.decimals,
         amount,
     )?;
-    update_user_info(ctx, amount)?;
+    save_user_info(ctx, amount)?;
+    msg!("Deposited {} tokens to vault.", amount);
     Ok(())
 }
 
-// Make this a reusable function
-fn update_user_info(ctx: Context<DepositToVault>, additional_balance: u64) -> Result<()> {
-    ctx.accounts.user_info.available_balance += additional_balance;
-    msg!("Funds have been added to the vault, and your available balance has been updated.");
+fn save_user_info(ctx: Context<DepositToVault>, amount: u64) -> Result<()> {
+    ctx.accounts.user_info.available_balance += amount;
+    ctx.accounts.user_info.bump = ctx.bumps.user_info;
     Ok(())
 }

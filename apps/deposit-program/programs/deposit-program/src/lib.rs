@@ -29,7 +29,7 @@ pub mod deposit_program {
         instructions::deposit_to_vault::deposit_to_vault_handler(ctx, amount)
     }
 
-    //pub fn subscribe_with_vault (ctx: Context<SubscribeWithVault>) -> Result<()> {
-    //    instructions::subscribe_with_vault::subscribe_with_vault_handler(ctx)
-    //}
+    pub fn subscribe_with_vault(ctx: Context<SubscribeWithVault>, amount: u64) -> Result<()> {
+        instructions::subscribe_with_vault::subscribe_with_vault_handler(ctx, amount)
+    }
 }

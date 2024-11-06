@@ -6,6 +6,6 @@ pub enum ErrorCode {
     InsufficientBalance,
     #[msg("Unauthorized Withdrawal")]
     UnauthorizedWithdrawal,
-    #[msg("Invalid Master Wallet")]
-    InvalidMasterWallet,
+    #[msg("Already subscribed")]
+    AlreadySubscribed,
 }

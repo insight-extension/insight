@@ -31,6 +31,8 @@ describe("Deposit Program", () => {
   let vault: PublicKey;
   const userUsdcBalance = new anchor.BN(20_000_000);
 
+  let bump: number;
+
   const getTokenBalance = async (
     tokenAccountAddress: PublicKey
   ): Promise<anchor.BN> => {
@@ -143,7 +145,7 @@ describe("Deposit Program", () => {
 
   beforeEach(async () => {
     // Find addresses for userInfo and vault accounts
-    [userInfoAddress] = PublicKey.findProgramAddressSync(
+    [userInfoAddress, bump] = PublicKey.findProgramAddressSync(
       [Buffer.from("user_info"), user.publicKey.toBuffer()],
       program.programId
     );
@@ -207,6 +209,7 @@ describe("Deposit Program", () => {
   });
 
   test("Subscription Rejection on Duplicate Request", async () => {
+    let txError: Error | null = null;
     try {
       await program.methods
         .subscribe(new anchor.BN(5_000_000))
@@ -219,17 +222,19 @@ describe("Deposit Program", () => {
         .rpc();
     } catch (error) {
       console.log(`Error: ${error}`);
+      txError = error;
     }
 
-    expect(await getTokenBalance(vault)).toEqual(new anchor.BN(6_000_000));
-    expect(await getTokenBalance(masterWalletUsdcAccount)).toEqual(
-      new anchor.BN(5_000_000)
-    );
+    expect(txError).not.toBeNull();
+    //expect(await getTokenBalance(vault)).toEqual(new anchor.BN(6_000_000));
+    //expect(await getTokenBalance(masterWalletUsdcAccount)).toEqual(
+    //  new anchor.BN(5_000_000)
+    //);
   });
 
   test("Successful Refund Balance from Vault", async () => {
     let userInfo = await program.account.userInfo.fetch(userInfoAddress);
-    expect(userInfo.availableBalance.toNumber()).toEqual(6_000_000);
+    expect(userInfo.availableBalance.toNumber()).toEqual(1_000_000);
 
     let tx: string | null = null;
     try {
@@ -256,7 +261,7 @@ describe("Deposit Program", () => {
     console.log(
       `User's USDC balance: ${await getTokenBalance(userUsdcAccount)}`
     );
-    // Check that the funds have been returned to the user's account
+    //Check that the funds have been returned to the user's account
     expect(await getTokenBalance(userUsdcAccount)).toEqual(
       new anchor.BN(15_000_000)
     );
@@ -291,7 +296,7 @@ describe("Deposit Program", () => {
     let tx: string | null = null;
     try {
       tx = await program.methods
-        .depositToVault(new anchor.BN(5_000_000))
+        .depositToVault(new anchor.BN(6_000_000))
         .accounts({
           user: user.publicKey,
           token: usdcMint,
@@ -307,9 +312,36 @@ describe("Deposit Program", () => {
     expect(tx).not.toBeNull();
 
     const userInfo = await program.account.userInfo.fetch(userInfoAddress);
-    expect(userInfo.availableBalance.toNumber()).toEqual(5_000_000);
+    expect(userInfo.availableBalance.toNumber()).toEqual(6_000_000);
 
     const vaultBalance = await getTokenBalance(vault);
-    expect(vaultBalance).toEqual(new anchor.BN(5_000_000));
+    expect(vaultBalance).toEqual(new anchor.BN(6_000_000));
+
+    console.log(`bump: ${bump}`);
+    console.log(`userInfo.bump: ${userInfo.bump}`);
   });
+
+  //test("Successful Subscription with Vault and Balance Update", async () => {
+  //  let tx: string | null = null;
+  //  try {
+  //    tx = await program.methods
+  //      .subscribeWithVault(new anchor.BN(5_000_000))
+  //      .accounts({
+  //        user: user.publicKey,
+  //        token: usdcMint,
+  //        tokenProgram: TOKEN_PROGRAM,
+  //      })
+  //      .signers([user])
+  //      .rpc();
+  //  } catch (error) {
+  //    console.log(`Error: ${error}`);
+  //  }
+  //  console.log(`Transaction: ${tx}`);
+  //  expect(tx).not.toBeNull();
+  //  const userInfo = await program.account.userInfo.fetch(userInfoAddress);
+  //  const currentTimestamp = new Date().getTime() / 1000;
+  //  expect(userInfo.expiration.toNumber()).toBeGreaterThan(currentTimestamp);
+  //  const vaultBalance = await getTokenBalance(vault);
+  //  expect(vaultBalance).toEqual(new anchor.BN(1_000_000));
+  //});
 });
