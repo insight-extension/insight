@@ -12,7 +12,8 @@ pub struct RefundBalance<'info> {
     pub user: Signer<'info>, // User must sign the transaction
     #[account(mint::token_program = token_program)]
     pub token: InterfaceAccount<'info, Mint>,
-    #[account(mut,
+    #[account(
+        mut,
         seeds = [USER_INFO_SEED, user.key().as_ref()],
         bump = user_info.bump
     )]
@@ -36,7 +37,7 @@ pub struct RefundBalance<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<RefundBalance>) -> Result<()> {
+pub fn refund_balance_handler(ctx: Context<RefundBalance>) -> Result<()> {
     let amount = ctx.accounts.user_info.available_balance;
     if amount == 0 {
         return Err(ErrorCode::InsufficientBalance.into());
@@ -49,7 +50,7 @@ pub fn handler(ctx: Context<RefundBalance>) -> Result<()> {
     Ok(())
 }
 
-pub fn send_to_user(ctx: &Context<RefundBalance>, amount: u64) -> Result<()> {
+fn send_to_user(ctx: &Context<RefundBalance>, amount: u64) -> Result<()> {
     let user_key = ctx.accounts.user.key();
     let seeds = &[
         USER_INFO_SEED,
