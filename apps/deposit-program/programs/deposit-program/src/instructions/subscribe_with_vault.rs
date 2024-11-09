@@ -57,7 +57,7 @@ pub fn subscribe_with_vault_handler(ctx: Context<SubscribeWithVault>, amount: u6
             "Subscription cost of {} tokens has been sent to the master wallet.",
             subscription_cost
         );
-        update_user_info(ctx, amount, duration)?;
+        update_user_info(ctx, subscription_cost, duration)?;
     }
     msg!("Subscription successful.");
     Ok(())
