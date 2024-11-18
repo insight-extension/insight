@@ -43,7 +43,7 @@ export const Header = ({
         </nav>
 
         <div className="flex gap-8">
-          <Button className="w-40 h-12 text-md" variant="accent">
+          <Button className="w-48 h-12 text-md" variant="accent">
             {t(`${translationPrefix}.start`)}
           </Button>
 
@@ -57,6 +57,7 @@ export const Header = ({
                   background: "hsl(var(--primary-foreground))",
                   color: "hsl(var(--primary))",
                   height: "3rem",
+                  width: "12rem",
                   fontFamily: "stolzl, sans-serif",
                   textAlign: "center",
                   fontWeight: 500,

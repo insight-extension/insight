@@ -17,6 +17,34 @@
 
     --default: 254, 93%, 5%;
 
+    /* box-shadow: 0px 20px 60px 0px #497bffb2 inset;
+
+    backdrop-filter: blur(40px);
+
+    box-shadow: 0px 20px 80px 0px #3f4aaf80; */
+
+    --gradient: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) -40.91%,
+      #402788 132.95%
+    );
+    --gradient-foreground: linear-gradient(
+      180deg,
+      rgba(7, 7, 7, 0) -40.91%,
+      #593ab6 132.95%
+    );
+    --gradient-border: linear-gradient(
+        180deg,
+        rgba(39, 55, 207, 0.4) 17.19%,
+        rgba(101, 98, 251, 0.77) 100%
+      ),
+      linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
+      linear-gradient(
+        180deg,
+        rgba(39, 55, 207, 0) -4.69%,
+        rgba(189, 252, 254, 0.3) 100%
+      );
+
     /*used*/
     --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;

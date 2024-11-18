@@ -38,11 +38,26 @@ export const config: Config = {
           foreground: "hsl(var(--popover-foreground))",
         },
 
-        //new colors
+        //new
+        gradient: {
+          DEFAULT: "var(--gradient)",
+          foreground: "var(--gradient-foreground)",
+          border: "var(--gradient-border)",
+        },
         default: {
           DEFAULT: "hsl(var(--default))",
           foreground: "hsl(var(--default-foreground))",
         },
+      },
+      backgroundImage: {
+        "custom-gradient": "var(--gradient)",
+      },
+      boxShadow: {
+        "custom-inner": "inset 0px 20px 60px 0px #497BFFB2",
+        "custom-drop": "0px 20px 80px 0px rgba(63, 74, 175, 0.5)",
+      },
+      backdropBlur: {
+        xl: "40px",
       },
       borderRadius: {
         lg: "var(--radius)",

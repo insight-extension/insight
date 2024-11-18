@@ -15,6 +15,8 @@ const buttonVariants = cva(
           "bg-accent text-primary-foreground hover:bg-accent-foreground font-normal",
         secondary:
           "text-primary bg-secondary hover:bg-secondary-dark font-normal",
+        gradient:
+          "text-primary-foreground bg-custom-gradient shadow-custom-drop backdrop-blur-xl hover:bg-custom-gradient font-normal border-custom-gradient",
         raw: "",
       },
       size: {
