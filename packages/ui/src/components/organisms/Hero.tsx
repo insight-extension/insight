@@ -21,12 +21,12 @@ export const Hero = ({ translationPrefix = "hero" }: HeroProps) => {
             {t(`${translationPrefix}.title`)}
           </Heading1>
 
-          <p className="text-sm font-medium text-primary-foreground mb-10">
+          <p className="text-lg font-medium text-primary-foreground mb-10">
             {t(`${translationPrefix}.available`)}
             {getSupportedBrowsers().join(", ")}
           </p>
 
-          <Button className="w-52 h-12" size="lg" variant="secondary">
+          <Button className="w-84 h-20 text-2xl" size="lg" variant="gradient">
             {t(`${translationPrefix}.download`)}
           </Button>
         </div>
@@ -34,3 +34,6 @@ export const Hero = ({ translationPrefix = "hero" }: HeroProps) => {
     </section>
   );
 };
+
+// todo
+//desifn resoluion and sizes fix

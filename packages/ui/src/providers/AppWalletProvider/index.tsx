@@ -11,7 +11,7 @@ import {
   SolflareWalletAdapter,
   TorusWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import { PropsWithChildren, useMemo } from "react";
+import { type PropsWithChildren, useMemo } from "react";
 
 import { SOLANA_NETWORK } from "@repo/shared/configs";
 
