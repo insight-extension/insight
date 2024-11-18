@@ -19,6 +19,7 @@ import {
   AlertDescription,
   AlertTitle,
   Container,
+  CTA,
   FAQ,
   Features,
   Footer,
@@ -129,6 +130,7 @@ export const HomePage = ({ translationPrefix = "home" }: HomePageProps) => {
       <About />
       <Features />
       <FAQ />
+      <CTA />
       <Footer />
     </main>
   );

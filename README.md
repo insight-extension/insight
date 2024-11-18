@@ -7,6 +7,7 @@ Live video translation services powered by Web3 and Solana for seamless, decentr
 - 🚀 [Turborepo](https://turbo.build/repo/docs): A high-performance build system for JavaScript and TypeScript codebases, written in Rust.
 - ⚛️ [Next.js](https://nextjs.org/): A React framework used for server-side rendering.
 - 🐱 [Nest.js](https://nestjs.com/): A progressive Node.js framework for building efficient, reliable and scalable server-side applications.
+- ⚓ [Anchor](https://www.anchor-lang.com/): Solana's most popular smart contract framework.
 - 🔮 [Plasmo](https://docs.plasmo.com/): A browser extension framework.
 
 ## 🌐 Website

@@ -15,10 +15,8 @@
   "packageManager": "pnpm@8.15.6",
   "private": true,
   "scripts": {
-    "build:api": "turbo run build --filter=api",
     "build:web": "turbo run build --filter=web",
     "clean:cache": "pnpm store prune",
-    "dev:api": "turbo run start:dev --filter=api",
     "dev:plasmo": "turbo run dev --filter=plasmo",
     "dev:web": "turbo run dev --filter=web",
     "deploy:web": "turbo run deploy --filter=web",
@@ -26,13 +24,15 @@
     "lint": "turbo lint",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install",
-    "start:api-prod": "turbo run start:prod --filter=api",
     "start:server": "turbo run start --filter=server",
     "start:web": "turbo run start --filter=web",
     "syncpack:fix-mismatches": "pnpm exec syncpack fix-mismatches",
     "syncpack:format": "pnpm exec syncpack format",
     "syncpack:list": "pnpm exec syncpack list",
     "syncpack:list-mismatches": "pnpm exec syncpack list-mismatches",
-    "syncpack:update": "pnpm exec syncpack update"
+    "syncpack:update": "pnpm exec syncpack update",
+    "build:api": "turbo run build --filter=api",
+    "dev:api": "turbo run start:dev --filter=api",
+    "start:api-prod": "turbo run start:prod --filter=api"
   }
 }

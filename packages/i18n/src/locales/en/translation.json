@@ -81,25 +81,28 @@
     "questions": [
       {
         "title": "How does the browser extension work?",
-        "answer": ""
+        "answer": "The extension provides real-time translation content directly in your browser, enabling seamless communication and interaction across multiple languages."
       },
       {
         "title": "What languages are supported?",
-        "answer": ""
+        "answer": "We support a wide range of languages, including major global languages like English, Spanish, Chinese, French, and more, with regular updates to add new ones."
       },
       {
         "title": "Is my data safe while using the extension?",
-        "answer": ""
+        "answer": "Yes, your data is secure. The extension does not collect or store any personal information, ensuring your privacy and security."
       },
       {
         "title": "Can I use this on multiple devices?",
-        "answer": ""
+        "answer": "Yes, the extension can be installed and used on multiple devices as long as they support your preferred browser."
       },
       {
         "title": "How accurate are the translations?",
-        "answer": ""
+        "answer": "The translations are powered by advanced AI, providing high accuracy, especially for casual conversations."
       }
     ]
+  },
+  "cta": {
+    "download": "Download for Free"
   },
   "footer": {
     "groupMember": "Group Member:",
