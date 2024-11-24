@@ -1,12 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronsUpDown, CircleX, Languages, Play, Square, Sidebar } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  ChevronsUpDown,
+  CircleX,
+  Languages,
+  Play,
+  Square,
+  Sidebar,
+} from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
 import { TextBlock } from "~/components/ui/textBlock";
@@ -15,29 +22,31 @@ import { Connection, type Language } from "~/types";
 import "~global.css";
 
 import Logo from "~/components/logo";
+import { WEBSOCKET_URL } from "~configs";
 
 // Define connection status types
 enum ConnectionStatus {
   CONNECTED = "Connected",
   CONNECTING = "Connecting",
-  DISCONNECTED = "Disconnected"
+  DISCONNECTED = "Disconnected",
 }
-
-// URL WebSocket server
-const SERVER_URL = "wss://example.com";
 
 // List of supported languages
 const supportedLanguages: Language[] = [
   { name: "English", flagCode: "US" },
   { name: "Українська", flagCode: "UA" },
-  { name: "Français", flagCode: "FR" }
+  { name: "Français", flagCode: "FR" },
   // Add other languages if necessary
 ];
 
 function SidePanel() {
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(supportedLanguages[0]);
+  const [currentLanguage, setCurrentLanguage] = useState<Language>(
+    supportedLanguages[0]
+  );
   const [balance, setBalance] = useState<number>(0);
-  const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
+  const [status, setStatus] = useState<ConnectionStatus>(
+    ConnectionStatus.DISCONNECTED
+  );
   const [recording, setRecording] = useState<boolean>(false);
   const [transcript, setTranscript] = useState<string>("");
   const [translation, setTranslation] = useState<string>("");
@@ -76,39 +85,36 @@ function SidePanel() {
       setStatus(ConnectionStatus.CONNECTING);
       setTranscript("");
       setTranslation("");
-  
+
       // Create WebSocket connection
-      const websocket = new WebSocket(SERVER_URL);
+      const websocket = new WebSocket(WEBSOCKET_URL);
       websocket.binaryType = "arraybuffer";
       websocketRef.current = websocket;
-  
+
       websocket.onopen = async () => {
         console.log("WebSocket connection established.");
 
         // Requesting audio capture
-        chrome.tabCapture.capture(
-          { audio: true, video: false },
-          (stream) => {
-            if (stream) {
-              capturedStreamRef.current = stream;
-              setupAudioProcessing(stream);
-            } else {
-              console.error("Failed to capture audio stream.");
-              if (chrome.runtime.lastError) {
-                console.error(chrome.runtime.lastError.message);
-              }
-              setStatus(ConnectionStatus.DISCONNECTED);
-              setRecording(false);
+        chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
+          if (stream) {
+            capturedStreamRef.current = stream;
+            setupAudioProcessing(stream);
+          } else {
+            console.error("Failed to capture audio stream.");
+            if (chrome.runtime.lastError) {
+              console.error(chrome.runtime.lastError.message);
             }
+            setStatus(ConnectionStatus.DISCONNECTED);
+            setRecording(false);
           }
-        );
+        });
       };
-  
+
       websocket.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
           console.log("Message from server:", message);
-      
+
           if (message.type === "transcript") {
             setTranscript((prev) => prev + " " + message.transcript);
           } else if (message.type === "translation") {
@@ -118,7 +124,6 @@ function SidePanel() {
             setTranscript((prev) => prev + `\nError: ${message.message}`);
             setStatus(ConnectionStatus.DISCONNECTED);
           } else if (message.type === "status") {
-
             if (message.status === "connected") {
               setStatus(ConnectionStatus.CONNECTED);
             }
@@ -133,13 +138,13 @@ function SidePanel() {
         setStatus(ConnectionStatus.DISCONNECTED);
         setRecording(false);
       };
-  
+
       websocket.onclose = (event) => {
         console.log("WebSocket connection closed:", event);
         setStatus(ConnectionStatus.DISCONNECTED);
         setRecording(false);
       };
-  
+
       setRecording(true);
       setStatus(ConnectionStatus.CONNECTED);
     } catch (error) {
@@ -151,7 +156,10 @@ function SidePanel() {
 
   const stopCapture = () => {
     // Closing WebSocket connection
-    if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+    if (
+      websocketRef.current &&
+      websocketRef.current.readyState === WebSocket.OPEN
+    ) {
       websocketRef.current.send(JSON.stringify({ type: "stop" }));
       websocketRef.current.close();
       websocketRef.current = null;
@@ -189,25 +197,28 @@ function SidePanel() {
   const setupAudioProcessing = async (stream: MediaStream) => {
     try {
       const audioContext = new AudioContext({ sampleRate: 16000 });
-  
+
       // Loading the AudioWorkletProcessor module
-      await audioContext.audioWorklet.addModule('pcm-processor.js');
-  
+      await audioContext.audioWorklet.addModule("pcm-processor.js");
+
       const sourceNode = audioContext.createMediaStreamSource(stream);
-      const pcmProcessor = new AudioWorkletNode(audioContext, 'pcm-processor');
-  
+      const pcmProcessor = new AudioWorkletNode(audioContext, "pcm-processor");
+
       // Restoring sound in the tab
       await audioContext.resume();
       console.log("AudioContext state after resume:", audioContext.state);
-  
+
       // Connecting the source to the processor
       sourceNode.connect(audioContext.destination);
       sourceNode.connect(pcmProcessor);
-  
+
       pcmProcessor.port.onmessage = (event) => {
         const audioData = event.data;
-  
-        if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+
+        if (
+          websocketRef.current &&
+          websocketRef.current.readyState === WebSocket.OPEN
+        ) {
           websocketRef.current.send(audioData);
           console.log("Audio data sent to WebSocket server.");
         } else {
@@ -220,7 +231,7 @@ function SidePanel() {
       setRecording(false);
     }
   };
-  
+
   // Function to change the language
   const handleLanguageChange = (language: Language) => {
     setCurrentLanguage(language);
@@ -254,7 +265,8 @@ function SidePanel() {
               size="icon"
               variant="raw"
               className="bg-transparent"
-              onClick={closeExtension}>
+              onClick={closeExtension}
+            >
               <CircleX
                 size={24}
                 className="text-primary-foreground hover:text-primary-foreground/80"
@@ -269,7 +281,8 @@ function SidePanel() {
             className="w-38"
             onClick={() => {
               // handleConnectWallet();
-            }}>
+            }}
+          >
             {getMessage("connectWallet")}
           </Button>
 
@@ -278,7 +291,8 @@ function SidePanel() {
             className="w-38"
             onClick={() => {
               // handleDepositFunds();
-            }}>
+            }}
+          >
             {getMessage("depositFunds")}
           </Button>
         </div>
@@ -308,7 +322,8 @@ function SidePanel() {
                   className="cursor-pointer w-36"
                   onClick={() =>
                     handleLanguageChange({ flagCode, name: language })
-                  }>
+                  }
+                >
                   <ReactCountryFlag
                     countryCode={flagCode}
                     svg
@@ -332,20 +347,20 @@ function SidePanel() {
               status === ConnectionStatus.CONNECTED
                 ? "text-green-500"
                 : status === ConnectionStatus.CONNECTING
-                ? "text-yellow-500"
-                : "text-red-500"
-            }>
+                  ? "text-yellow-500"
+                  : "text-red-500"
+            }
+          >
             {status}
           </span>
         </p>
-
       </div>
 
       <div className="flex flex-col gap-3 px-3 py-2">
         <TextBlock className="bg-muted max-h-40 text-primary rounded-lg text-sm overflow-auto">
           <p>{transcript}</p>
         </TextBlock>
-        
+
         <TextBlock className="bg-secondary-foreground max-h-44 text-primary rounded-lg text-sm overflow-auto">
           <p>{translation}</p>
         </TextBlock>
@@ -353,8 +368,9 @@ function SidePanel() {
         <div className="flex flex-row gap-2">
           <Button
             size="lg"
-            variant={recording ? "destructive" : "primary"}
-            onClick={recording ? stopCapture : startCapture}>
+            variant={recording ? "destructive" : undefined}
+            onClick={recording ? stopCapture : startCapture}
+          >
             {recording ? (
               <>
                 <Square className="mr-2" />
