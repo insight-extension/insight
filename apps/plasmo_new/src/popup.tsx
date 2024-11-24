@@ -1,18 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronsUpDown, CircleX, Languages, Play, Square, Sidebar } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  ChevronsUpDown,
+  CircleX,
+  Languages,
+  Play,
+  Square,
+  Sidebar,
+} from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Button } from "~/components/ui/button";
 import { TextBlock } from "~/components/ui/textBlock";
-import { Connection, type Language } from "~/types";
+import { type Language } from "~/types";
 
 import "~global.css";
+
+// todo: add env WSS var for manifest
+//    "content_security_policy": {
+//       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
+//     }
 
 import Logo from "~/components/logo";
 import { storage } from "~background";
@@ -23,21 +35,25 @@ import { UI_URL, WEBSOCKET_URL } from "~configs";
 enum ConnectionStatus {
   CONNECTED = "Connected",
   CONNECTING = "Connecting",
-  DISCONNECTED = "Disconnected"
+  DISCONNECTED = "Disconnected",
 }
 
 // List of supported languages
 const supportedLanguages: Language[] = [
   { name: "English", flagCode: "US" },
   { name: "Українська", flagCode: "UA" },
-  { name: "Français", flagCode: "FR" }
+  { name: "Français", flagCode: "FR" },
   // Add other languages if necessary
 ];
 
 function IndexPopup() {
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(supportedLanguages[0]);
+  const [currentLanguage, setCurrentLanguage] = useState<Language>(
+    supportedLanguages[0]
+  );
   const [balance, setBalance] = useState<number>(0);
-  const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
+  const [status, setStatus] = useState<ConnectionStatus>(
+    ConnectionStatus.DISCONNECTED
+  );
   const [recording, setRecording] = useState<boolean>(false);
   const [transcript, setTranscript] = useState<string>("");
   const [translation, setTranslation] = useState<string>("");
@@ -50,7 +66,26 @@ function IndexPopup() {
 
   const { getMessage } = chrome.i18n;
 
-// Functions for retrieving real data
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async function getAccessToken() {
+      try {
+        const token = await storage.get(StorageKey.ACCESS_TOKEN);
+
+        if (token) {
+          setAccessToken(token);
+        }
+      } catch (error) {
+        // console.error("Error fetching access token:", error);
+        return;
+      }
+    })();
+  }, []);
+
+  console.log("accessToken", accessToken);
+
+  // Functions for retrieving real data
   const fetchBalance = async () => {
     try {
       const response = await fetch("https://example.com/balance");
@@ -76,39 +111,36 @@ function IndexPopup() {
       setStatus(ConnectionStatus.CONNECTING);
       setTranscript("");
       setTranslation("");
-  
+
       // Create WebSocket connection
       const websocket = new WebSocket(WEBSOCKET_URL);
       websocket.binaryType = "arraybuffer";
       websocketRef.current = websocket;
-  
+
       websocket.onopen = async () => {
         console.log("WebSocket connection established.");
-  
+
         // Requesting audio capture
-        chrome.tabCapture.capture(
-          { audio: true, video: false },
-          (stream) => {
-            if (stream) {
-              capturedStreamRef.current = stream;
-              setupAudioProcessing(stream);
-            } else {
-              console.error("Failed to capture audio stream.");
-              if (chrome.runtime.lastError) {
-                console.error(chrome.runtime.lastError.message);
-              }
-              setStatus(ConnectionStatus.DISCONNECTED);
-              setRecording(false);
+        chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
+          if (stream) {
+            capturedStreamRef.current = stream;
+            setupAudioProcessing(stream);
+          } else {
+            console.error("Failed to capture audio stream.");
+            if (chrome.runtime.lastError) {
+              console.error(chrome.runtime.lastError.message);
             }
+            setStatus(ConnectionStatus.DISCONNECTED);
+            setRecording(false);
           }
-        );
+        });
       };
-  
+
       websocket.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
           console.log("Message from server:", message);
-      
+
           if (message.type === "transcript") {
             setTranscript((prev) => prev + " " + message.transcript);
           } else if (message.type === "translation") {
@@ -118,7 +150,6 @@ function IndexPopup() {
             setTranscript((prev) => prev + `\nError: ${message.message}`);
             setStatus(ConnectionStatus.DISCONNECTED);
           } else if (message.type === "status") {
-
             if (message.status === "connected") {
               setStatus(ConnectionStatus.CONNECTED);
             }
@@ -133,13 +164,13 @@ function IndexPopup() {
         setStatus(ConnectionStatus.DISCONNECTED);
         setRecording(false);
       };
-  
+
       websocket.onclose = (event) => {
         console.log("WebSocket connection closed:", event);
         setStatus(ConnectionStatus.DISCONNECTED);
         setRecording(false);
       };
-  
+
       setRecording(true);
       setStatus(ConnectionStatus.CONNECTED);
     } catch (error) {
@@ -151,7 +182,10 @@ function IndexPopup() {
 
   const stopCapture = () => {
     // Closing WebSocket connection
-    if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+    if (
+      websocketRef.current &&
+      websocketRef.current.readyState === WebSocket.OPEN
+    ) {
       websocketRef.current.send(JSON.stringify({ type: "stop" }));
       websocketRef.current.close();
       websocketRef.current = null;
@@ -189,25 +223,28 @@ function IndexPopup() {
   const setupAudioProcessing = async (stream: MediaStream) => {
     try {
       const audioContext = new AudioContext({ sampleRate: 16000 });
-  
+
       // Loading the AudioWorkletProcessor module
-      await audioContext.audioWorklet.addModule('pcm-processor.js');
-  
+      await audioContext.audioWorklet.addModule("pcm-processor.js");
+
       const sourceNode = audioContext.createMediaStreamSource(stream);
-      const pcmProcessor = new AudioWorkletNode(audioContext, 'pcm-processor');
-  
+      const pcmProcessor = new AudioWorkletNode(audioContext, "pcm-processor");
+
       // Restoring sound in the tab
       await audioContext.resume();
       console.log("AudioContext state after resume:", audioContext.state);
-  
+
       // Connecting the source to the processor
       sourceNode.connect(audioContext.destination);
       sourceNode.connect(pcmProcessor);
-  
+
       pcmProcessor.port.onmessage = (event) => {
         const audioData = event.data;
-  
-        if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+
+        if (
+          websocketRef.current &&
+          websocketRef.current.readyState === WebSocket.OPEN
+        ) {
           websocketRef.current.send(audioData);
           console.log("Audio data sent to WebSocket server.");
         } else {
@@ -220,7 +257,7 @@ function IndexPopup() {
       setRecording(false);
     }
   };
-  
+
   // Function to change the language
   const handleLanguageChange = (language: Language) => {
     setCurrentLanguage(language);
@@ -232,7 +269,7 @@ function IndexPopup() {
     try {
       const [tab] = await chrome.tabs.query({
         active: true,
-        lastFocusedWindow: true
+        lastFocusedWindow: true,
       });
 
       if (!tab.id) {
@@ -243,12 +280,12 @@ function IndexPopup() {
       await chrome.sidePanel.open({ tabId: tab.id });
       await chrome.sidePanel.setOptions({
         tabId: tab.id,
-        path: 'sidepanel.html', // Make sure the path corresponds to your file
-        enabled: true
+        path: "sidepanel.html", // Make sure the path corresponds to your file
+        enabled: true,
       });
-      console.log('Sidebar opened');
+      console.log("Sidebar opened");
     } catch (error) {
-      console.error('Error opening sidebar:', error);
+      console.error("Error opening sidebar:", error);
     }
   };
 
@@ -285,17 +322,20 @@ function IndexPopup() {
               size="icon"
               variant="raw"
               className="bg-transparent rotate-180"
-              onClick={handleSidebarClick}>
+              onClick={handleSidebarClick}
+            >
               <Sidebar
                 className="text-primary-foreground hover:text-primary-foreground/80"
-                size={24} />
+                size={24}
+              />
             </Button>
-            
+
             <Button
               size="icon"
               variant="raw"
               className="bg-transparent"
-              onClick={closeExtension}>
+              onClick={closeExtension}
+            >
               <CircleX
                 size={24}
                 className="text-primary-foreground hover:text-primary-foreground/80"
@@ -351,7 +391,8 @@ function IndexPopup() {
                   className="cursor-pointer w-36"
                   onClick={() =>
                     handleLanguageChange({ flagCode, name: language })
-                  }>
+                  }
+                >
                   <ReactCountryFlag
                     countryCode={flagCode}
                     svg
@@ -375,20 +416,20 @@ function IndexPopup() {
               status === ConnectionStatus.CONNECTED
                 ? "text-green-500"
                 : status === ConnectionStatus.CONNECTING
-                ? "text-yellow-500"
-                : "text-red-500"
-            }>
+                  ? "text-yellow-500"
+                  : "text-red-500"
+            }
+          >
             {status}
           </span>
         </p>
-
       </div>
 
       <div className="flex flex-col gap-3 px-3 py-2">
         <TextBlock className="bg-muted max-h-40 text-primary rounded-lg text-sm overflow-auto">
           <p>{transcript}</p>
         </TextBlock>
-        
+
         <TextBlock className="bg-secondary-foreground max-h-44 text-primary rounded-lg text-sm overflow-auto">
           <p>{translation}</p>
         </TextBlock>
@@ -396,8 +437,9 @@ function IndexPopup() {
         <div className="flex flex-row gap-2">
           <Button
             size="lg"
-            variant={recording ? "destructive" : "primary"}
-            onClick={recording ? stopCapture : startCapture}>
+            variant={recording ? "destructive" : undefined}
+            onClick={recording ? stopCapture : startCapture}
+          >
             {recording ? (
               <>
                 <Square className="mr-2" />
