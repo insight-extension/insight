@@ -15,6 +15,9 @@ import { Connection, type Language } from "~/types";
 import "~global.css";
 
 import Logo from "~/components/logo";
+import { storage } from "~background";
+import { StorageKey } from "~constants";
+import { UI_URL, WEBSOCKET_URL } from "~configs";
 
 // Define connection status types
 enum ConnectionStatus {
@@ -22,9 +25,6 @@ enum ConnectionStatus {
   CONNECTING = "Connecting",
   DISCONNECTED = "Disconnected"
 }
-
-// URL WebSocket server
-const SERVER_URL = "wss://example.com";
 
 // List of supported languages
 const supportedLanguages: Language[] = [
@@ -78,7 +78,7 @@ function IndexPopup() {
       setTranslation("");
   
       // Create WebSocket connection
-      const websocket = new WebSocket(SERVER_URL);
+      const websocket = new WebSocket(WEBSOCKET_URL);
       websocket.binaryType = "arraybuffer";
       websocketRef.current = websocket;
   
@@ -305,24 +305,24 @@ function IndexPopup() {
         </div>
 
         <div className="flex flex-row justify-between items-center mb-3">
-          <Button
-            variant="default"
-            className="w-38"
-            onClick={() => {
-              // Wallet connection handler
-              // handleConnectWallet();
-            }}>
-            {getMessage("connectWallet")}
+          <Button variant="default" className="w-38">
+            <a
+              href={`${UI_URL}?connectWallet`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {getMessage("connectWallet")}
+            </a>
           </Button>
 
-          <Button
-            variant="default"
-            className="w-38"
-            onClick={() => {
-              // Deposit funds handler
-              // handleDepositFunds();
-            }}>
-            {getMessage("depositFunds")}
+          <Button variant="default" className="w-38">
+            <a
+              href={`${UI_URL}?depositFunds`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {getMessage("depositFunds")}
+            </a>
           </Button>
         </div>
 
