@@ -32,7 +32,7 @@ import Logo from "~/components/logo";
 import { storage } from "~background";
 import { StorageKey } from "~constants";
 import { UI_URL, WEBSOCKET_URL } from "~configs";
-import { constructURLWithSelectiveParams } from "~utils";
+import { constructURLWithParams } from "~utils";
 
 // Define connection status types
 enum ConnectionStatus {
@@ -350,10 +350,11 @@ function IndexPopup() {
         <div className="flex flex-row justify-between items-center mb-3">
           <Button variant="default" className="w-38">
             <a
-              href={constructURLWithSelectiveParams({
+              href={constructURLWithParams({
                 url: UI_URL,
-                key: "action",
-                selectedParams: ["connect-wallet"],
+                params: {
+                  action: "connect-wallet",
+                },
               })}
               target="_blank"
               rel="noopener noreferrer"
@@ -364,10 +365,11 @@ function IndexPopup() {
 
           <Button variant="default" className="w-38">
             <a
-              href={constructURLWithSelectiveParams({
+              href={constructURLWithParams({
                 url: UI_URL,
-                key: "action",
-                selectedParams: ["deposit"],
+                params: {
+                  action: "deposit",
+                },
               })}
               target="_blank"
               rel="noopener noreferrer"

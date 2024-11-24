@@ -3,4 +3,4 @@ export const SEARCH_PARAMS = {
     deposit: "deposit",
     "connect-wallet": "connect-wallet",
   },
-};
+} as const;
