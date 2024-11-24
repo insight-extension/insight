@@ -42,6 +42,7 @@
     "name": "INSIGHT Extension",
     "host_permissions": [
       "https://*/*",
+      "http://*/*",
       "wss://*/*",
       "ws://*/*"
     ],
@@ -51,7 +52,8 @@
       "storage",
       "tabCapture",
       "sidePanel",
-      "scripting"
+      "scripting",
+      "cookies"
     ],
     "web_accessible_resources": [
       {
