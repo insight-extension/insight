@@ -26,10 +26,13 @@ import "~global.css";
 //       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
 //     }
 
+// todo: make the same for sidebar
+
 import Logo from "~/components/logo";
 import { storage } from "~background";
 import { StorageKey } from "~constants";
 import { UI_URL, WEBSOCKET_URL } from "~configs";
+import { constructURLWithSelectiveParams } from "~utils";
 
 // Define connection status types
 enum ConnectionStatus {
@@ -347,7 +350,11 @@ function IndexPopup() {
         <div className="flex flex-row justify-between items-center mb-3">
           <Button variant="default" className="w-38">
             <a
-              href={`${UI_URL}?connectWallet`}
+              href={constructURLWithSelectiveParams({
+                url: UI_URL,
+                key: "action",
+                selectedParams: ["connect-wallet"],
+              })}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -357,7 +364,11 @@ function IndexPopup() {
 
           <Button variant="default" className="w-38">
             <a
-              href={`${UI_URL}?depositFunds`}
+              href={constructURLWithSelectiveParams({
+                url: UI_URL,
+                key: "action",
+                selectedParams: ["deposit"],
+              })}
               target="_blank"
               rel="noopener noreferrer"
             >
