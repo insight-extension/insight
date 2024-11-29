@@ -86,6 +86,19 @@ function IndexPopup() {
     })();
   }, []);
 
+  useEffect(() => {
+    (async function deposit() {
+      try {
+        const deposit = await storage.get(StorageKey.DEPOSIT_FUNDS);
+
+        console.log("DEPOSIT", deposit);
+      } catch (error) {
+        // console.error("Error fetching access token:", error);
+        return;
+      }
+    })();
+  }, []);
+
   console.log("accessToken", accessToken);
 
   // Functions for retrieving real data
