@@ -73,6 +73,22 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
+  chrome.cookies.onChanged.addListener(async function (changeInfo) {
+    function domainFromUrl(url?: string): string | undefined {
+      if (!url) {
+        return;
+      }
+      return new URL(url).hostname;
+    }
+
+    if (
+      changeInfo.cookie.domain === domainFromUrl("https://www.magichow.co/")
+    ) {
+      console.log("cookie changed", changeInfo);
+      // todo: process and cookie chnages
+    }
+  });
+
   useEffect(() => {
     (async function getAccessToken() {
       try {
