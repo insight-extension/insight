@@ -27,6 +27,7 @@
 // export default PlasmoOverlay;
 
 // todo: add logic?
+// see: https://docs.plasmo.com/framework/content-scripts-ui
 const CustomButton = () => {
   return <button className="btn">Custom button</button>;
 };
