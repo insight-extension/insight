@@ -2,5 +2,4 @@
 
 import { PCMProcessor } from "./pcm";
 
-// Регистрируем процессор
 registerProcessor("pcm-processor", PCMProcessor as any);
