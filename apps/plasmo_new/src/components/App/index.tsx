@@ -18,19 +18,17 @@ import {
 import { Button } from "~/components/ui/button";
 import { TextBlock } from "~/components/ui/textBlock";
 import { type Language } from "~/types";
-
+import Logo from "~/components/logo";
+import { storage } from "~background";
+import { StorageKey } from "~constants";
+import { UI_URL, WEBSOCKET_URL } from "~configs";
+import { constructURLWithParams } from "~utils";
 import "~global.css";
 
 // todo: add env WSS var for manifest
 //    "content_security_policy": {
 //       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
 //     }
-
-import Logo from "~/components/logo";
-import { storage } from "~background";
-import { StorageKey } from "~constants";
-import { UI_URL, WEBSOCKET_URL } from "~configs";
-import { constructURLWithParams } from "~utils";
 
 // Define connection status types
 enum ConnectionStatus {
@@ -73,20 +71,10 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  chrome.cookies.onChanged.addListener(async function (changeInfo) {
-    function domainFromUrl(url?: string): string | undefined {
-      if (!url) {
-        return;
-      }
-      return new URL(url).hostname;
-    }
-
-    if (
-      changeInfo.cookie.domain === domainFromUrl("https://www.magichow.co/")
-    ) {
-      console.log("cookie changed", changeInfo);
-      // todo: process and cookie chnages
-    }
+  storage.watch({
+    [StorageKey.DEPOSIT_FUNDS]: ({ newValue }) => {
+      console.log("newValue", newValue);
+    },
   });
 
   useEffect(() => {
