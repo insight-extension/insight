@@ -2,7 +2,7 @@ import cssText from "data-text:~global.css";
 import type { PlasmoCSConfig } from "plasmo";
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.plasmo.com/*"]
+  matches: ["<all_urls>"],
 };
 
 export const getStyle = () => {
