@@ -4,14 +4,12 @@ import { storage } from "~background";
 import { StorageKey } from "~constants";
 import { Status } from "~types/index";
 
-const handler: PlasmoMessaging.MessageHandler = async (request, response) => {
-  const body = request.body;
-
-  storage.set(StorageKey.DEPOSIT_FUNDS, 1000 + body.amount);
+// todo: complete
+const handler: PlasmoMessaging.MessageHandler = async ({ body }, response) => {
+  storage.set(StorageKey.DEPOSIT_FUNDS, body.amount);
 
   response.send({
     status: Status.SUCCESS,
-    body,
   });
 };
 
