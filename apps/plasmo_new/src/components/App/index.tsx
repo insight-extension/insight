@@ -25,6 +25,8 @@ import { UI_URL, WEBSOCKET_URL } from "~configs";
 import { constructURLWithParams } from "~utils";
 import "~global.css";
 
+import { SWR_CACHE_KEY } from "@repo/ui/fetching";
+
 // todo: add env WSS var for manifest
 //    "content_security_policy": {
 //       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
@@ -81,6 +83,9 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     (async function getAccessToken() {
       try {
         const token = await storage.get(StorageKey.ACCESS_TOKEN);
+
+        console.log("SWR_CACHE_KEY", SWR_CACHE_KEY.ValidateAccount);
+        // todo: REUSE COMMON THINGS
 
         if (token) {
           setAccessToken(token);
