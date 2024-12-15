@@ -4,16 +4,14 @@ import {
     BalanceMessage,
     DepositMessage,
     RelayResponse,
+    RelayRoute,
     RelayStatus,
 } from "@/relay";
 
-enum RelayRoute {
-    DEPOSIT = "deposit",
-    BALANCE = "balance",
-}
-
 class RelayMessenger {
     public async deposit({
+        token,
+
         amount,
         subscriptionType,
         transactionSignature,
@@ -25,6 +23,7 @@ class RelayMessenger {
             >({
                 name: RelayRoute.DEPOSIT as never,
                 body: {
+                    token,
                     subscriptionType,
                     amount,
                     transactionSignature,

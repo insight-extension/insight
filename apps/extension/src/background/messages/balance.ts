@@ -6,10 +6,9 @@ import { Status } from "~types/index";
 
 // todo: complete
 const handler: PlasmoMessaging.MessageHandler = async ({ body }, response) => {
-  storage.set(StorageKey.DEPOSIT, {
-    subscriptionType: body.subscriptionType,
+  storage.set(StorageKey.BALANCE, {
     amount: body.amount,
-    transactionSignature: body.transactionSignature,
+    token: body.token,
   });
 
   response.send({

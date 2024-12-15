@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@solana/wallet-adapter-base": "^0.9.23",
-    "@solana/web3.js": "1.95.3",
+    "@solana/web3.js": "^1.95.4",
     "bs58": "^6.0.0",
     "zod": "^3.23.8"
   },

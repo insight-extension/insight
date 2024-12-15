@@ -76,22 +76,28 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                     .returnType<Promise<string>>()
                     .with(SubscriptionType.PER_MONTH, () =>
                         anchorClient.depositToSubscriptionVault({
-                            amount,
+                            amount: new BN(amount),
                             token,
                         })
                     )
                     .with(SubscriptionType.PER_USAGE, () =>
                         anchorClient.depositToTimedVault({
-                            amount,
+                            amount: new BN(amount),
                             token,
                         })
                     )
                     .exhaustive();
 
                 await relayMessenger.deposit({
-                    amount: new BN(amount),
+                    amount: Number(new BN(amount)),
                     subscriptionType,
                     transactionSignature: signature,
+                    token,
+                });
+
+                await relayMessenger.balance({
+                    amount: Number(new BN(amount)),
+                    token,
                 });
 
                 handleSuccessSubmit();
