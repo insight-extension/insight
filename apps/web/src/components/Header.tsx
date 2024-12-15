@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 import { Logo } from "./Logo";
 import { Button } from "./Button";
@@ -12,13 +13,11 @@ import {
     DialogTrigger,
 } from "@/components";
 import { cn } from "@/lib";
-import { SEARCH_PARAMS } from "@/constants";
-import { useSearchParamValue } from "@/hooks";
 
 export interface HeaderProps {}
 
 export const Header: FC<HeaderProps> = () => {
-    const action = useSearchParamValue("action");
+    const { connected } = useWallet();
 
     return (
         <nav className="container mt-6 flex items-center justify-between">
@@ -36,7 +35,7 @@ export const Header: FC<HeaderProps> = () => {
 
             <div className="flex items-center">
                 <div className="flex gap-1">
-                    {action === SEARCH_PARAMS.action.deposit && (
+                    {connected && (
                         <div className="container flex w-full justify-center">
                             <DepositModal
                                 trigger={
@@ -44,7 +43,6 @@ export const Header: FC<HeaderProps> = () => {
                                         Deposit
                                     </DialogTrigger>
                                 }
-                                isDefaultOpen
                             />
                         </div>
                     )}

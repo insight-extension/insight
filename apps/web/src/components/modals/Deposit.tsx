@@ -1,4 +1,4 @@
-import { memo, ReactNode, useCallback, useState } from "react";
+import { memo, ReactNode, useCallback, useEffect, useState } from "react";
 
 import {
     Dialog,
@@ -8,6 +8,8 @@ import {
     DepositForm,
 } from "@/components";
 import { TRANSLATIONS } from "@/i18n";
+import { useSearchParamValue } from "@/hooks";
+import { SEARCH_PARAMS } from "@/constants";
 
 interface DepositModalProps {
     isDefaultOpen?: boolean;
@@ -16,18 +18,21 @@ interface DepositModalProps {
 
 export const DepositModal: React.FC<DepositModalProps> = memo(
     ({ isDefaultOpen = false, trigger }) => {
-        const [isOpen, setIsOpen] = useState<boolean>(false);
+        const action = useSearchParamValue("action");
+        const [isOpen, setIsOpen] = useState<boolean>(
+            action === SEARCH_PARAMS.action.deposit
+        );
 
         const handleCloseModal = useCallback(() => {
             setIsOpen(false);
         }, []);
 
+        useEffect(() => {
+            console.log("isDefaultOpen", isDefaultOpen);
+        }, [isDefaultOpen]);
+
         return (
-            <Dialog
-                defaultOpen={isDefaultOpen}
-                open={isOpen}
-                onOpenChange={setIsOpen}
-            >
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 {trigger}
 
                 <DialogContent className="sm:max-w-[425px]">

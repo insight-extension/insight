@@ -48,5 +48,8 @@ export const TRANSLATIONS = {
             submit: "Submit",
             submitting: "...",
         },
+        info: {
+            balance: "Your balance",
+        },
     },
 };

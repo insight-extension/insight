@@ -7,15 +7,14 @@ import { Button } from "./Button";
 import GlobalIcon from "../assets/icons/Global.svg";
 import { WalletMultiButton } from "./wallet";
 import { HeaderProps } from "./Header";
-import { SEARCH_PARAMS } from "@/constants";
 import { DepositModal } from "./modals";
 import { DialogTrigger } from "./ui";
-import { useSearchParamValue } from "@/hooks";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 interface MobileHeaderProps extends HeaderProps {}
 
 export const MobileHeader: FC<MobileHeaderProps> = () => {
-    const action = useSearchParamValue("action");
+    const { connected } = useWallet();
 
     const [showModal, setShowModal] = useState(false);
 
@@ -94,7 +93,7 @@ export const MobileHeader: FC<MobileHeaderProps> = () => {
                 className="container mx-auto mt-6 flex items-center justify-between"
                 onClick={toggleModal}
             >
-                <Logo></Logo>
+                <Logo />
                 <div
                     id="nav-icon1"
                     className={cn({
@@ -135,16 +134,15 @@ export const MobileHeader: FC<MobileHeaderProps> = () => {
                                 ))}
                             </div>
 
-                            <DepositModal
-                                trigger={
-                                    <DialogTrigger className="button-white wallet-adapter-dropdown-list-item mx-auto my-10 w-fit bg-purple-300">
-                                        Deposit
-                                    </DialogTrigger>
-                                }
-                                isDefaultOpen={
-                                    action === SEARCH_PARAMS.action.deposit
-                                }
-                            />
+                            {connected && (
+                                <DepositModal
+                                    trigger={
+                                        <DialogTrigger className="button-white wallet-adapter-dropdown-list-item mx-auto my-10 w-fit bg-purple-300">
+                                            Deposit
+                                        </DialogTrigger>
+                                    }
+                                />
+                            )}
 
                             <div className="flex flex-wrap items-center justify-center gap-2">
                                 <div className="flex flex-wrap justify-center gap-1">
