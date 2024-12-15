@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+img {
+    pointer-events: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+body[data-scroll-locked][data-override] {
+    margin-right: 0 !important;
+}
+
+@layer base {
+    /* Fixel */
+    @font-face {
+        font-family: "Fixel";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(/src/fonts/Fixel/FixelText-Regular.otf) format("opentype");
+    }
+    @font-face {
+        font-family: "Fixel";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url(/src/fonts/Fixel/FixelText-Medium.otf) format("opentype");
+    }
+    @font-face {
+        font-family: "Fixel";
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url(/src/fonts/Fixel/FixelText-SemiBold.otf) format("opentype");
+    }
+    /* Sofia Pro */
+    @font-face {
+        font-family: "Sofia Pro";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(/src/fonts/SofiaPro/Sofia-Pro-Regular-Az.otf)
+            format("opentype");
+    }
+    @font-face {
+        font-family: "Sofia Pro";
+        font-style: italic;
+        font-weight: 400;
+        font-display: swap;
+        src: url(/src/fonts/SofiaPro/Sofia-Pro-Regular-Italic-Az.otf)
+            format("opentype");
+    }
+    @font-face {
+        font-family: "Sofia Pro";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url(/src/fonts/SofiaPro/Sofia-Pro-Medium-Az.otf) format("opentype");
+    }
+    @font-face {
+        font-family: "Sofia Pro";
+        font-style: italic;
+        font-weight: 500;
+        font-display: swap;
+        src: url(/src/fonts/SofiaPro/Sofia-Pro-Medium-Italic-Az.otf)
+            format("opentype");
+    }
+    html {
+        @apply bg-dark font-fixel text-white;
+    }
+}
+
+@layer components {
+    .button {
+        @apply rounded-[32px] px-5 py-[11px] font-fixel text-lg leading-none;
+    }
+
+    .button-white {
+        @apply border bg-white text-dark transition-all hover:border-white hover:bg-dark hover:text-white;
+    }
+
+    .button-dark-border {
+        @apply border border-white bg-dark text-white transition-all hover:border-dark hover:bg-white hover:text-dark;
+    }
+    .button-dark {
+        @apply border border-dark bg-dark px-[50px] py-4 text-[30px] text-white transition-all hover:bg-white hover:text-dark;
+    }
+}
+
+/* nav icon */
+#nav-icon1 {
+    padding: 8px;
+    width: 30px;
+    height: 22.5px;
+    position: relative;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+    -webkit-transition: 0.5s ease-in-out;
+    -moz-transition: 0.5s ease-in-out;
+    -o-transition: 0.5s ease-in-out;
+    transition: 0.5s ease-in-out;
+    cursor: pointer;
+}
+
+#nav-icon1 span {
+    @apply bg-white;
+
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    border-radius: 4.5px;
+    opacity: 1;
+    left: 0;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+    -webkit-transition: 0.25s ease-in-out;
+    -moz-transition: 0.25s ease-in-out;
+    -o-transition: 0.25s ease-in-out;
+    transition: 0.25s ease-in-out;
+}
+
+#nav-icon1 span:nth-child(1) {
+    top: 0px;
+}
+
+#nav-icon1 span:nth-child(2) {
+    top: 9px;
+}
+
+#nav-icon1 span:nth-child(3) {
+    top: 18px;
+}
+
+#nav-icon1.open span:nth-child(1) {
+    top: 9px;
+    -webkit-transform: rotate(135deg);
+    -moz-transform: rotate(135deg);
+    -o-transform: rotate(135deg);
+    transform: rotate(135deg);
+}
+
+#nav-icon1.open span:nth-child(2) {
+    opacity: 0;
+    left: -60px;
+}
+
+#nav-icon1.open span:nth-child(3) {
+    top: 9px;
+    -webkit-transform: rotate(-135deg);
+    -moz-transform: rotate(-135deg);
+    -o-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+}

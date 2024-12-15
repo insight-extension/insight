@@ -16,18 +16,25 @@
         "./src/*"
       ]
     },
+    "verbatimModuleSyntax": false,
     "baseUrl": ".",
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "strict": true,
     "skipLibCheck": true,
     "noEmitOnError": false,
     "outDir": "build/chrome-mv3-prod/public/processors",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["chrome"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "types": [
+      "chrome"
+    ],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
