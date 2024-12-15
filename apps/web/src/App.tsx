@@ -30,7 +30,8 @@ const MobileHeader = lazy(() => import("./components/MobileHeader"));
 
 // todo: use RTR: https://tanstack.com/router/v1/docs/framework/react/quick-start
 // https://tanstack.com/router/latest/docs/framework/react/comparison
-// todo: change button to solana wallet button
+
+// todo: add auto connect wallet - open modal
 
 const BREAKPOINT_WIDTH = 1023;
 

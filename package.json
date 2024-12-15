@@ -17,8 +17,7 @@
   "scripts": {
     "build:web": "turbo run build --filter=web",
     "clean:cache": "pnpm store prune",
-    "dev:plasmo": "turbo run dev --filter=plasmo",
-    "dev:plasmo_new": "turbo run dev --filter=plasmo_new",
+    "dev:extension": "turbo run dev --filter=extension",
     "dev:web": "turbo run dev --filter=web",
     "deploy:web": "turbo run deploy --filter=web",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

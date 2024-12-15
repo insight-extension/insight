@@ -1,6 +1,9 @@
-import { BN } from "@coral-xyz/anchor";
+import { DepositToken, SubscriptionType } from "@/constants";
 
-import { SubscriptionType } from "@/constants";
+export enum RelayRoute {
+    DEPOSIT = "deposit",
+    BALANCE = "balance",
+}
 
 export enum RelayStatus {
     SUCCESS = "success",
@@ -12,8 +15,12 @@ export interface RelayResponse {
     status: RelayStatus;
 }
 
-export interface DepositMessage {
+export interface BalanceMessage {
+    amount: number;
+    token: DepositToken;
+}
+
+export interface DepositMessage extends BalanceMessage {
     subscriptionType: SubscriptionType;
-    amount: BN;
     transactionSignature: string;
 }

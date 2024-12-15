@@ -117,7 +117,6 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = ({
                 {publicKey && (
                     <DepositModal
                         isDefaultOpen
-                        onDeposit={async () => {}}
                         trigger={
                             <DialogTrigger className="wallet-adapter-dropdown-list-item bg-purple-300">
                                 Deposit
