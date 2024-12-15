@@ -135,7 +135,6 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
       const socket = io(WEBSOCKET_URL, {
         transports: ["websocket"],
       });
-
       websocketRef.current = socket;
 
       socket.on("connect", () => {

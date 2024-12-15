@@ -25,6 +25,7 @@ import { DepositToken, SubscriptionType, TOKEN_CURRENCIES } from "@/constants";
 import { relayMessenger } from "@/relay";
 import { useToast } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
+
 import { DepositFormFields, depositFormSchema } from "./validation";
 
 interface DepositFormProps {
@@ -60,7 +61,9 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
             subscriptionType: SubscriptionType.PER_MONTH,
         } as DepositFormFields,
         onSubmit: async ({ value: { amount, token, subscriptionType } }) => {
-            console.log("SUBMIT", amount, token, subscriptionType);
+            const normalizedAmount = new BN(
+                amount * 10 ** TOKEN_CURRENCIES[token].decimals
+            );
 
             if (!publicKey || !anchorProvider) {
                 throw new WalletNotConnectedError();
@@ -72,42 +75,49 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                     anchorProvider
                 );
 
+                await anchorClient.checkUserTokenAccount({
+                    token,
+                });
+
+                await anchorClient.airdropSOLIfRequired();
+
                 const signature = await match(subscriptionType)
                     .returnType<Promise<string>>()
                     .with(SubscriptionType.PER_MONTH, () =>
                         anchorClient.depositToSubscriptionVault({
-                            amount: new BN(amount),
+                            amount: normalizedAmount,
                             token,
                         })
                     )
                     .with(SubscriptionType.PER_USAGE, () =>
                         anchorClient.depositToTimedVault({
-                            amount: new BN(amount),
+                            amount: normalizedAmount,
                             token,
                         })
                     )
                     .exhaustive();
 
                 await relayMessenger.deposit({
-                    amount: Number(new BN(amount)),
+                    amount: Number(normalizedAmount),
                     subscriptionType,
                     transactionSignature: signature,
                     token,
                 });
 
                 await relayMessenger.balance({
-                    amount: Number(new BN(amount)),
+                    amount: Number(normalizedAmount),
                     token,
                 });
 
                 handleSuccessSubmit();
-            } catch {
+            } catch (error: any) {
                 toast({
                     title: TRANSLATIONS.depositForm.toast
                         .transactionFailedTitle,
                     description:
                         TRANSLATIONS.depositForm.toast
-                            .transactionFailedDescription,
+                            .transactionFailedDescription +
+                        `${error.message && ": " + error.message}`,
                     variant: "error",
                 });
             }

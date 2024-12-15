@@ -8,7 +8,7 @@ export const depositFormSchema = z.object({
     amount: z
         .number()
         .min(1, { message: TRANSLATIONS.depositForm.validation.amount.minimum })
-        .max(100000, {
+        .max(10, {
             message: TRANSLATIONS.depositForm.validation.amount.maximum,
         }),
     token: z.nativeEnum(DepositToken, {
