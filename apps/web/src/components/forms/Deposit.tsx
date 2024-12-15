@@ -1,12 +1,21 @@
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
-import { FC, FormEvent, Fragment, memo, useCallback } from "react";
+import {
+    FC,
+    FormEvent,
+    Fragment,
+    memo,
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 import { z } from "zod";
 import { useAtomValue } from "jotai";
 import { BN } from "@coral-xyz/anchor";
 import { match } from "ts-pattern";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
+import { useSearchParams } from "react-router";
 
 import {
     Label,
@@ -22,7 +31,6 @@ import { cn } from "@/lib/cn";
 import { AnchorClient } from "@/onchain";
 import { anchorProviderAtom } from "@/store";
 import { DepositToken, SubscriptionType, TOKEN_CURRENCIES } from "@/constants";
-import { relayMessenger } from "@/relay";
 import { useToast } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
 
@@ -34,6 +42,10 @@ interface DepositFormProps {
 
 export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
     const { toast } = useToast();
+    const [searchParams, _] = useSearchParams();
+
+    const [userTokenBalance, setUserTokenBalance] = useState<number>(0);
+    const [anchorClient, setAnchorClient] = useState<AnchorClient | null>(null);
 
     const anchorProvider = useAtomValue(anchorProviderAtom);
 
@@ -47,6 +59,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
             variant: "success",
         });
 
+        searchParams.delete("action");
+
         onSuccessSubmit();
     }, []);
 
@@ -54,6 +68,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         Field,
         Subscribe,
         handleSubmit: triggerSubmit,
+        getFieldValue,
+        state: { isSubmitted },
     } = useForm({
         defaultValues: {
             amount: 0,
@@ -61,18 +77,15 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
             subscriptionType: SubscriptionType.PER_MONTH,
         } as DepositFormFields,
         onSubmit: async ({ value: { amount, token, subscriptionType } }) => {
-            const normalizedAmount = new BN(
-                amount * 10 ** TOKEN_CURRENCIES[token].decimals
-            );
-
-            if (!publicKey || !anchorProvider) {
+            if (!anchorClient) {
                 throw new WalletNotConnectedError();
             }
 
             try {
-                const anchorClient = new AnchorClient(
-                    publicKey,
-                    anchorProvider
+                const normalizedAmount = new BN(
+                    (amount * 10 ** TOKEN_CURRENCIES[token].decimals) /
+                        // todo: remove
+                        1000
                 );
 
                 await anchorClient.checkUserTokenAccount({
@@ -97,17 +110,20 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                     )
                     .exhaustive();
 
-                await relayMessenger.deposit({
-                    amount: Number(normalizedAmount),
-                    subscriptionType,
-                    transactionSignature: signature,
-                    token,
-                });
+                console.log("signature", signature);
 
-                await relayMessenger.balance({
-                    amount: Number(normalizedAmount),
-                    token,
-                });
+                // todo: complete
+                // await relayMessenger.deposit({
+                //     amount: Number(normalizedAmount),
+                //     subscriptionType,
+                //     transactionSignature: signature,
+                //     token,
+                // });
+
+                // await relayMessenger.balance({
+                //     amount: Number(normalizedAmount),
+                //     token,
+                // });
 
                 handleSuccessSubmit();
             } catch (error: any) {
@@ -137,6 +153,24 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         },
         [triggerSubmit]
     );
+
+    useEffect(() => {
+        if (publicKey && anchorProvider) {
+            setAnchorClient(new AnchorClient(publicKey, anchorProvider));
+        }
+    }, [publicKey, anchorProvider]);
+
+    useEffect(() => {
+        (async () => {
+            if (anchorClient) {
+                setUserTokenBalance(
+                    await anchorClient.getTokenBalance({
+                        token: getFieldValue("token"),
+                    })
+                );
+            }
+        })();
+    }, [anchorClient, isSubmitted]);
 
     return (
         <form onSubmit={handleFormSubmit}>
@@ -289,7 +323,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                         isSubmitting,
                         isPristine,
                     ]}
-                    children={([canSubmit, isSubmitting, isPristine]) => (
+                >
+                    {([canSubmit, isSubmitting, isPristine]) => (
                         <button
                             className="btn btn-accent"
                             type="submit"
@@ -300,7 +335,17 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                                 : TRANSLATIONS.depositForm.states.submit}
                         </button>
                     )}
-                />
+                </Subscribe>
+
+                <Subscribe selector={({ isSubmitting }) => [isSubmitting]}>
+                    {([isSubmitting]) => (
+                        <Label>
+                            {isSubmitting
+                                ? "..."
+                                : `${TRANSLATIONS.depositForm.info.balance}: ${userTokenBalance} ${TOKEN_CURRENCIES[getFieldValue("token")].symbol}`}
+                        </Label>
+                    )}
+                </Subscribe>
             </div>
         </form>
     );

@@ -9,7 +9,7 @@ import {
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import IDL, { type DepositProgram } from "@/onchain/idl";
-import { DepositToken } from "@/constants";
+import { DepositToken, TOKEN_CURRENCIES } from "@/constants";
 import { TokenAccountNotFoundError } from "@/errors";
 
 export class AnchorClient {
@@ -98,7 +98,7 @@ export class AnchorClient {
         }
     }
 
-    private getBalance = async () =>
+    private getSOLBalance = async () =>
         this.provider.connection.getBalance(this.user);
 
     public async checkUserTokenAccount({ token }: { token: DepositToken }) {
@@ -126,10 +126,36 @@ export class AnchorClient {
     }
 
     public async airdropSOLIfRequired() {
-        const balance = await this.getBalance();
+        const balance = await this.getSOLBalance();
 
         if (balance === 0) {
             await this.getAirdropSOL();
+        }
+    }
+
+    public async getTokenBalance({ token }: { token: DepositToken }) {
+        try {
+            const tokenMint = await this.getTokenMint(
+                new PublicKey(this.TOKEN_ADDRESSES[token])
+            );
+
+            const userATA = await getAssociatedTokenAddress(
+                tokenMint.address,
+                this.user,
+                false,
+                this.TOKEN_PROGRAM
+            );
+
+            const { amount } = await getAccount(
+                this.provider.connection,
+                userATA,
+                undefined,
+                this.TOKEN_PROGRAM
+            );
+
+            return Number(amount) / 10 ** TOKEN_CURRENCIES[token].decimals;
+        } catch {
+            return 0;
         }
     }
 
