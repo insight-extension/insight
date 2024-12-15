@@ -1,9 +1,15 @@
 import { sendToBackgroundViaRelay } from "@plasmohq/messaging";
 
-import { DepositMessage, RelayResponse, RelayStatus } from "@/relay";
+import {
+    BalanceMessage,
+    DepositMessage,
+    RelayResponse,
+    RelayStatus,
+} from "@/relay";
 
 enum RelayRoute {
     DEPOSIT = "deposit",
+    BALANCE = "balance",
 }
 
 class RelayMessenger {
@@ -20,8 +26,27 @@ class RelayMessenger {
                 name: RelayRoute.DEPOSIT as never,
                 body: {
                     subscriptionType,
-                    amount: Number(amount),
+                    amount,
                     transactionSignature,
+                },
+            });
+
+            return status;
+        } catch (error) {
+            return RelayStatus.ERROR;
+        }
+    }
+
+    public async balance({ amount, token }: BalanceMessage) {
+        try {
+            const { status } = await sendToBackgroundViaRelay<
+                BalanceMessage,
+                RelayResponse
+            >({
+                name: RelayRoute.BALANCE as never,
+                body: {
+                    amount,
+                    token,
                 },
             });
 

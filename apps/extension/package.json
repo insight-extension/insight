@@ -1,5 +1,5 @@
 {
-  "name": "plasmo_new",
+  "name": "extension",
   "description": "__MSG_extensionDescription__",
   "version": "0.0.1",
   "author": "Insight's team",
@@ -19,6 +19,7 @@
     "react": "18.3.1",
     "react-country-flag": "^3.1.0",
     "react-dom": "18.3.1",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "^2.5.3",
     "tailwindcss": "^3.4.13",
     "tailwindcss-animate": "^1.0.7"
@@ -69,9 +70,6 @@
         ]
       }
     ],
-    "content_security_policy": {
-      "extension_pages": "script-src 'self'; connect-src 'self' wss://176.117.185.56:*;"
-    },
     "externally_connectable": {
       "matches": [
         "<all_urls>"
