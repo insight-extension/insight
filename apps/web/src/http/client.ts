@@ -1,8 +1,7 @@
-import { BASE_API_URL } from "../configs";
 import { HTTPError, ResponseCodeStatus, FetchResponse } from ".";
 
 class HTTPClient {
-    private baseURL = BASE_API_URL;
+    private baseURL = import.meta.env.VITE_API_URL;
     private headers = {
         "Content-Type": "application/json",
     };

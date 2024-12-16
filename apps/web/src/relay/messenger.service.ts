@@ -6,6 +6,7 @@ import {
     RelayResponse,
     RelayRoute,
     RelayStatus,
+    AuthTokensMessage,
 } from "@/relay";
 
 class RelayMessenger {
@@ -46,6 +47,25 @@ class RelayMessenger {
                 body: {
                     amount,
                     token,
+                },
+            });
+
+            return status;
+        } catch (error) {
+            return RelayStatus.ERROR;
+        }
+    }
+
+    public async authTokens({ accessToken, refreshToken }: AuthTokensMessage) {
+        try {
+            const { status } = await sendToBackgroundViaRelay<
+                AuthTokensMessage,
+                RelayResponse
+            >({
+                name: RelayRoute.BALANCE as never,
+                body: {
+                    accessToken,
+                    refreshToken,
                 },
             });
 

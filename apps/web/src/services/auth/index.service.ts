@@ -65,7 +65,7 @@ class AuthService {
 
     public refreshToken = async ({
         refreshToken,
-    }: AuthRefreshToken): Promise<FetchResult<AuthTokens | null>> => {
+    }: AuthRefreshToken): Promise<FetchResult<AuthTokens>> => {
         try {
             const response = await jsonHTTPClient.post<
                 AuthRefreshToken,
