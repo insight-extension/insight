@@ -1,14 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
-import {
-    FC,
-    FormEvent,
-    Fragment,
-    memo,
-    useCallback,
-    useEffect,
-    useState,
-} from "react";
+import { FC, FormEvent, memo, useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import { useAtomValue } from "jotai";
 import { BN } from "@coral-xyz/anchor";
@@ -174,7 +166,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
     return (
         <form onSubmit={handleFormSubmit}>
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-5">
                 <Field name="subscriptionType">
                     {({ state, name, handleChange }) => (
                         <RadioGroup
@@ -183,10 +175,10 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                             onValueChange={(value) =>
                                 handleChange(value as SubscriptionType)
                             }
-                            className="flex gap-4"
+                            className="flex gap-8"
                         >
                             {Object.values(SubscriptionType).map((type) => (
-                                <Fragment>
+                                <div key={type} className="flex gap-2">
                                     <RadioGroupItem
                                         color="green"
                                         key={type}
@@ -200,55 +192,13 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                                                 .subscription[type]
                                         }
                                     </Label>
-                                </Fragment>
+                                </div>
                             ))}
                         </RadioGroup>
                     )}
                 </Field>
 
-                <div className="mb-10 flex gap-4">
-                    <Field name="token">
-                        {({ state, name, handleChange }) => (
-                            <Select
-                                name={name}
-                                defaultValue={state.value}
-                                onValueChange={(value) =>
-                                    handleChange(value as DepositToken)
-                                }
-                            >
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue
-                                        placeholder={
-                                            TRANSLATIONS.depositForm.fields
-                                                .token.select
-                                        }
-                                    />
-                                </SelectTrigger>
-
-                                <SelectContent className="rounded">
-                                    {Object.values(DepositToken).map(
-                                        (token) => {
-                                            const tokenValue =
-                                                TOKEN_CURRENCIES[token].symbol;
-                                            const isDisabled =
-                                                state.value !== tokenValue;
-
-                                            return (
-                                                <SelectItem
-                                                    disabled={isDisabled}
-                                                    key={token.toString()}
-                                                    value={tokenValue}
-                                                >
-                                                    {tokenValue}
-                                                </SelectItem>
-                                            );
-                                        }
-                                    )}
-                                </SelectContent>
-                            </Select>
-                        )}
-                    </Field>
-
+                <div className="flex gap-4">
                     <Field
                         name="amount"
                         validators={{
@@ -268,7 +218,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                             } = state;
 
                             return (
-                                <div className="flex flex-col gap-2">
+                                <div className="flex w-4/6 flex-col gap-2">
                                     <div className="flex flex-col gap-2">
                                         <input
                                             id={name}
@@ -292,9 +242,9 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                                             className={cn(
                                                 "relative z-10",
                                                 "cursor-pointer",
-                                                "h-10 w-[180px]",
+                                                "h-10",
                                                 "px-3 py-2",
-                                                "rounded border border-input bg-dark"
+                                                "border-input rounded border bg-dark"
                                             )}
                                         />
                                     </div>
@@ -315,6 +265,49 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                             );
                         }}
                     </Field>
+
+                    <Field name="token">
+                        {({ state, name, handleChange }) => (
+                            <Select
+                                disabled
+                                name={name}
+                                defaultValue={state.value}
+                                onValueChange={(value) =>
+                                    handleChange(value as DepositToken)
+                                }
+                            >
+                                <SelectTrigger className="w-2/6">
+                                    <SelectValue
+                                        placeholder={
+                                            TRANSLATIONS.depositForm.fields
+                                                .token.select
+                                        }
+                                    />
+                                </SelectTrigger>
+
+                                <SelectContent className="z-10 w-2/6 rounded bg-dark">
+                                    {Object.values(DepositToken).map(
+                                        (token) => {
+                                            const tokenValue =
+                                                TOKEN_CURRENCIES[token].symbol;
+                                            const isDisabled =
+                                                state.value !== tokenValue;
+
+                                            return (
+                                                <SelectItem
+                                                    disabled={isDisabled}
+                                                    key={token.toString()}
+                                                    value={tokenValue}
+                                                >
+                                                    {tokenValue}
+                                                </SelectItem>
+                                            );
+                                        }
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        )}
+                    </Field>
                 </div>
 
                 <Subscribe
@@ -326,7 +319,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                 >
                     {([canSubmit, isSubmitting, isPristine]) => (
                         <button
-                            className="btn btn-accent"
+                            className="h-10 cursor-pointer rounded bg-green-300 font-bold text-dark"
                             type="submit"
                             disabled={!canSubmit || isPristine}
                         >
@@ -339,7 +332,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
                 <Subscribe selector={({ isSubmitting }) => [isSubmitting]}>
                     {([isSubmitting]) => (
-                        <Label>
+                        <Label className="font- text-medium">
                             {isSubmitting
                                 ? "..."
                                 : `${TRANSLATIONS.depositForm.info.balance}: ${userTokenBalance} ${TOKEN_CURRENCIES[getFieldValue("token")].symbol}`}

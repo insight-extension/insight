@@ -1,24 +1,16 @@
 import { FC } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
 
 import { Logo } from "./Logo";
 import { Button } from "./Button";
 import GlobalIcon from "../assets/icons/Global.svg";
 
 import { NAV_LINKS } from "@/configs";
-import {
-    DepositModal,
-    UpcomingSoonBadge,
-    WalletMultiButton,
-    DialogTrigger,
-} from "@/components";
+import { UpcomingSoonBadge, WalletMultiButton } from "@/components";
 import { cn } from "@/lib";
 
 export interface HeaderProps {}
 
 export const Header: FC<HeaderProps> = () => {
-    const { connected } = useWallet();
-
     return (
         <nav className="container mt-6 flex items-center justify-between">
             <div className="flex items-center">
@@ -35,18 +27,6 @@ export const Header: FC<HeaderProps> = () => {
 
             <div className="flex items-center">
                 <div className="flex gap-1">
-                    {connected && (
-                        <div className="container flex w-full justify-center">
-                            <DepositModal
-                                trigger={
-                                    <DialogTrigger className="wallet-adapter-dropdown-list-item bg-purple-300">
-                                        Deposit
-                                    </DialogTrigger>
-                                }
-                            />
-                        </div>
-                    )}
-
                     <div className="relative">
                         <UpcomingSoonBadge className="-top-2 right-0" />
 

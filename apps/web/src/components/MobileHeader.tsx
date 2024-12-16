@@ -7,15 +7,10 @@ import { Button } from "./Button";
 import GlobalIcon from "../assets/icons/Global.svg";
 import { WalletMultiButton } from "./wallet";
 import { HeaderProps } from "./Header";
-import { DepositModal } from "./modals";
-import { DialogTrigger } from "./ui";
-import { useWallet } from "@solana/wallet-adapter-react";
 
 interface MobileHeaderProps extends HeaderProps {}
 
 export const MobileHeader: FC<MobileHeaderProps> = () => {
-    const { connected } = useWallet();
-
     const [showModal, setShowModal] = useState(false);
 
     const toggleModal = () => {
@@ -133,16 +128,6 @@ export const MobileHeader: FC<MobileHeaderProps> = () => {
                                     </motion.span>
                                 ))}
                             </div>
-
-                            {connected && (
-                                <DepositModal
-                                    trigger={
-                                        <DialogTrigger className="button-white wallet-adapter-dropdown-list-item mx-auto my-10 w-fit bg-purple-300">
-                                            Deposit
-                                        </DialogTrigger>
-                                    }
-                                />
-                            )}
 
                             <div className="flex flex-wrap items-center justify-center gap-2">
                                 <div className="flex flex-wrap justify-center gap-1">
