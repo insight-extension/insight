@@ -1,8 +1,8 @@
 import { cn } from "@/lib";
-import { Button } from "../Button";
+import { Button } from "@/components";
 
-import StarIcon from "../../assets/icons/star.svg";
-import Spring from "../../assets/images/spring.webp";
+import StarIcon from "@/assets/icons/star.svg";
+import Spring from "@/assets/images/spring.webp";
 
 const Plans = [
     {

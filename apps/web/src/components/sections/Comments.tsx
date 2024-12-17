@@ -1,8 +1,7 @@
-import { Button } from "../Button";
-
-import StarIcon from "../../assets/icons/star-purple.svg";
-import Anna from "../../assets/images/Anna.png";
-import Aleg from "../../assets/images/Aleg.png";
+import { Button } from "@/components";
+import StarIcon from "@/assets/icons/star-purple.svg";
+import Anna from "@/assets/images/Anna.png";
+import Aleg from "@/assets/images/Aleg.png";
 
 export const Comments = () => {
     return (

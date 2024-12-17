@@ -1,10 +1,8 @@
 import * as React from "react";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 
-// todo: move to one place
-import { Circle } from "lucide-react";
-
 import { cn } from "@/lib/cn";
+import { Icon } from "@/components";
 
 const RadioGroup = React.forwardRef<
     React.ElementRef<typeof RadioGroupPrimitive.Root>,
@@ -38,13 +36,14 @@ const RadioGroupItem = React.forwardRef<
             ref={ref}
             className={cn(
                 colorVariants[color].border,
-                "aspect-square h-4 w-4 rounded-full border ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                "ring-offset-background focus-visible:ring-ring aspect-square h-4 w-4 rounded-full border focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
                 className
             )}
             {...props}
         >
             <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-                <Circle
+                <Icon
+                    name="circle"
                     className={cn(
                         colorVariants[color].icon,
                         "w-2.50 h-2.5 text-current"

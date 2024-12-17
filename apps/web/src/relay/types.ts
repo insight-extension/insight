@@ -1,8 +1,10 @@
 import { DepositToken, SubscriptionType } from "@/constants";
+import { AuthTokens } from "@/services/auth/types";
 
 export enum RelayRoute {
     DEPOSIT = "deposit",
     BALANCE = "balance",
+    AUTH_TOKENS = "authTokens",
 }
 
 export enum RelayStatus {
@@ -24,3 +26,5 @@ export interface DepositMessage extends BalanceMessage {
     subscriptionType: SubscriptionType;
     transactionSignature: string;
 }
+
+export interface AuthTokensMessage extends AuthTokens {}

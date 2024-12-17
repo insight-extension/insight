@@ -1,2 +1,2 @@
-export * from "./messenger";
+export * from "./messenger.service";
 export * from "./types";

@@ -22,7 +22,6 @@ import { type Language } from "~/types";
 import Logo from "~/components/logo";
 import { storage } from "~background";
 import { StorageKey } from "~constants";
-import { API_URL, UI_URL, WEBSOCKET_URL } from "~configs";
 import { constructURLWithParams } from "~utils";
 import "~global.css";
 
@@ -107,7 +106,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   // Functions for retrieving real data
   const fetchBalance = async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(process.env.PLASMO_PUBLIC_API_URL as string);
       const data = await response.json();
       setBalance(data.balance);
     } catch (error) {
@@ -117,7 +116,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
   const fetchStatus = async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(process.env.PLASMO_PUBLIC_API_URL as string);
       const data = await response.json();
       setStatus(data.status);
     } catch (error) {
@@ -132,7 +131,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
       setTranslation("");
 
       // Create Socket connection
-      const socket = io(WEBSOCKET_URL, {
+      const socket = io(process.env.PLASMO_PUBLIC_WEBSOCKET_URL as string, {
         transports: ["websocket"],
       });
       websocketRef.current = socket;
@@ -364,7 +363,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <Button variant="default" className="w-38">
             <a
               href={constructURLWithParams({
-                url: UI_URL,
+                url: process.env.PLASMO_PUBLIC_UI_URL as string,
                 params: {
                   action: "connect-wallet",
                 },
@@ -379,7 +378,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <Button variant="default" className="w-38">
             <a
               href={constructURLWithParams({
-                url: UI_URL,
+                url: process.env.PLASMO_PUBLIC_UI_URL as string,
                 params: {
                   action: "deposit",
                 },

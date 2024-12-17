@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { FirstCard } from "../cards-slider/FirstCard";
-import ArrowRight from "../../assets/icons/arrow-right.svg";
-import { SecondCard } from "../cards-slider/SecondCard";
-import { ThirdCard } from "../cards-slider/ThirdCard";
-import { FourthCard } from "../cards-slider/FourthCard";
-import { FifthCard } from "../cards-slider/FifthCard";
+
+import ArrowRight from "@/assets/icons/arrow-right.svg";
+import {
+    FirstCard,
+    SecondCard,
+    ThirdCard,
+    FourthCard,
+    FifthCard,
+} from "@/components";
 
 type Card = {
     card: (active: boolean) => JSX.Element;

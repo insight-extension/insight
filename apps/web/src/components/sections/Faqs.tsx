@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Accordion } from "../Accordion";
+
+import { Accordion } from "@/components";
+
 const accordions = [
     {
         title: "How does the browser extension work?",
@@ -27,6 +29,7 @@ const accordions = [
             "The translations are powered by advanced AI, providing high accuracy, especially for casual conversations.",
     },
 ];
+
 export const Faqs = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
