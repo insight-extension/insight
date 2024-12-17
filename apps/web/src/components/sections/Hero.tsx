@@ -1,16 +1,13 @@
-import People1 from "../../assets/images/people-1.png";
-import People2 from "../../assets/images/people-2.png";
-import People3 from "../../assets/images/people-3.png";
-import People4 from "../../assets/images/people-4.png";
-import Spring from "../../assets/images/spring.webp";
+import People1 from "@/assets/images/people-1.png";
+import People2 from "@/assets/images/people-2.png";
+import People3 from "@/assets/images/people-3.png";
+import People4 from "@/assets/images/people-4.png";
+import Spring from "@/assets/images/spring.webp";
+import Girl from "@/assets/images/video.png";
+import ChromeIcon from "@/assets/icons/ChromeIcon.svg";
+import PlayBtnIcon from "@/assets/icons/PlayBtn.svg";
 
-import Girl from "../../assets/images/video.png";
-
-import ChromeIcon from "../../assets/icons/ChromeIcon.svg";
-import PlayBtnIcon from "../../assets/icons/PlayBtn.svg";
-
-import { Button } from "../Button";
-import LinesWaveAnimation from "../LinesWaveAnimation";
+import { LinesWaveAnimation, Button } from "@/components";
 
 export const Hero = () => {
     return (

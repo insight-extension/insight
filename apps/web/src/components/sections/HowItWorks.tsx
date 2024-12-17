@@ -1,11 +1,9 @@
-import DeutschlandIcon from "../../assets/icons/Deutschland.svg";
-import FranceIcon from "../../assets/icons/France.svg";
-import SpainIcon from "../../assets/icons/Spain.svg";
-import USAIcon from "../../assets/icons/USA.svg";
-
-import Line from "../../assets/icons/line.svg";
-
-import Noodle from "../../assets/images/Noodle.webp";
+import DeutschlandIcon from "@/assets/icons/Deutschland.svg";
+import FranceIcon from "@/assets/icons/France.svg";
+import SpainIcon from "@/assets/icons/Spain.svg";
+import USAIcon from "@/assets/icons/USA.svg";
+import Line from "@/assets/icons/line.svg";
+import Noodle from "@/assets/images/Noodle.webp";
 
 export const HowItWorks = () => {
     return (

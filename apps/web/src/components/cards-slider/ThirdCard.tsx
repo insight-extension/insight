@@ -1,8 +1,9 @@
-import Social from "../../assets/images/Social Media Icons for WEB3.png";
+import Social from "@/assets/images/Social Media Icons for WEB3.png";
 
 type FirstCardProps = {
     active: boolean;
 };
+
 export const ThirdCard = ({ active }: FirstCardProps) => {
     return (
         <>

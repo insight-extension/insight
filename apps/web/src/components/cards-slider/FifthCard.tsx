@@ -1,4 +1,4 @@
-import Social from "../../assets/images/Learning Language Flags Illustration.png";
+import Social from "@/assets/images/Learning Language Flags Illustration.png";
 
 type FirstCardProps = {
     active: boolean;

@@ -1,8 +1,9 @@
-import SparePartsCars from "../../assets/images/Spare Parts Cars.png";
+import SparePartsCars from "@/assets/images/Spare Parts Cars.png";
 
 type FirstCardProps = {
     active: boolean;
 };
+
 export const SecondCard = ({ active }: FirstCardProps) => {
     return (
         <>

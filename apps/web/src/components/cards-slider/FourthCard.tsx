@@ -1,8 +1,9 @@
-import SparePartsCars from "../../assets/images/Cloud with Key Insight WEB3.png";
+import SparePartsCars from "@/assets/images/Cloud with Key Insight WEB3.png";
 
 type FirstCardProps = {
     active: boolean;
 };
+
 export const FourthCard = ({ active }: FirstCardProps) => {
     return (
         <>

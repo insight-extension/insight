@@ -1,8 +1,10 @@
-import ManEngagedVideoConference from "../../assets/images/ManEngagedVideoConference.webp";
-import Radio from "../../assets/icons/radio.svg";
+import ManEngagedVideoConference from "@/assets/images/ManEngagedVideoConference.webp";
+import Radio from "@/assets/icons/radio.svg";
+
 type FirstCardProps = {
     active: boolean;
 };
+
 export const FirstCard = ({ active }: FirstCardProps) => {
     return (
         <>

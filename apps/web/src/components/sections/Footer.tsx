@@ -1,12 +1,11 @@
-import { Logo } from "../Logo";
-import Kumeka from "../../assets/icons/Kumeka.svg";
-import Solana from "../../assets/icons/Solana.svg";
-import Insta from "../../assets/icons/insta.svg";
-import Twitter from "../../assets/icons/twiter.svg";
-import Linked from "../../assets/icons/linked.svg";
 import { useRef, useState, KeyboardEvent, RefObject } from "react";
-import { Button } from "../Button";
-import { UpcomingSoonBadge } from "../ui";
+
+import { Logo, Button, UpcomingSoonBadge } from "@/components";
+import Kumeka from "@/assets/icons/Kumeka.svg";
+import Solana from "@/assets/icons/Solana.svg";
+import Insta from "@/assets/icons/insta.svg";
+import Twitter from "@/assets/icons/twiter.svg";
+import Linked from "@/assets/icons/linked.svg";
 
 export const Footer = () => {
     const emailRef = useRef(null);
