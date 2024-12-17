@@ -8,11 +8,18 @@ import { NAV_LINKS } from "@/configs";
 import { UpcomingSoonBadge, WalletMultiButton } from "@/components";
 import { cn } from "@/lib";
 
-export interface HeaderProps {}
+export interface HeaderProps {
+    className?: string;
+}
 
-export const Header: FC<HeaderProps> = () => {
+export const Header: FC<HeaderProps> = ({ className }) => {
     return (
-        <nav className="container mt-6 flex items-center justify-between">
+        <nav
+            className={cn(
+                "container mt-6 items-center justify-between",
+                className
+            )}
+        >
             <div className="flex items-center">
                 <Logo />
 

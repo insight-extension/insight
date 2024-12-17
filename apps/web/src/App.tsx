@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-import { useWindowSize } from "@uidotdev/usehooks";
 
 import { Hero } from "./components/sections/Hero";
 import { HowItWorks } from "./components/sections/HowItWorks";
@@ -10,26 +9,25 @@ import { Faqs } from "./components/sections/Faqs";
 import { Comments } from "./components/sections/Comments";
 import { Footer } from "./components/sections/Footer";
 
-import { useAnchorProvider, useAuthentication } from "@/hooks";
-import { AuthenticationAlert } from "./components";
-import { Loader } from "lucide-react";
+import { useSetupAnchorProvider, useAuthentication } from "@/hooks";
+import { AuthenticationAlert, Loader } from "./components";
 
 const Header = lazy(() => import("./components/Header"));
 const MobileHeader = lazy(() => import("./components/MobileHeader"));
 
-// todo: use RTR: https://tanstack.com/router/v1/docs/framework/react/quick-start
-// https://tanstack.com/router/latest/docs/framework/react/comparison
-
-// todo: add auto connect wallet - open modal
-
-const BREAKPOINT_WIDTH = 1023;
+// todo:
+// use RTR: https://tanstack.com/router/v1/docs/framework/react/quick-start
+// use KY
+// use deno
+// write e2e tests
+// add sentry
+// add posthog
+// add auto connect wallet - open modal
 
 const App = () => {
     const { authenticationError } = useAuthentication();
 
-    const { width } = useWindowSize();
-
-    useAnchorProvider();
+    useSetupAnchorProvider();
 
     return (
         <Suspense
@@ -39,7 +37,8 @@ const App = () => {
                 </div>
             }
         >
-            {width && width > BREAKPOINT_WIDTH ? <Header /> : <MobileHeader />}
+            <Header className="hidden lg:flex" />
+            <MobileHeader className="block lg:hidden" />
 
             {authenticationError && (
                 <AuthenticationAlert
@@ -55,6 +54,7 @@ const App = () => {
             <Prices />
             <Faqs />
             <Comments />
+
             <Footer />
         </Suspense>
     );

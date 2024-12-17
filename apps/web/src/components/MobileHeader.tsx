@@ -10,7 +10,7 @@ import { HeaderProps } from "./Header";
 
 interface MobileHeaderProps extends HeaderProps {}
 
-export const MobileHeader: FC<MobileHeaderProps> = () => {
+export const MobileHeader: FC<MobileHeaderProps> = ({ className }) => {
     const [showModal, setShowModal] = useState(false);
 
     const toggleModal = () => {
@@ -83,7 +83,7 @@ export const MobileHeader: FC<MobileHeaderProps> = () => {
     };
 
     return (
-        <nav className="">
+        <nav className={cn(className)}>
             <div
                 className="container mx-auto mt-6 flex items-center justify-between"
                 onClick={toggleModal}

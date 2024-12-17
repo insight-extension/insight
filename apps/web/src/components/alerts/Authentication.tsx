@@ -1,7 +1,6 @@
 import React, { memo } from "react";
-import { AlertCircleIcon } from "lucide-react";
 
-import { Alert, AlertTitle, AlertDescription } from "@/components";
+import { Alert, AlertTitle, AlertDescription, Icon } from "@/components";
 
 interface AuthenticationAlertProps {
     message: string;
@@ -12,7 +11,7 @@ export const AuthenticationAlert: React.FC<AuthenticationAlertProps> = memo(
     ({ message, title }) => {
         return (
             <Alert variant="destructive" className="mx-auto w-fit">
-                <AlertCircleIcon className="h-4 w-4" />
+                <Icon name="alertCircleIcon" className="h-4 w-4" />
 
                 <AlertTitle>{title}</AlertTitle>
 

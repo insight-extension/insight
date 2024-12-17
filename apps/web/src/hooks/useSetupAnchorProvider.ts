@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 import { anchorProviderAtom } from "@/store";
 
-export const useAnchorProvider = () => {
+export const useSetupAnchorProvider = () => {
     const { connection } = useConnection();
     const setAnchorProvider = useSetAtom(anchorProviderAtom);
 
