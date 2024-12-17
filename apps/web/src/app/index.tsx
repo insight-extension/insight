@@ -10,6 +10,8 @@ import { Home } from "@/app/routes/home";
 // add posthog
 // add auto connect wallet - open modal
 
+// see: https://github.com/alan2207/bulletproof-react
+// add docs
 export const App = () => {
     return (
         <AppProvider>

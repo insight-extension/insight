@@ -2,9 +2,9 @@ import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { useWalletMultiButton } from "@solana/wallet-adapter-base-ui";
 import { HTMLAttributes, useEffect, useMemo, useRef, useState } from "react";
 
-import { BaseWalletConnectionButton } from ".";
-import { DepositModal } from "../modals";
-import { DialogTrigger } from "@radix-ui/react-dialog";
+import { DepositModal, DialogTrigger } from "@/components";
+
+import { BaseWalletConnectionButton } from "./base";
 
 const LABELS = {
     "change-wallet": "Change wallet",

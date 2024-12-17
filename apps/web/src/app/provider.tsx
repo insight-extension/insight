@@ -5,6 +5,8 @@ import { FC, PropsWithChildren, Suspense } from "react";
 import { AppWalletProvider } from "@/providers";
 import { Loader, Toaster } from "@/components";
 
+import "@/i18n";
+
 interface AppProviderProps extends PropsWithChildren {}
 
 export const AppProvider: FC<AppProviderProps> = ({ children }) => {
