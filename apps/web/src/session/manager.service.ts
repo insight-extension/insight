@@ -1,5 +1,8 @@
+import Cookies from "js-cookie";
+
 import { authService } from "@/services";
-import { Cookies } from "react-cookie";
+import { pipe } from "fp-ts/lib/function";
+import { tryCatch } from "fp-ts/lib/TaskEither";
 
 export enum TokenKey {
     ACCESS = "accessToken",
@@ -7,25 +10,62 @@ export enum TokenKey {
 }
 
 class SessionManager {
-    private cookies: Cookies;
-
-    constructor() {
-        this.cookies = new Cookies();
-    }
-
     public setToken({ key, value }: { key: TokenKey; value: string }) {
-        this.cookies.set(key, value);
+        Cookies.set(key, value);
     }
 
     public getToken({ key }: { key: TokenKey }) {
-        return this.cookies.get(key);
+        return Cookies.get(key) || "";
     }
 
     public removeToken({ key }: { key: TokenKey }) {
-        this.cookies.remove(key);
+        Cookies.remove(key);
     }
 
     public async refreshToken({ refreshToken }: { refreshToken: string }) {
+        // TODO
+        await pipe(
+            tryCatch(
+                () => authService.refreshToken({ refreshToken }),
+                (error: any) => throw new Error("Error refreshing token")
+                
+            )
+            // chain(({ data: nonceResponse }) =>
+            //     match(nonceResponse)
+            //         .with(P.nullish, handleRejectedError)
+            //         .otherwise(({ nonce }) =>
+            //             tryCatch(
+            //                 () =>
+            //                     authService.createSignature({
+            //                         nonce,
+            //                         signMessageFn: signMessage,
+            //                     }),
+            //                 (error: any) => handleError(error)
+            //             )
+            //         )
+            // ),
+            // chain((signatureResponse) =>
+            //     match(signatureResponse)
+            //         .with(P.nullish, handleRejectedError)
+            //         .otherwise(({ signature }) =>
+            //             tryCatch(
+            //                 () =>
+            //                     authService.verifyAccount({
+            //                         publicKey,
+            //                         signature,
+            //                     }),
+            //                 (error: any) => handleError(error)
+            //             )
+            //         )
+            // ),
+            // chain(({ data: authTokensResponse }) =>
+            //     match(authTokensResponse)
+            //         .with(P.nullish, handleRejectedError)
+            //         .otherwise(({ accessToken, refreshToken }) =>
+            //             right(saveTokens(accessToken, refreshToken))
+            //         )
+            // )
+        )();
         try {
             const { data: refreshTokenResponse } =
                 await authService.refreshToken({

@@ -1,62 +1,28 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
+import { match, P } from "ts-pattern";
+import { pipe } from "fp-ts/function";
+import { tryCatch, chain, left, right } from "fp-ts/TaskEither";
 
 import { SessionExpiredError } from "@/errors";
-import { CacheKey, useMutation } from "@/fetching";
-import { TRANSLATIONS } from "@/i18n";
 import { isTokenExpired } from "@/lib";
 import { authService } from "@/services";
-import { sessionManager, TokenKey } from "@/session/manager.service";
+import { sessionManager, TokenKey } from "@/session";
+import { ResponseStatus } from "@/http";
 
 export const useAuthentication = () => {
+    const accessToken = sessionManager.getToken({
+        key: TokenKey.ACCESS,
+    });
+
     const { publicKey, connected, signMessage } = useWallet();
 
     const [authenticationError, setAuthenticationError] = useState<
         string | null
     >(null);
 
-    const accessToken = sessionManager.getToken({ key: TokenKey.ACCESS });
-    const refreshToken = sessionManager.getToken({ key: TokenKey.REFRESH });
-
-    const isUnauthenticated = !accessToken;
-    const shouldRefreshToken = isTokenExpired(accessToken);
-
-    const { trigger: claimNonce, error: claimNonceError } = useMutation({
-        key: CacheKey.CLAIM_NONCE,
-        mutateFn: authService.claimNonce,
-    });
-
-    const { trigger: verifyAccount, error: verifyAccountError } = useMutation({
-        key: CacheKey.VERIFY_ACCOUNT,
-        mutateFn: authService.verifyAccount,
-    });
-
-    const { trigger: refresh, error: refreshError } = useMutation({
-        key: CacheKey.REFRESH_TOKEN,
-        mutateFn: authService.refreshToken,
-    });
-
-    const handleTokenRefresh = useCallback(async () => {
-        if (isTokenExpired(refreshToken) || !refreshToken) {
-            throw new SessionExpiredError();
-        }
-
-        const { data: refreshTokenResponse } = await refresh({ refreshToken });
-
-        if (refreshTokenResponse) {
-            sessionManager.setToken({
-                key: TokenKey.ACCESS,
-                value: refreshTokenResponse.accessToken,
-            });
-            sessionManager.setToken({
-                key: TokenKey.REFRESH,
-                value: refreshTokenResponse.refreshToken,
-            });
-        }
-    }, [refreshToken, refresh]);
-
-    const handleSaveTokens = useCallback(
+    const handleAuthenticationFlow = useCallback(
         async ({
             publicKey,
             signMessage,
@@ -64,75 +30,105 @@ export const useAuthentication = () => {
             publicKey: PublicKey;
             signMessage: (message: Uint8Array) => Promise<Uint8Array>;
         }) => {
-            const { data: nonceResponse } = await claimNonce({ publicKey });
-
-            if (!nonceResponse) {
-                return;
-            }
-
-            const signatureResponse = await authService.createSignature({
-                nonce: nonceResponse.nonce,
-                signMessageFn: signMessage,
-            });
-
-            if (!signatureResponse) {
-                setAuthenticationError(TRANSLATIONS.createSignatureError);
-
-                return;
-            }
-
-            const { data: accountResponse } = await verifyAccount({
-                publicKey,
-                signature: signatureResponse.signature,
-            });
-
-            if (accountResponse) {
+            const saveTokens = (accessToken: string, refreshToken: string) => {
                 sessionManager.setToken({
                     key: TokenKey.ACCESS,
-                    value: accountResponse.accessToken,
+                    value: accessToken,
                 });
                 sessionManager.setToken({
                     key: TokenKey.REFRESH,
-                    value: accountResponse.refreshToken,
+                    value: refreshToken,
                 });
-            }
+            };
+
+            const handleError = (error: any) => {
+                setAuthenticationError(error.message);
+
+                return ResponseStatus.ERROR;
+            };
+
+            const handleRejectedError = (error: any) => {
+                setAuthenticationError(error.message);
+
+                return left(ResponseStatus.ERROR);
+            };
+
+            await pipe(
+                tryCatch(
+                    () => authService.claimNonce({ publicKey }),
+                    (error: any) => handleError(error)
+                ),
+                chain(({ data: nonceResponse }) =>
+                    match(nonceResponse)
+                        .with(P.nullish, handleRejectedError)
+                        .otherwise(({ nonce }) =>
+                            tryCatch(
+                                () =>
+                                    authService.createSignature({
+                                        nonce,
+                                        signMessageFn: signMessage,
+                                    }),
+                                (error: any) => handleError(error)
+                            )
+                        )
+                ),
+                chain((signatureResponse) =>
+                    match(signatureResponse)
+                        .with(P.nullish, handleRejectedError)
+                        .otherwise(({ signature }) =>
+                            tryCatch(
+                                () =>
+                                    authService.verifyAccount({
+                                        publicKey,
+                                        signature,
+                                    }),
+                                (error: any) => handleError(error)
+                            )
+                        )
+                ),
+                chain(({ data: authTokensResponse }) =>
+                    match(authTokensResponse)
+                        .with(P.nullish, handleRejectedError)
+                        .otherwise(({ accessToken, refreshToken }) =>
+                            right(saveTokens(accessToken, refreshToken))
+                        )
+                )
+            )();
         },
-        [claimNonce, verifyAccount]
+        []
     );
 
     useEffect(() => {
+        const shouldRefreshToken = isTokenExpired(accessToken);
+
         if (shouldRefreshToken) {
-            handleTokenRefresh().catch(() =>
-                setAuthenticationError(TRANSLATIONS.unexpectedError)
-            );
+            const refreshToken = sessionManager.getToken({
+                key: TokenKey.REFRESH,
+            });
+
+            if (!refreshToken || isTokenExpired(refreshToken)) {
+                throw new SessionExpiredError();
+            }
+
+            sessionManager.refreshToken({ refreshToken });
         }
-    }, [shouldRefreshToken, handleTokenRefresh]);
+    }, []);
 
     useEffect(() => {
-        if (isUnauthenticated && publicKey && signMessage) {
-            handleSaveTokens({ publicKey, signMessage }).catch(() =>
-                setAuthenticationError(TRANSLATIONS.unexpectedError)
-            );
-        }
-    }, [isUnauthenticated, publicKey, signMessage, handleSaveTokens]);
+        const accessToken = sessionManager.getToken({
+            key: TokenKey.ACCESS,
+        });
 
-    useEffect(() => {
-        if (verifyAccountError || claimNonceError) {
-            setAuthenticationError(TRANSLATIONS.verifyAccountError);
+        if (accessToken && publicKey && signMessage) {
+            handleAuthenticationFlow({ publicKey, signMessage });
         }
-    }, [verifyAccountError, claimNonceError]);
+    }, [publicKey, signMessage, handleAuthenticationFlow]);
 
     useEffect(() => {
         if (!connected && authenticationError) {
             setAuthenticationError(null);
         }
     }, [connected, authenticationError]);
-
-    useEffect(() => {
-        if (refreshError) {
-            setAuthenticationError(TRANSLATIONS.unexpectedError);
-        }
-    }, [refreshError]);
 
     return {
         authenticationError,
