@@ -1,26 +1,20 @@
-import { CookiesProvider } from "react-cookie";
 import { BrowserRouter } from "react-router";
-import { FC, PropsWithChildren, Suspense } from "react";
+import { FC, PropsWithChildren } from "react";
 
 import { AppWalletProvider } from "@/providers";
-import { Loader, Toaster } from "@/components";
-
-import "@/i18n";
+import { Toaster } from "@/components";
+import { LocalizationProvider } from "@/i18n/provider";
 
 interface AppProviderProps extends PropsWithChildren {}
 
 export const AppProvider: FC<AppProviderProps> = ({ children }) => {
     return (
-        <Suspense fallback={<Loader withContainer />}>
-            <BrowserRouter>
-                <CookiesProvider>
-                    <AppWalletProvider>
-                        <Toaster />
+        <BrowserRouter>
+            <AppWalletProvider>
+                <Toaster />
 
-                        {children}
-                    </AppWalletProvider>
-                </CookiesProvider>
-            </BrowserRouter>
-        </Suspense>
+                <LocalizationProvider>{children}</LocalizationProvider>
+            </AppWalletProvider>
+        </BrowserRouter>
     );
 };

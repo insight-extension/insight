@@ -1,0 +1,6 @@
+{
+    "error.unexpected": "Unexpected error occurred.",
+    "error.verifyAccount": "Please verify your account before proceeding.",
+    "error.createSignature": "Please create a signature before proceeding.",
+    "error.authentication": "Authentication error occurred."
+}

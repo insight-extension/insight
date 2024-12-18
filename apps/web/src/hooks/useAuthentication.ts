@@ -1,6 +1,6 @@
+import { useCallback, useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { useCallback, useEffect, useState } from "react";
 import { match, P } from "ts-pattern";
 import { pipe } from "fp-ts/function";
 import { tryCatch, chain, left, right } from "fp-ts/TaskEither";
@@ -30,17 +30,6 @@ export const useAuthentication = () => {
             publicKey: PublicKey;
             signMessage: (message: Uint8Array) => Promise<Uint8Array>;
         }) => {
-            const saveTokens = (accessToken: string, refreshToken: string) => {
-                sessionManager.setToken({
-                    key: TokenKey.ACCESS,
-                    value: accessToken,
-                });
-                sessionManager.setToken({
-                    key: TokenKey.REFRESH,
-                    value: refreshToken,
-                });
-            };
-
             const handleError = (error: any) => {
                 setAuthenticationError(error.message);
 
@@ -53,6 +42,7 @@ export const useAuthentication = () => {
                 return left(ResponseStatus.ERROR);
             };
 
+            // todo: should catch nullish? review response object for error/parse error
             await pipe(
                 tryCatch(
                     () => authService.claimNonce({ publicKey }),
@@ -90,7 +80,12 @@ export const useAuthentication = () => {
                     match(authTokensResponse)
                         .with(P.nullish, handleRejectedError)
                         .otherwise(({ accessToken, refreshToken }) =>
-                            right(saveTokens(accessToken, refreshToken))
+                            right(
+                                sessionManager.saveTokens({
+                                    accessToken,
+                                    refreshToken,
+                                })
+                            )
                         )
                 )
             )();
@@ -98,19 +93,23 @@ export const useAuthentication = () => {
         []
     );
 
+    const handleRefreshToken = useCallback(() => {
+        const refreshToken = sessionManager.getToken({
+            key: TokenKey.REFRESH,
+        });
+
+        if (!refreshToken || isTokenExpired(refreshToken)) {
+            throw new SessionExpiredError();
+        }
+
+        sessionManager.refreshToken({ refreshToken });
+    }, []);
+
     useEffect(() => {
         const shouldRefreshToken = isTokenExpired(accessToken);
 
         if (shouldRefreshToken) {
-            const refreshToken = sessionManager.getToken({
-                key: TokenKey.REFRESH,
-            });
-
-            if (!refreshToken || isTokenExpired(refreshToken)) {
-                throw new SessionExpiredError();
-            }
-
-            sessionManager.refreshToken({ refreshToken });
+            handleRefreshToken();
         }
     }, []);
 

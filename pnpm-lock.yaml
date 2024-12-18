@@ -189,15 +189,6 @@ importers:
       framer-motion:
         specifier: ^11.11.11
         version: 11.14.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      i18next:
-        specifier: ^23.11.5
-        version: 23.15.2
-      i18next-browser-languagedetector:
-        specifier: ^8.0.0
-        version: 8.0.0
-      i18next-http-backend:
-        specifier: ^3.0.1
-        version: 3.0.1(encoding@0.1.13)
       jotai:
         specifier: ^2.10.3
         version: 2.10.3(@types/react@18.3.16)(react@18.3.1)
@@ -216,9 +207,12 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
-      react-i18next:
-        specifier: 15.0.2
-        version: 15.0.2(i18next@23.15.2)(react-dom@18.3.1(react@18.3.1))(react-native@0.75.4(@babel/core@7.25.7)(@babel/preset-env@7.25.7(@babel/core@7.25.7))(@types/react@18.3.16)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(typescript@5.6.3)(utf-8-validate@5.0.10))(react@18.3.1)
+      react-error-boundary:
+        specifier: ^4.1.2
+        version: 4.1.2(react@18.3.1)
+      react-intl:
+        specifier: ^7.0.4
+        version: 7.0.4(react@18.3.1)(typescript@5.6.3)
       react-router:
         specifier: ^7.0.1
         version: 7.0.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1799,6 +1793,29 @@ packages:
 
   '@floating-ui/utils@0.2.8':
     resolution: {integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==}
+
+  '@formatjs/ecma402-abstract@2.3.1':
+    resolution: {integrity: sha512-Ip9uV+/MpLXWRk03U/GzeJMuPeOXpJBSB5V1tjA6kJhvqssye5J5LoYLc7Z5IAHb7nR62sRoguzrFiVCP/hnzw==}
+
+  '@formatjs/fast-memoize@2.2.5':
+    resolution: {integrity: sha512-6PoewUMrrcqxSoBXAOJDiW1m+AmkrAj0RiXnOMD59GRaswjXhm3MDhgepXPBgonc09oSirAJTsAggzAGQf6A6g==}
+
+  '@formatjs/icu-messageformat-parser@2.9.7':
+    resolution: {integrity: sha512-cuEHyRM5VqLQobANOjtjlgU7+qmk9Q3fDQuBiRRJ3+Wp3ZoZhpUPtUfuimZXsir6SaI2TaAJ+SLo9vLnV5QcbA==}
+
+  '@formatjs/icu-skeleton-parser@1.8.11':
+    resolution: {integrity: sha512-8LlHHE/yL/zVJZHAX3pbKaCjZKmBIO6aJY1mkVh4RMSEu/2WRZ4Ysvv3kKXJ9M8RJLBHdnk1/dUQFdod1Dt7Dw==}
+
+  '@formatjs/intl-localematcher@0.5.9':
+    resolution: {integrity: sha512-8zkGu/sv5euxbjfZ/xmklqLyDGQSxsLqg8XOq88JW3cmJtzhCP8EtSJXlaKZnVO4beEaoiT9wj4eIoCQ9smwxA==}
+
+  '@formatjs/intl@3.0.4':
+    resolution: {integrity: sha512-pnetak6R7Xp/ET96O5kx9zRYoQQqr6sbRXWkJHKw0Hr/jr3ls4CddZKq+suwCDuW6p/ior2BhpOSh/WLLcJM6w==}
+    peerDependencies:
+      typescript: '5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   '@fractalwagmi/popup-connection@1.1.1':
     resolution: {integrity: sha512-hYL+45iYwNbwjvP2DxP3YzVsrAGtj/RV9LOgMpJyCxsfNoyyOoi2+YrnywKkiANingiG2kJ1nKsizbu1Bd4zZw==}
@@ -7338,9 +7355,6 @@ packages:
   i18next-fs-backend@2.3.2:
     resolution: {integrity: sha512-LIwUlkqDZnUI8lnUxBnEj8K/FrHQTT/Sc+1rvDm9E8YvvY5YxzoEAASNx+W5M9DfD5s77lI5vSAFWeTp26B/3Q==}
 
-  i18next-http-backend@3.0.1:
-    resolution: {integrity: sha512-XT2lYSkbAtDE55c6m7CtKxxrsfuRQO3rUfHzj8ZyRtY9CkIX3aRGwXGTkUhpGWce+J8n7sfu3J0f2wTzo7Lw0A==}
-
   i18next-resources-to-backend@1.2.1:
     resolution: {integrity: sha512-okHbVA+HZ7n1/76MsfhPqDou0fptl2dAlhRDu2ideXloRRduzHsqDOznJBef+R3DFZnbvWoBW+KxJ7fnFjd6Yw==}
 
@@ -7432,6 +7446,9 @@ packages:
   internal-slot@1.0.7:
     resolution: {integrity: sha512-NGnrKwXzSms2qUUih/ILZ5JBqNTSa1+ZmP6flaIp6KmSElgE9qdndzS3cqjrDovwFdmwsGsLdeFgB6suw+1e9g==}
     engines: {node: '>= 0.4'}
+
+  intl-messageformat@10.7.10:
+    resolution: {integrity: sha512-hp7iejCBiJdW3zmOe18FdlJu8U/JsADSDiBPQhfdSeI8B9POtvPRvPh3nMlvhYayGMKLv6maldhR7y3Pf1vkpw==}
 
   invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
@@ -9411,6 +9428,11 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
+  react-error-boundary@4.1.2:
+    resolution: {integrity: sha512-GQDxZ5Jd+Aq/qUxbCm1UtzmL/s++V7zKgE8yMktJiCQXCCFZnMZh9ng+6/Ne6PjNSXH0L9CjeOEREfRnq6Duag==}
+    peerDependencies:
+      react: '>=16.13.1'
+
   react-error-overlay@6.0.9:
     resolution: {integrity: sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==}
 
@@ -9425,6 +9447,15 @@ packages:
       react-dom:
         optional: true
       react-native:
+        optional: true
+
+  react-intl@7.0.4:
+    resolution: {integrity: sha512-WGNfCPNcRQhNAZBN+amz2hfR8Kd7jngScJ4WaRZcsaOWsvva1ciStnUIGj9MvOAxPqTf1D78J5OdRdc3l0wgKQ==}
+    peerDependencies:
+      react: ^16.6.0 || 17 || 18 || 19
+      typescript: '5'
+    peerDependenciesMeta:
+      typescript:
         optional: true
 
   react-is@16.13.1:
@@ -12414,6 +12445,42 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   '@floating-ui/utils@0.2.8': {}
+
+  '@formatjs/ecma402-abstract@2.3.1':
+    dependencies:
+      '@formatjs/fast-memoize': 2.2.5
+      '@formatjs/intl-localematcher': 0.5.9
+      decimal.js: 10.4.3
+      tslib: 2.7.0
+
+  '@formatjs/fast-memoize@2.2.5':
+    dependencies:
+      tslib: 2.7.0
+
+  '@formatjs/icu-messageformat-parser@2.9.7':
+    dependencies:
+      '@formatjs/ecma402-abstract': 2.3.1
+      '@formatjs/icu-skeleton-parser': 1.8.11
+      tslib: 2.7.0
+
+  '@formatjs/icu-skeleton-parser@1.8.11':
+    dependencies:
+      '@formatjs/ecma402-abstract': 2.3.1
+      tslib: 2.7.0
+
+  '@formatjs/intl-localematcher@0.5.9':
+    dependencies:
+      tslib: 2.7.0
+
+  '@formatjs/intl@3.0.4(typescript@5.6.3)':
+    dependencies:
+      '@formatjs/ecma402-abstract': 2.3.1
+      '@formatjs/fast-memoize': 2.2.5
+      '@formatjs/icu-messageformat-parser': 2.9.7
+      intl-messageformat: 10.7.10
+      tslib: 2.7.0
+    optionalDependencies:
+      typescript: 5.6.3
 
   '@fractalwagmi/popup-connection@1.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -15556,7 +15623,7 @@ snapshots:
     dependencies:
       '@solana-mobile/wallet-adapter-mobile': 2.1.3(@solana/web3.js@1.95.8(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10))(react-native@0.75.4(@babel/core@7.25.7)(@babel/preset-env@7.25.7(@babel/core@7.25.7))(@types/react@18.3.11)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(typescript@5.6.2)(utf-8-validate@5.0.10))(react@18.3.1)
       '@solana/wallet-adapter-base': 0.9.23(@solana/web3.js@1.95.8(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10))
-      '@solana/wallet-standard-wallet-adapter-react': 1.1.2(@solana/wallet-adapter-base@0.9.23(@solana/web3.js@1.95.8(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)))(@solana/web3.js@1.95.8(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10))(bs58@6.0.0)(react@18.3.1)
+      '@solana/wallet-standard-wallet-adapter-react': 1.1.2(@solana/wallet-adapter-base@0.9.23(@solana/web3.js@1.95.8(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)))(@solana/web3.js@1.95.8(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10))(bs58@5.0.0)(react@18.3.1)
       '@solana/web3.js': 1.95.8(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@5.0.10)
       react: 18.3.1
     transitivePeerDependencies:
@@ -20586,12 +20653,6 @@ snapshots:
 
   i18next-fs-backend@2.3.2: {}
 
-  i18next-http-backend@3.0.1(encoding@0.1.13):
-    dependencies:
-      cross-fetch: 4.0.0(encoding@0.1.13)
-    transitivePeerDependencies:
-      - encoding
-
   i18next-resources-to-backend@1.2.1:
     dependencies:
       '@babel/runtime': 7.25.7
@@ -20713,6 +20774,13 @@ snapshots:
       es-errors: 1.3.0
       hasown: 2.0.2
       side-channel: 1.0.6
+
+  intl-messageformat@10.7.10:
+    dependencies:
+      '@formatjs/ecma402-abstract': 2.3.1
+      '@formatjs/fast-memoize': 2.2.5
+      '@formatjs/icu-messageformat-parser': 2.9.7
+      tslib: 2.7.0
 
   invariant@2.2.4:
     dependencies:
@@ -23105,6 +23173,11 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
+  react-error-boundary@4.1.2(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.25.7
+      react: 18.3.1
+
   react-error-overlay@6.0.9: {}
 
   react-i18next@15.0.2(i18next@23.15.2)(react-dom@18.3.1(react@18.3.1))(react-native@0.75.4(@babel/core@7.25.7)(@babel/preset-env@7.25.7(@babel/core@7.25.7))(@types/react@18.3.16)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(typescript@5.6.3)(utf-8-validate@5.0.10))(react@18.3.1):
@@ -23116,6 +23189,20 @@ snapshots:
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
       react-native: 0.75.4(@babel/core@7.25.7)(@babel/preset-env@7.25.7(@babel/core@7.25.7))(@types/react@18.3.16)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(typescript@5.6.3)(utf-8-validate@5.0.10)
+
+  react-intl@7.0.4(react@18.3.1)(typescript@5.6.3):
+    dependencies:
+      '@formatjs/ecma402-abstract': 2.3.1
+      '@formatjs/icu-messageformat-parser': 2.9.7
+      '@formatjs/intl': 3.0.4(typescript@5.6.3)
+      '@types/hoist-non-react-statics': 3.3.5
+      '@types/react': 18.3.16
+      hoist-non-react-statics: 3.3.2
+      intl-messageformat: 10.7.10
+      react: 18.3.1
+      tslib: 2.7.0
+    optionalDependencies:
+      typescript: 5.6.3
 
   react-is@16.13.1: {}
 

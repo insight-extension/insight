@@ -1,8 +1,10 @@
 import Cookies from "js-cookie";
+import { chain, left, right, tryCatch } from "fp-ts/TaskEither";
+import { pipe } from "fp-ts/function";
+import { match, P } from "ts-pattern";
 
 import { authService } from "@/services";
-import { pipe } from "fp-ts/lib/function";
-import { tryCatch } from "fp-ts/lib/TaskEither";
+import { HTTPError } from "@/http";
 
 export enum TokenKey {
     ACCESS = "accessToken",
@@ -22,69 +24,55 @@ class SessionManager {
         Cookies.remove(key);
     }
 
-    public async refreshToken({ refreshToken }: { refreshToken: string }) {
-        // TODO
-        await pipe(
+    public saveTokens({
+        accessToken,
+        refreshToken,
+    }: {
+        accessToken: string;
+        refreshToken: string;
+    }) {
+        this.setToken({
+            key: TokenKey.ACCESS,
+            value: accessToken,
+        });
+        this.setToken({
+            key: TokenKey.REFRESH,
+            value: refreshToken,
+        });
+    }
+
+    public async refreshToken({
+        refreshToken,
+    }: {
+        refreshToken: string;
+    }): Promise<void> {
+        pipe(
             tryCatch(
                 () => authService.refreshToken({ refreshToken }),
-                (error: any) => throw new Error("Error refreshing token")
-                
+                (error: any) => {
+                    throw new HTTPError({
+                        message: error.message,
+                        status: error.status,
+                    });
+                }
+            ),
+            chain(({ data: tokens }) =>
+                match(tokens)
+                    .with(P.nonNullable, ({ accessToken, refreshToken }) =>
+                        right(() =>
+                            this.saveTokens({ accessToken, refreshToken })
+                        )
+                    )
+                    .otherwise(() =>
+                        left(
+                            new HTTPError({
+                                message: "Failed to refresh token",
+                                status: 500,
+                            })
+                        )
+                    )
             )
-            // chain(({ data: nonceResponse }) =>
-            //     match(nonceResponse)
-            //         .with(P.nullish, handleRejectedError)
-            //         .otherwise(({ nonce }) =>
-            //             tryCatch(
-            //                 () =>
-            //                     authService.createSignature({
-            //                         nonce,
-            //                         signMessageFn: signMessage,
-            //                     }),
-            //                 (error: any) => handleError(error)
-            //             )
-            //         )
-            // ),
-            // chain((signatureResponse) =>
-            //     match(signatureResponse)
-            //         .with(P.nullish, handleRejectedError)
-            //         .otherwise(({ signature }) =>
-            //             tryCatch(
-            //                 () =>
-            //                     authService.verifyAccount({
-            //                         publicKey,
-            //                         signature,
-            //                     }),
-            //                 (error: any) => handleError(error)
-            //             )
-            //         )
-            // ),
-            // chain(({ data: authTokensResponse }) =>
-            //     match(authTokensResponse)
-            //         .with(P.nullish, handleRejectedError)
-            //         .otherwise(({ accessToken, refreshToken }) =>
-            //             right(saveTokens(accessToken, refreshToken))
-            //         )
-            // )
         )();
-        try {
-            const { data: refreshTokenResponse } =
-                await authService.refreshToken({
-                    refreshToken,
-                });
-
-            if (refreshTokenResponse) {
-                this.setToken({
-                    key: TokenKey.ACCESS,
-                    value: refreshTokenResponse.accessToken,
-                });
-                this.setToken({
-                    key: TokenKey.REFRESH,
-                    value: refreshTokenResponse.refreshToken,
-                });
-            }
-        } catch (error) {
-            console.error(error);
-        }
     }
 }
 

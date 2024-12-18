@@ -1,8 +1,17 @@
 {
     "errors": {
-        "unexpected": "Something went wrong. Please reload the page and try again.",
-        "verifyAccount": "Failed to verify account. Please reload the page and try again.",
-        "createSignature": "Failed to create signature. Please reload the page and try again."
+        "unexpected": {
+            "title": "Unexpected error",
+            "description": "An unexpected error occurred. Please try again later."
+        },
+        "verifyAccount": {
+            "title": "Verify account",
+            "description": "Please verify your account before proceeding."
+        },
+        "createSignature": {
+            "title": "Create signature",
+            "description": "Please create a signature before proceeding."
+        }
     },
     "alert": {
         "authentication": {
