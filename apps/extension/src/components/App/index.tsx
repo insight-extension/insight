@@ -394,7 +394,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         <div className="flex flex-row justify-between items-center mb-2">
           <div className="flex flex-row items-center h-8 w-38 bg-accent-foreground rounded">
             <p className="px-3 text-primary-foreground font-medium text-sm">
-              {`${getMessage("balance")}: ${balance}`}
+              {/* {`${getMessage("balance")}: ${balance}`} */}
+              {getMessage("balance")}
             </p>
           </div>
 
