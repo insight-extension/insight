@@ -10,6 +10,8 @@ import {
 import ReactCountryFlag from "react-country-flag";
 import { io, Socket } from "socket.io-client";
 
+import { SessionToken } from "@repo/ui/constants";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,12 +27,17 @@ import { StorageKey } from "~constants";
 import { constructURLWithParams } from "~utils";
 import "~global.css";
 
-import { SWR_CACHE_KEY } from "@repo/ui/fetching";
-
 // todo: add env WSS var for manifest
 //    "content_security_policy": {
 //       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
 //     }
+
+// todo: remove
+const PLASMO_PUBLIC_API_URL = "https://hackathon-test-project.space:3030/";
+
+const PLASMO_PUBLIC_WEBSOCKET_URL = "wss://hackathon-test-project.space:3030/";
+
+const PLASMO_PUBLIC_UI_URL = "http://localhost:5173/";
 
 // Define connection status types
 enum ConnectionStatus {
@@ -74,10 +81,12 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   storage.watch({
+    [SessionToken.ACCESS]: ({ newValue }) => {
+      console.log(SessionToken.ACCESS, newValue);
+    },
     [StorageKey.DEPOSIT]: ({ newValue }) => {
       console.log(StorageKey.DEPOSIT, newValue);
     },
-
     [StorageKey.BALANCE]: ({ newValue }) => {
       console.log([StorageKey.BALANCE], newValue);
     },
@@ -88,7 +97,6 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
       try {
         const token = await storage.get(StorageKey.ACCESS_TOKEN);
 
-        console.log("SWR_CACHE_KEY", SWR_CACHE_KEY.ValidateAccount);
         // todo: REUSE COMMON THINGS
 
         if (token) {
@@ -101,12 +109,11 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     })();
   }, []);
 
-  console.log("accessToken", accessToken);
-
   // Functions for retrieving real data
   const fetchBalance = async () => {
     try {
-      const response = await fetch(process.env.PLASMO_PUBLIC_API_URL as string);
+      // const response = await fetch(process.env.PLASMO_PUBLIC_API_URL as string);
+      const response = await fetch(PLASMO_PUBLIC_API_URL as string);
       const data = await response.json();
       setBalance(data.balance);
     } catch (error) {
@@ -116,7 +123,9 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
   const fetchStatus = async () => {
     try {
-      const response = await fetch(process.env.PLASMO_PUBLIC_API_URL as string);
+      // const response = await fetch(process.env.PLASMO_PUBLIC_API_URL as string);
+      const response = await fetch(PLASMO_PUBLIC_API_URL as string);
+
       const data = await response.json();
       setStatus(data.status);
     } catch (error) {
@@ -131,7 +140,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
       setTranslation("");
 
       // Create Socket connection
-      const socket = io(process.env.PLASMO_PUBLIC_WEBSOCKET_URL as string, {
+      // const socket = io(process.env.PLASMO_PUBLIC_WEBSOCKET_URL as string, {
+      const socket = io(PLASMO_PUBLIC_WEBSOCKET_URL as string, {
         transports: ["websocket"],
       });
       websocketRef.current = socket;
@@ -363,7 +373,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <Button variant="default" className="w-38">
             <a
               href={constructURLWithParams({
-                url: process.env.PLASMO_PUBLIC_UI_URL as string,
+                // url: process.env.PLASMO_PUBLIC_UI_URL as string,
+                url: PLASMO_PUBLIC_UI_URL as string,
                 params: {
                   action: "connect-wallet",
                 },
@@ -378,7 +389,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <Button variant="default" className="w-38">
             <a
               href={constructURLWithParams({
-                url: process.env.PLASMO_PUBLIC_UI_URL as string,
+                // url: process.env.PLASMO_PUBLIC_UI_URL as string,
+                url: PLASMO_PUBLIC_UI_URL as string,
                 params: {
                   action: "deposit",
                 },

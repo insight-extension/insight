@@ -10,35 +10,45 @@ import type {
 
 import { cn } from "@/lib";
 
-interface BaseWalletConnectionButtonProps
-    extends PropsWithChildren<{
-        className?: string;
-        disabled?: boolean;
-        endIcon?: ReactElement;
-        onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
-        style?: CSSProperties;
-        tabIndex?: number;
-        walletIcon?: string;
-        walletName?: WalletName;
-    }> {}
+interface BaseWalletConnectionButtonProps extends PropsWithChildren {
+    className?: string;
+    disabled?: boolean;
+    endIcon?: ReactElement;
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+    style?: CSSProperties;
+    tabIndex?: number;
+    walletIcon?: string;
+    walletName?: WalletName;
+    isHighlighted?: boolean;
+}
 
 export const BaseWalletConnectionButton: FC<
     BaseWalletConnectionButtonProps
-> = ({ className, children, endIcon, walletIcon, walletName, ...other }) => {
-    const icon =
-        walletIcon && walletName ? (
-            <WalletIcon
-                wallet={{
-                    adapter: { icon: walletIcon, name: walletName },
-                }}
-            />
-        ) : undefined;
-
+> = ({
+    className,
+    children,
+    endIcon,
+    walletIcon,
+    walletName,
+    isHighlighted,
+    ...props
+}) => {
+    const highlightVariant = isHighlighted ? "shadow-md shadow-green-300" : "";
     return (
-        <button className={cn(className)} {...other} type="button">
+        <button
+            className={cn(highlightVariant, className)}
+            {...props}
+            type="button"
+        >
             <div className="flex items-center gap-2 text-sm">
-                {icon && (
-                    <i className="wallet-adapter-button-start-icon">{icon}</i>
+                {walletIcon && walletName && (
+                    <i className="wallet-adapter-button-start-icon">
+                        <WalletIcon
+                            wallet={{
+                                adapter: { icon: walletIcon, name: walletName },
+                            }}
+                        />
+                    </i>
                 )}
 
                 <p>{children}</p>

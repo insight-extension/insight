@@ -83,7 +83,7 @@
   },
   "scripts": {
     "build:worklet": "tsc -p tsconfig.worklet.json",
-    "build": "npm run build:worklet && plasmo build && copyfiles -u 1 src/pcm-processor.js build/chrome-mv3-prod/",
+    "build": "pnpm run build:worklet && plasmo build && copyfiles -u 1 src/pcm-processor.js build/chrome-mv3-prod/",
     "dev": "plasmo dev",
     "package": "plasmo package"
   }

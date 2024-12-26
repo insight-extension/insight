@@ -18,8 +18,9 @@ const Header = lazy(() => import("@/components/sections/Header"));
 const MobileHeader = lazy(() => import("@/components/sections/MobileHeader"));
 
 export const Home = () => {
-    const { authenticationError } = useAuthentication();
     const intl = useIntl();
+
+    const { authenticationError } = useAuthentication();
 
     useSetupAnchorProvider();
 
@@ -32,6 +33,7 @@ export const Home = () => {
                 <ErrorAlert
                     title={intl.formatMessage({ id: "error.authentication" })}
                     message={authenticationError}
+                    actionMessage={intl.formatMessage({ id: "action.retry" })}
                 />
             )}
 

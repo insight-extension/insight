@@ -4,9 +4,14 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { ErrorAlert } from "@/components";
 
-interface AppErrorBoundaryProps extends PropsWithChildren {}
+interface AppErrorBoundaryProps extends PropsWithChildren {
+    namespace?: string;
+}
 
-export const AppErrorBoundary: FC<AppErrorBoundaryProps> = ({ children }) => {
+export const AppErrorBoundary: FC<AppErrorBoundaryProps> = ({
+    namespace = "error",
+    children,
+}) => {
     const intl = useIntl();
 
     return (
@@ -14,9 +19,12 @@ export const AppErrorBoundary: FC<AppErrorBoundaryProps> = ({ children }) => {
             fallbackRender={({ error }) => (
                 <ErrorAlert
                     title={intl.formatMessage({
-                        id: "error.unexpected",
+                        id: `${namespace}.unexpected`,
                     })}
                     message={error.message}
+                    actionMessage={intl.formatMessage({
+                        id: `${namespace}.action.reload`,
+                    })}
                 />
             )}
         >

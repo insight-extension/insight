@@ -93,7 +93,7 @@ class AuthService {
 
             return { signature };
         } catch (error) {
-            return null;
+            throw error;
         }
     };
 }

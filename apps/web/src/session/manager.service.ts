@@ -5,22 +5,18 @@ import { match, P } from "ts-pattern";
 
 import { authService } from "@/services";
 import { HTTPError } from "@/http";
-
-export enum TokenKey {
-    ACCESS = "accessToken",
-    REFRESH = "refreshToken",
-}
+import { SessionToken } from "@/constants";
 
 class SessionManager {
-    public setToken({ key, value }: { key: TokenKey; value: string }) {
+    public setToken({ key, value }: { key: SessionToken; value: string }) {
         Cookies.set(key, value);
     }
 
-    public getToken({ key }: { key: TokenKey }) {
+    public getToken({ key }: { key: SessionToken }) {
         return Cookies.get(key) || "";
     }
 
-    public removeToken({ key }: { key: TokenKey }) {
+    public removeToken({ key }: { key: SessionToken }) {
         Cookies.remove(key);
     }
 
@@ -32,11 +28,11 @@ class SessionManager {
         refreshToken: string;
     }) {
         this.setToken({
-            key: TokenKey.ACCESS,
+            key: SessionToken.ACCESS,
             value: accessToken,
         });
         this.setToken({
-            key: TokenKey.REFRESH,
+            key: SessionToken.REFRESH,
             value: refreshToken,
         });
     }

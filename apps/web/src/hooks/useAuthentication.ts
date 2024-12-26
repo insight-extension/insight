@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useIntl } from "react-intl";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { match, P } from "ts-pattern";
@@ -8,12 +9,15 @@ import { tryCatch, chain, left, right } from "fp-ts/TaskEither";
 import { SessionExpiredError } from "@/errors";
 import { isTokenExpired } from "@/lib";
 import { authService } from "@/services";
-import { sessionManager, TokenKey } from "@/session";
+import { sessionManager } from "@/session";
 import { ResponseStatus } from "@/http";
+import { SessionToken } from "@/constants";
 
+// todo: add autoconnect
 export const useAuthentication = () => {
+    const intl = useIntl();
     const accessToken = sessionManager.getToken({
-        key: TokenKey.ACCESS,
+        key: SessionToken.ACCESS,
     });
 
     const { publicKey, connected, signMessage } = useWallet();
@@ -22,7 +26,7 @@ export const useAuthentication = () => {
         string | null
     >(null);
 
-    const handleAuthenticationFlow = useCallback(
+    const handleAuthentication = useCallback(
         async ({
             publicKey,
             signMessage,
@@ -30,8 +34,8 @@ export const useAuthentication = () => {
             publicKey: PublicKey;
             signMessage: (message: Uint8Array) => Promise<Uint8Array>;
         }) => {
-            const handleError = (error: any) => {
-                setAuthenticationError(error.message);
+            const handleErrorMessage = (errorMessage: string) => {
+                setAuthenticationError(errorMessage);
 
                 return ResponseStatus.ERROR;
             };
@@ -46,7 +50,7 @@ export const useAuthentication = () => {
             await pipe(
                 tryCatch(
                     () => authService.claimNonce({ publicKey }),
-                    (error: any) => handleError(error)
+                    (error: any) => handleErrorMessage(error.message)
                 ),
                 chain(({ data: nonceResponse }) =>
                     match(nonceResponse)
@@ -58,7 +62,12 @@ export const useAuthentication = () => {
                                         nonce,
                                         signMessageFn: signMessage,
                                     }),
-                                (error: any) => handleError(error)
+                                () =>
+                                    handleErrorMessage(
+                                        intl.formatMessage({
+                                            id: "error.createSignature",
+                                        })
+                                    )
                             )
                         )
                 ),
@@ -72,7 +81,8 @@ export const useAuthentication = () => {
                                         publicKey,
                                         signature,
                                     }),
-                                (error: any) => handleError(error)
+                                (error: any) =>
+                                    handleErrorMessage(error.message)
                             )
                         )
                 ),
@@ -95,10 +105,15 @@ export const useAuthentication = () => {
 
     const handleRefreshToken = useCallback(() => {
         const refreshToken = sessionManager.getToken({
-            key: TokenKey.REFRESH,
+            key: SessionToken.REFRESH,
         });
 
-        if (!refreshToken || isTokenExpired(refreshToken)) {
+        if (
+            !refreshToken ||
+            isTokenExpired({
+                token: refreshToken,
+            })
+        ) {
             throw new SessionExpiredError();
         }
 
@@ -106,22 +121,22 @@ export const useAuthentication = () => {
     }, []);
 
     useEffect(() => {
-        const shouldRefreshToken = isTokenExpired(accessToken);
-
-        if (shouldRefreshToken) {
+        if (
+            connected &&
+            accessToken &&
+            isTokenExpired({
+                token: accessToken,
+            })
+        ) {
             handleRefreshToken();
         }
-    }, []);
+    }, [connected, accessToken, handleRefreshToken]);
 
     useEffect(() => {
-        const accessToken = sessionManager.getToken({
-            key: TokenKey.ACCESS,
-        });
-
-        if (accessToken && publicKey && signMessage) {
-            handleAuthenticationFlow({ publicKey, signMessage });
+        if (connected && !accessToken && publicKey && signMessage) {
+            handleAuthentication({ publicKey, signMessage });
         }
-    }, [publicKey, signMessage, handleAuthenticationFlow]);
+    }, [connected, accessToken, publicKey, signMessage, handleAuthentication]);
 
     useEffect(() => {
         if (!connected && authenticationError) {
