@@ -5,6 +5,9 @@
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/web3.js": "^1.95.4",
     "bs58": "^6.0.0",
+    "io-ts": "^2.2.22",
+    "jwt-decode": "^4.0.0",
+    "ts-pattern": "^5.5.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -17,9 +20,11 @@
     "typescript": "^5.4.5"
   },
   "exports": {
-    "./configs": "./src/configs/index.ts",
     "./client/http": "./src/client/http/index.ts",
     "./client/services": "./src/client/services/index.ts",
+    "./configs": "./src/configs/index.ts",
+    "./constants": "./src/constants/index.ts",
+    "./errors": "./src/errors/index.ts",
     "./types": "./src/types/index.ts",
     "./utils": "./src/utils/index.ts",
     "./validation": "./src/validation/index.ts"

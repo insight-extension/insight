@@ -1,4 +1,4 @@
-import { memo, ReactNode, useCallback, useEffect, useState } from "react";
+import { memo, ReactNode, useCallback, useState } from "react";
 
 import {
     Dialog,
@@ -16,35 +16,29 @@ interface DepositModalProps {
     trigger: ReactNode;
 }
 
-export const DepositModal: React.FC<DepositModalProps> = memo(
-    ({ isDefaultOpen = false, trigger }) => {
-        const action = useSearchParamValue("action");
-        const [isOpen, setIsOpen] = useState<boolean>(
-            action === SEARCH_PARAMS.action.deposit
-        );
+export const DepositModal: React.FC<DepositModalProps> = memo(({ trigger }) => {
+    const action = useSearchParamValue("action");
+    const [isOpen, setIsOpen] = useState<boolean>(
+        action === SEARCH_PARAMS.action.deposit
+    );
 
-        const handleCloseModal = useCallback(() => {
-            setIsOpen(false);
-        }, []);
+    const handleCloseModal = useCallback(() => {
+        setIsOpen(false);
+    }, []);
 
-        useEffect(() => {
-            console.log("isDefaultOpen", isDefaultOpen);
-        }, [isDefaultOpen]);
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            {trigger}
 
-        return (
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                {trigger}
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>
+                        {TRANSLATIONS.depositModal.trigger}
+                    </DialogTitle>
+                </DialogHeader>
 
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>
-                            {TRANSLATIONS.depositModal.trigger}
-                        </DialogTitle>
-                    </DialogHeader>
-
-                    <DepositForm onSuccessSubmit={handleCloseModal} />
-                </DialogContent>
-            </Dialog>
-        );
-    }
-);
+                <DepositForm onSuccessSubmit={handleCloseModal} />
+            </DialogContent>
+        </Dialog>
+    );
+});

@@ -18,6 +18,7 @@
     "build:web": "turbo run build --filter=web",
     "clean:cache": "pnpm store prune",
     "dev:extension": "turbo run dev --filter=extension",
+    "build:extension": "turbo run build --filter=extension",
     "dev:web": "turbo run dev --filter=web",
     "deploy:web": "turbo run deploy --filter=web",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

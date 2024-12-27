@@ -115,11 +115,11 @@ export const MobileHeader: FC<MobileHeaderProps> = ({ className }) => {
                             animate="visible"
                             exit="exit"
                         >
-                            <div className="mb-32 flex h-full flex-col items-center justify-center gap-8">
+                            <div className="mb-10 flex h-full flex-col items-center justify-center gap-6">
                                 {NAV_LINKS.map((link, index) => (
                                     <motion.span
                                         key={index}
-                                        className="cursor-pointer text-2xl font-light text-white"
+                                        className="cursor-pointer text-xl font-light text-white"
                                         variants={linkItemVariants}
                                     >
                                         {link.title}

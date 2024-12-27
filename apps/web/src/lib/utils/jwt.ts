@@ -1,25 +1,25 @@
 import { JwtPayload, jwtDecode } from "jwt-decode";
+import { match, P } from "ts-pattern";
 
-export const tokenExpiresIn = (token: string) => {
+import { SECOND } from "@/constants";
+
+export const isTokenExpired = ({
+    token,
+    shiftInMilliseconds = 30 * SECOND,
+}: {
+    token: string;
+    shiftInMilliseconds?: number;
+}): boolean => {
     try {
-        const decoded = jwtDecode<JwtPayload>(token);
-        const expirationTime = decoded.exp || 0;
+        const { exp: expiresInSeconds } = jwtDecode<JwtPayload>(token);
 
-        // convert from seconds to milliseconds
-        const expirationTimeInMilliSeconds = expirationTime * 1000;
-
-        return expirationTimeInMilliSeconds;
+        return match(expiresInSeconds)
+            .with(P.nullish, () => true)
+            .otherwise(
+                (expiresIn) =>
+                    Date.now() >= expiresIn * SECOND + shiftInMilliseconds
+            );
     } catch (error) {
-        return 0;
+        return true;
     }
-};
-
-export const isTokenAlive = (expirationTime: number) => {
-    const currentTime = Date.now();
-
-    return currentTime <= expirationTime;
-};
-
-export const isTokenExpired = (token: string) => {
-    return !isTokenAlive(tokenExpiresIn(token));
 };

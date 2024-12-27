@@ -6,8 +6,6 @@
   "include": [
     "src",
     "turbo",
-    "tailwind.config.ts",
-    "postcss.config.mjs"
   ],
   "exclude": [
     "node_modules",

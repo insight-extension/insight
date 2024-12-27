@@ -1,62 +1,32 @@
+import { useCallback, useEffect, useState } from "react";
+import { useIntl } from "react-intl";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { useCallback, useEffect, useState } from "react";
+import { match, P } from "ts-pattern";
+import { pipe } from "fp-ts/function";
+import { tryCatch, chain, left, right } from "fp-ts/TaskEither";
 
 import { SessionExpiredError } from "@/errors";
-import { CacheKey, useMutation } from "@/fetching";
-import { TRANSLATIONS } from "@/i18n";
 import { isTokenExpired } from "@/lib";
 import { authService } from "@/services";
-import { sessionManager, TokenKey } from "@/session/manager.service";
+import { sessionManager } from "@/session";
+import { ResponseStatus } from "@/http";
+import { SessionToken } from "@/constants";
 
+// todo: add autoconnect
 export const useAuthentication = () => {
+    const intl = useIntl();
+    const accessToken = sessionManager.getToken({
+        key: SessionToken.ACCESS,
+    });
+
     const { publicKey, connected, signMessage } = useWallet();
 
     const [authenticationError, setAuthenticationError] = useState<
         string | null
     >(null);
 
-    const accessToken = sessionManager.getToken({ key: TokenKey.ACCESS });
-    const refreshToken = sessionManager.getToken({ key: TokenKey.REFRESH });
-
-    const isUnauthenticated = !accessToken;
-    const shouldRefreshToken = isTokenExpired(accessToken);
-
-    const { trigger: claimNonce, error: claimNonceError } = useMutation({
-        key: CacheKey.CLAIM_NONCE,
-        mutateFn: authService.claimNonce,
-    });
-
-    const { trigger: verifyAccount, error: verifyAccountError } = useMutation({
-        key: CacheKey.VERIFY_ACCOUNT,
-        mutateFn: authService.verifyAccount,
-    });
-
-    const { trigger: refresh, error: refreshError } = useMutation({
-        key: CacheKey.REFRESH_TOKEN,
-        mutateFn: authService.refreshToken,
-    });
-
-    const handleTokenRefresh = useCallback(async () => {
-        if (isTokenExpired(refreshToken) || !refreshToken) {
-            throw new SessionExpiredError();
-        }
-
-        const { data: refreshTokenResponse } = await refresh({ refreshToken });
-
-        if (refreshTokenResponse) {
-            sessionManager.setToken({
-                key: TokenKey.ACCESS,
-                value: refreshTokenResponse.accessToken,
-            });
-            sessionManager.setToken({
-                key: TokenKey.REFRESH,
-                value: refreshTokenResponse.refreshToken,
-            });
-        }
-    }, [refreshToken, refresh]);
-
-    const handleSaveTokens = useCallback(
+    const authenticate = useCallback(
         async ({
             publicKey,
             signMessage,
@@ -64,75 +34,115 @@ export const useAuthentication = () => {
             publicKey: PublicKey;
             signMessage: (message: Uint8Array) => Promise<Uint8Array>;
         }) => {
-            const { data: nonceResponse } = await claimNonce({ publicKey });
+            const handleErrorMessage = (errorMessage: string) => {
+                setAuthenticationError(errorMessage);
 
-            if (!nonceResponse) {
-                return;
-            }
+                return ResponseStatus.ERROR;
+            };
 
-            const signatureResponse = await authService.createSignature({
-                nonce: nonceResponse.nonce,
-                signMessageFn: signMessage,
-            });
+            const handleRejectedError = (error: any) => {
+                setAuthenticationError(error.message);
 
-            if (!signatureResponse) {
-                setAuthenticationError(TRANSLATIONS.createSignatureError);
+                return left(ResponseStatus.ERROR);
+            };
 
-                return;
-            }
-
-            const { data: accountResponse } = await verifyAccount({
-                publicKey,
-                signature: signatureResponse.signature,
-            });
-
-            if (accountResponse) {
-                sessionManager.setToken({
-                    key: TokenKey.ACCESS,
-                    value: accountResponse.accessToken,
-                });
-                sessionManager.setToken({
-                    key: TokenKey.REFRESH,
-                    value: accountResponse.refreshToken,
-                });
-            }
+            // todo: should catch nullish? review response object for error/parse error
+            await pipe(
+                tryCatch(
+                    () => authService.claimNonce({ publicKey }),
+                    (error: any) => handleErrorMessage(error.message)
+                ),
+                chain(({ data: nonceResponse }) =>
+                    match(nonceResponse)
+                        .with(P.nullish, handleRejectedError)
+                        .otherwise(({ nonce }) =>
+                            tryCatch(
+                                () =>
+                                    authService.createSignature({
+                                        nonce,
+                                        signMessageFn: signMessage,
+                                    }),
+                                () =>
+                                    handleErrorMessage(
+                                        intl.formatMessage({
+                                            id: "error.createSignature",
+                                        })
+                                    )
+                            )
+                        )
+                ),
+                chain((signatureResponse) =>
+                    match(signatureResponse)
+                        .with(P.nullish, handleRejectedError)
+                        .otherwise(({ signature }) =>
+                            tryCatch(
+                                () =>
+                                    authService.verifyAccount({
+                                        publicKey,
+                                        signature,
+                                    }),
+                                (error: any) =>
+                                    handleErrorMessage(error.message)
+                            )
+                        )
+                ),
+                chain(({ data: authTokensResponse }) =>
+                    match(authTokensResponse)
+                        .with(P.nullish, handleRejectedError)
+                        .otherwise(({ accessToken, refreshToken }) =>
+                            right(
+                                sessionManager.saveTokens({
+                                    accessToken,
+                                    refreshToken,
+                                })
+                            )
+                        )
+                )
+            )();
         },
-        [claimNonce, verifyAccount]
+        []
     );
 
-    useEffect(() => {
-        if (shouldRefreshToken) {
-            handleTokenRefresh().catch(() =>
-                setAuthenticationError(TRANSLATIONS.unexpectedError)
-            );
+    const tokenRefresh = useCallback(() => {
+        const refreshToken = sessionManager.getToken({
+            key: SessionToken.REFRESH,
+        });
+
+        if (
+            !refreshToken ||
+            isTokenExpired({
+                token: refreshToken,
+            })
+        ) {
+            throw new SessionExpiredError();
         }
-    }, [shouldRefreshToken, handleTokenRefresh]);
+
+        sessionManager.refreshToken({ refreshToken });
+    }, []);
 
     useEffect(() => {
-        if (isUnauthenticated && publicKey && signMessage) {
-            handleSaveTokens({ publicKey, signMessage }).catch(() =>
-                setAuthenticationError(TRANSLATIONS.unexpectedError)
-            );
+        if (
+            connected &&
+            accessToken &&
+            isTokenExpired({
+                token: accessToken,
+            })
+        ) {
+            tokenRefresh();
         }
-    }, [isUnauthenticated, publicKey, signMessage, handleSaveTokens]);
+    }, [connected, accessToken, tokenRefresh]);
 
     useEffect(() => {
-        if (verifyAccountError || claimNonceError) {
-            setAuthenticationError(TRANSLATIONS.verifyAccountError);
+        if (connected && !accessToken && publicKey && signMessage) {
+            authenticate({ publicKey, signMessage });
         }
-    }, [verifyAccountError, claimNonceError]);
+    }, [connected, accessToken, publicKey, signMessage, authenticate]);
 
     useEffect(() => {
         if (!connected && authenticationError) {
             setAuthenticationError(null);
         }
     }, [connected, authenticationError]);
-
-    useEffect(() => {
-        if (refreshError) {
-            setAuthenticationError(TRANSLATIONS.unexpectedError);
-        }
-    }, [refreshError]);
 
     return {
         authenticationError,

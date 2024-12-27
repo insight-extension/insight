@@ -1,8 +1,9 @@
 import { lazy } from "react";
+import { useIntl } from "react-intl";
 
 import { useSetupAnchorProvider, useAuthentication } from "@/hooks";
 import {
-    AuthenticationAlert,
+    ErrorAlert,
     Hero,
     HowItWorks,
     WhyOur,
@@ -12,14 +13,14 @@ import {
     Comments,
     Footer,
 } from "@/components";
-import { useTranslation } from "react-i18next";
 
 const Header = lazy(() => import("@/components/sections/Header"));
 const MobileHeader = lazy(() => import("@/components/sections/MobileHeader"));
 
 export const Home = () => {
+    const intl = useIntl();
+
     const { authenticationError } = useAuthentication();
-    const { t } = useTranslation();
 
     useSetupAnchorProvider();
 
@@ -29,9 +30,10 @@ export const Home = () => {
             <MobileHeader className="block lg:hidden" />
 
             {authenticationError && (
-                <AuthenticationAlert
-                    title={t("alert.authentication.title")}
+                <ErrorAlert
+                    title={intl.formatMessage({ id: "error.authentication" })}
                     message={authenticationError}
+                    actionMessage={intl.formatMessage({ id: "action.retry" })}
                 />
             )}
 

@@ -1,9 +1,24 @@
-// pcm-processor.js
 class PCMProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
   }
 
+  /**
+   * Processes audio input data and converts it to PCM Int16 format.
+   * 
+   * @param inputs - A 2D array of audio channel data. 
+   *                 Each element of the outer array represents an input.
+   *                 Each input is an array of Float32Array buffers, where each buffer contains audio samples for a channel.
+   *                 Example: inputs[0][0] is the audio data for the first channel of the first input.
+   * 
+   * @param _outputs - A 2D array of Float32Array audio buffers for output (not used here).
+   *                   Typically used when modifying or passing audio data downstream.
+   * 
+   * @param _parameters - An object containing parameter data as Float32Array values (not used here).
+   *                      These are usually used for controlling the processor dynamically.
+   * 
+   * @returns {boolean} Returning `true` keeps the processor alive for future calls.
+   */
   process(inputs, _outputs, _parameters) {
     const audioInput = inputs[0];
 

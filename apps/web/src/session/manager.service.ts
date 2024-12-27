@@ -1,50 +1,74 @@
-import { authService } from "@/services";
-import { Cookies } from "react-cookie";
+import Cookies from "js-cookie";
+import { chain, left, right, tryCatch } from "fp-ts/TaskEither";
+import { pipe } from "fp-ts/function";
+import { match, P } from "ts-pattern";
 
-export enum TokenKey {
-    ACCESS = "accessToken",
-    REFRESH = "refreshToken",
-}
+import { authService } from "@/services";
+import { HTTPError } from "@/http";
+import { SessionToken } from "@/constants";
 
 class SessionManager {
-    private cookies: Cookies;
-
-    constructor() {
-        this.cookies = new Cookies();
+    public setToken({ key, value }: { key: SessionToken; value: string }) {
+        Cookies.set(key, value);
     }
 
-    public setToken({ key, value }: { key: TokenKey; value: string }) {
-        this.cookies.set(key, value);
+    public getToken({ key }: { key: SessionToken }) {
+        return Cookies.get(key) || "";
     }
 
-    public getToken({ key }: { key: TokenKey }) {
-        return this.cookies.get(key);
+    public removeToken({ key }: { key: SessionToken }) {
+        Cookies.remove(key);
     }
 
-    public removeToken({ key }: { key: TokenKey }) {
-        this.cookies.remove(key);
+    public saveTokens({
+        accessToken,
+        refreshToken,
+    }: {
+        accessToken: string;
+        refreshToken: string;
+    }) {
+        this.setToken({
+            key: SessionToken.ACCESS,
+            value: accessToken,
+        });
+        this.setToken({
+            key: SessionToken.REFRESH,
+            value: refreshToken,
+        });
     }
 
-    public async refreshToken({ refreshToken }: { refreshToken: string }) {
-        try {
-            const { data: refreshTokenResponse } =
-                await authService.refreshToken({
-                    refreshToken,
-                });
-
-            if (refreshTokenResponse) {
-                this.setToken({
-                    key: TokenKey.ACCESS,
-                    value: refreshTokenResponse.accessToken,
-                });
-                this.setToken({
-                    key: TokenKey.REFRESH,
-                    value: refreshTokenResponse.refreshToken,
-                });
-            }
-        } catch (error) {
-            console.error(error);
-        }
+    public async refreshToken({
+        refreshToken,
+    }: {
+        refreshToken: string;
+    }): Promise<void> {
+        pipe(
+            tryCatch(
+                () => authService.refreshToken({ refreshToken }),
+                (error: any) => {
+                    throw new HTTPError({
+                        message: error.message,
+                        status: error.status,
+                    });
+                }
+            ),
+            chain(({ data: tokens }) =>
+                match(tokens)
+                    .with(P.nonNullable, ({ accessToken, refreshToken }) =>
+                        right(() =>
+                            this.saveTokens({ accessToken, refreshToken })
+                        )
+                    )
+                    .otherwise(() =>
+                        left(
+                            new HTTPError({
+                                message: "Failed to refresh token",
+                                status: 500,
+                            })
+                        )
+                    )
+            )
+        )();
     }
 }
 
