@@ -22,7 +22,11 @@ import {
 import { cn } from "@/lib/cn";
 import { AnchorClient } from "@/onchain";
 import { anchorProviderAtom } from "@/store";
-import { DepositToken, SubscriptionType, TOKEN_CURRENCIES } from "@/constants";
+import {
+    DepositToken,
+    SubscriptionType,
+    TOKEN_CURRENCIES,
+} from "@repo/shared/constants";
 import { useToast } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
 
@@ -88,6 +92,11 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
                 const signature = await match(subscriptionType)
                     .returnType<Promise<string>>()
+                    .with(
+                        SubscriptionType.FREE_TRIAL,
+                        () => Promise.resolve("signature")
+                        // todo: complete
+                    )
                     .with(SubscriptionType.PER_MONTH, () =>
                         anchorClient.depositToSubscriptionVault({
                             amount: normalizedAmount,
@@ -109,11 +118,6 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                 //     amount: Number(normalizedAmount),
                 //     subscriptionType,
                 //     transactionSignature: signature,
-                //     token,
-                // });
-
-                // await relayMessenger.balance({
-                //     amount: Number(normalizedAmount),
                 //     token,
                 // });
 

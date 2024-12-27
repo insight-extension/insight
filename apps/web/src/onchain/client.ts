@@ -9,7 +9,7 @@ import {
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import IDL, { type DepositProgram } from "@/onchain/idl";
-import { DepositToken, TOKEN_CURRENCIES } from "@/constants";
+import { DepositToken, TOKEN_CURRENCIES } from "@repo/shared/constants";
 import { TokenAccountNotFoundError } from "@/errors";
 
 export class AnchorClient {
@@ -98,9 +98,6 @@ export class AnchorClient {
         }
     }
 
-    private getSOLBalance = async () =>
-        this.provider.connection.getBalance(this.user);
-
     public async checkUserTokenAccount({ token }: { token: DepositToken }) {
         const tokenMint = await this.getTokenMint(
             new PublicKey(this.TOKEN_ADDRESSES[token])
@@ -122,14 +119,6 @@ export class AnchorClient {
             );
         } catch {
             throw new TokenAccountNotFoundError();
-        }
-    }
-
-    public async airdropSOLIfRequired() {
-        const balance = await this.getSOLBalance();
-
-        if (balance === 0) {
-            await this.getAirdropSOL();
         }
     }
 
@@ -159,7 +148,7 @@ export class AnchorClient {
         }
     }
 
-    // todo: for test usage
+    // for test usage
     public async checkTestSenderMintAccount({
         user,
         token,
@@ -196,4 +185,16 @@ export class AnchorClient {
             );
         }
     }
+
+    // aidrops for devnet
+    public async airdropSOLIfRequired() {
+        const balance = await this.getSOLBalance();
+
+        if (balance === 0) {
+            await this.getAirdropSOL();
+        }
+    }
+
+    private getSOLBalance = async () =>
+        this.provider.connection.getBalance(this.user);
 }

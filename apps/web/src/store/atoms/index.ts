@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 
-import { DepositToken } from "@/constants";
+import { DepositToken } from "@repo/shared/constants";
 
 export const anchorProviderAtom = atom<AnchorProvider | null>(null);
 

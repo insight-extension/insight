@@ -1,4 +1,4 @@
-import { ROOT_DOMAIN_PATTERN } from "@/constants";
+import { ROOT_DOMAIN_PATTERN } from "@repo/shared/constants";
 
 export const isServerSide = typeof window === "undefined";
 

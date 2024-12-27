@@ -1,10 +1,18 @@
 import { HTTPError, ResponseCodeStatus, FetchResponse } from ".";
 
+enum ContentType {
+    JSON = "application/json",
+}
+
 class HTTPClient {
+    constructor(private contentType: ContentType) {
+        this.headers = {
+            "Content-Type": this.contentType,
+        };
+    }
+
     private baseURL = import.meta.env.VITE_API_URL;
-    private headers = {
-        "Content-Type": "application/json",
-    };
+    private headers: HeadersInit;
 
     private getURL(url: string) {
         return this.baseURL + url;
@@ -82,4 +90,4 @@ class HTTPClient {
     }
 }
 
-export const jsonHTTPClient = new HTTPClient();
+export const jsonHTTPClient = new HTTPClient(ContentType.JSON);

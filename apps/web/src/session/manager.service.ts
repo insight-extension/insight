@@ -5,7 +5,7 @@ import { match, P } from "ts-pattern";
 
 import { authService } from "@/services";
 import { HTTPError } from "@/http";
-import { SessionToken } from "@/constants";
+import { SessionToken } from "@repo/shared/constants";
 
 class SessionManager {
     public setToken({ key, value }: { key: SessionToken; value: string }) {

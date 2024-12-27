@@ -1,5 +1,12 @@
 import bs58 from "bs58";
 
+import {
+    jsonHTTPClient,
+    FetchResult,
+    parseResponse,
+    throwErrorResponse,
+} from "@/http";
+
 import type {
     AuthClaimNonce,
     AuthCreateSignature,
@@ -10,9 +17,7 @@ import type {
     AuthTokens,
     AuthVerifyAccount,
 } from "./types";
-import { jsonHTTPClient } from "../../http/client";
 import { AuthTokensSchema, ClaimNonceSchema } from "./validation";
-import { FetchResult, parseResponse, throwErrorResponse } from "../../http";
 
 class AuthService {
     private baseURL = "/auth";
@@ -52,7 +57,7 @@ class AuthService {
             const response = await jsonHTTPClient.post<
                 AuthVerifyAccount,
                 AuthTokens
-            >(this.getURL("/verify"), {
+            >(this.getURL("/verifyd"), {
                 publicKey: publicKeyBase58,
                 signature,
             });

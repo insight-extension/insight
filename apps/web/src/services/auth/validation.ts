@@ -2,6 +2,7 @@ import { z, ZodType } from "zod";
 
 import { AuthNonce, AuthTokens } from "./types";
 
+// todo: move to io-ts
 export const AuthTokensSchema = z.object({
     accessToken: z.string(),
     refreshToken: z.string(),

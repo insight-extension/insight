@@ -15,7 +15,7 @@ import { useIntl } from "react-intl";
 import debounce from "debounce";
 
 import { DepositModal, DialogTrigger } from "@/components";
-import { SessionToken } from "@/constants";
+import { SessionToken } from "@repo/shared/constants";
 import { formatPublicKey, isTokenExpired } from "@/lib";
 
 import { BaseWalletConnectionButton } from "./base";

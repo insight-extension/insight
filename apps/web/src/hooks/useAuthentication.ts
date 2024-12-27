@@ -11,7 +11,7 @@ import { isTokenExpired } from "@/lib";
 import { authService } from "@/services";
 import { sessionManager } from "@/session";
 import { ResponseStatus } from "@/http";
-import { SessionToken } from "@/constants";
+import { SessionToken } from "@repo/shared/constants";
 
 // todo: add autoconnect
 export const useAuthentication = () => {

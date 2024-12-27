@@ -34,6 +34,7 @@ export const TRANSLATIONS = {
             subscription: {
                 perMonth: "Per month",
                 perUsage: "Per usage",
+                freeTrial: "Free trial",
                 select: "Select",
             },
             token: {
