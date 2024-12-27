@@ -6,10 +6,12 @@ import { ErrorAlert } from "@/components";
 
 interface AppErrorBoundaryProps extends PropsWithChildren {
     namespace?: string;
+    actionNamespace?: string;
 }
 
 export const AppErrorBoundary: FC<AppErrorBoundaryProps> = ({
     namespace = "error",
+    actionNamespace = "action",
     children,
 }) => {
     const intl = useIntl();
@@ -23,7 +25,7 @@ export const AppErrorBoundary: FC<AppErrorBoundaryProps> = ({
                     })}
                     message={error.message}
                     actionMessage={intl.formatMessage({
-                        id: `${namespace}.action.reload`,
+                        id: `${actionNamespace}.reload`,
                     })}
                 />
             )}

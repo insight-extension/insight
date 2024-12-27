@@ -70,7 +70,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   const [transcript, setTranscript] = useState<string>("");
   const [translation, setTranslation] = useState<string>("");
 
-  const websocketRef = useRef<Socket | null>(null);
+  const socketClientRef = useRef<Socket | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const pcmProcessorRef = useRef<AudioWorkletNode | null>(null);
@@ -82,7 +82,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
   storage.watch({
     [SessionToken.ACCESS]: ({ newValue }) => {
-      console.log(SessionToken.ACCESS, newValue);
+      setAccessToken(newValue);
     },
     [StorageKey.DEPOSIT]: ({ newValue }) => {
       console.log(StorageKey.DEPOSIT, newValue);
@@ -91,23 +91,6 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
       console.log([StorageKey.BALANCE], newValue);
     },
   });
-
-  useEffect(() => {
-    (async function getAccessToken() {
-      try {
-        const token = await storage.get(StorageKey.ACCESS_TOKEN);
-
-        // todo: REUSE COMMON THINGS
-
-        if (token) {
-          setAccessToken(token);
-        }
-      } catch (error) {
-        // console.error("Error fetching access token:", error);
-        return;
-      }
-    })();
-  }, []);
 
   // Functions for retrieving real data
   const fetchBalance = async () => {
@@ -139,15 +122,19 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
       setTranscript("");
       setTranslation("");
 
-      // Create Socket connection
-      // const socket = io(process.env.PLASMO_PUBLIC_WEBSOCKET_URL as string, {
-      const socket = io(PLASMO_PUBLIC_WEBSOCKET_URL as string, {
-        transports: ["websocket"],
-      });
-      websocketRef.current = socket;
+      const socketClient = io(
+        process.env.PLASMO_PUBLIC_WEBSOCKET_URL as string as string,
+        {
+          transports: ["websocket"],
+          extraHeaders: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      socketClientRef.current = socketClient;
 
-      socket.on("connect", () => {
-        console.log("Connected to server:", socket.id);
+      socketClient.on("connect", () => {
+        console.log("Connected to server:", socketClient.id);
 
         // Requesting audio capture
         chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
@@ -165,13 +152,13 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         });
       });
 
-      socket.on("connect_error", (error) => {
+      socketClient.on("connect_error", (error) => {
         console.error("Connection error:", error);
         setStatus(ConnectionStatus.DISCONNECTED);
         setRecording(false);
       });
 
-      socket.on("message", (data) => {
+      socketClient.on("message", (data) => {
         try {
           const message = JSON.parse(data);
           console.log("Message from server:", message);
@@ -194,7 +181,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         }
       });
 
-      socket.on("disconnect", () => {
+      socketClient.on("disconnect", () => {
         console.log("Socket connection closed.");
         setStatus(ConnectionStatus.DISCONNECTED);
         setRecording(false);
@@ -211,10 +198,10 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
   const stopCapture = () => {
     // Closing WebSocket connection
-    if (websocketRef.current) {
-      websocketRef.current.emit("stop", { type: "stop" });
-      websocketRef.current.disconnect();
-      websocketRef.current = null;
+    if (socketClientRef.current) {
+      socketClientRef.current.emit("stop", { type: "stop" });
+      socketClientRef.current.disconnect();
+      socketClientRef.current = null;
       console.log("Socket connection closed by client.");
     }
 
@@ -268,8 +255,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
         const uint8Array = new Uint8Array(audioData);
 
-        if (websocketRef.current && websocketRef.current.connected) {
-          websocketRef.current.emit("audioData", uint8Array);
+        if (socketClientRef.current && socketClientRef.current.connected) {
+          socketClientRef.current.emit("audioData", uint8Array);
         } else {
           console.warn("Socket is not connected. Cannot send audio data.");
         }

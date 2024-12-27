@@ -9,10 +9,10 @@ import {
     useState,
     memo,
 } from "react";
-import { useCookies } from "react-cookie";
 import { PublicKey } from "@solana/web3.js";
 import { match, P } from "ts-pattern";
 import { useIntl } from "react-intl";
+import debounce from "debounce";
 
 import { DepositModal, DialogTrigger } from "@/components";
 import { SessionToken } from "@/constants";
@@ -21,18 +21,25 @@ import { formatPublicKey, isTokenExpired } from "@/lib";
 import { BaseWalletConnectionButton } from "./base";
 import { WalletButtonLabel, WalletButtonState } from "./types";
 import { useWalletMultiButton } from "./hooks";
+import { useLogout } from "@/hooks";
+import { sessionManager } from "@/session";
 
 interface WalletMultiButtonProps extends HTMLAttributes<HTMLButtonElement> {
     namespace?: string;
 }
 
+// todo: auth action must be with wallet actions
 export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
     ({ namespace = "features.wallet.multiButton", ...props }) => {
         const intl = useIntl();
-        const [{ accessToken }] = useCookies<string>([SessionToken.ACCESS], {
-            doNotParse: true,
+        // const [{ accessToken }] = useCookies<string>([SessionToken.ACCESS], {
+        //     doNotParse: true,
+        // });
+        const accessToken = sessionManager.getToken({
+            key: SessionToken.ACCESS,
         });
         const { setVisible: setModalVisible } = useWalletModal();
+        const logout = useLogout();
 
         const {
             buttonState,
@@ -63,53 +70,55 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
 
             // setIsAuthenticationRequired(shouldAuthenticate);
 
-            return match({
-                publicKey,
-                buttonState,
-                shouldAuthenticate,
-            })
-                .returnType<string | ReactNode>()
-                .with(
-                    {
-                        shouldAuthenticate: true,
-                    },
-                    () =>
+            return (
+                match({
+                    publicKey,
+                    buttonState,
+                    shouldAuthenticate,
+                })
+                    .returnType<string | ReactNode>()
+                    // .with(
+                    //     {
+                    //          shouldAuthenticate: true,
+                    //     },
+                    //     () =>
+                    //         intl.formatMessage({
+                    //             id: `${namespace}.${WalletButtonLabel.AUTHENTICATION_REQUIRED}`,
+                    //         })
+                    // )
+                    .with(
+                        {
+                            publicKey: P.intersection(
+                                P.instanceOf(PublicKey),
+                                P.select()
+                            ),
+                        },
+                        (publicKey) => formatPublicKey(publicKey)
+                    )
+                    .with(
+                        {
+                            buttonState: WalletButtonState.CONNECTING,
+                        },
+                        () =>
+                            intl.formatMessage({
+                                id: `${namespace}.${WalletButtonLabel.CONNECTING}`,
+                            })
+                    )
+                    .with(
+                        {
+                            buttonState: WalletButtonState.HAS_WALLET,
+                        },
+                        () =>
+                            intl.formatMessage({
+                                id: `${namespace}.${WalletButtonLabel.HAS_WALLET}`,
+                            })
+                    )
+                    .otherwise(() =>
                         intl.formatMessage({
-                            id: `${namespace}.${WalletButtonLabel.AUTHENTICATION_REQUIRED}`,
+                            id: `${namespace}.${WalletButtonLabel.NO_WALLET}`,
                         })
-                )
-                .with(
-                    {
-                        publicKey: P.intersection(
-                            P.instanceOf(PublicKey),
-                            P.select()
-                        ),
-                    },
-                    (publicKey) => formatPublicKey(publicKey)
-                )
-                .with(
-                    {
-                        buttonState: WalletButtonState.CONNECTING,
-                    },
-                    () =>
-                        intl.formatMessage({
-                            id: `${namespace}.${WalletButtonLabel.CONNECTING}`,
-                        })
-                )
-                .with(
-                    {
-                        buttonState: WalletButtonState.HAS_WALLET,
-                    },
-                    () =>
-                        intl.formatMessage({
-                            id: `${namespace}.${WalletButtonLabel.HAS_WALLET}`,
-                        })
-                )
-                .otherwise(() =>
-                    intl.formatMessage({
-                        id: `${namespace}.${WalletButtonLabel.NO_WALLET}`,
-                    })
-                );
+                    )
+            );
         }, [buttonState, publicKey, accessToken]);
 
         const handleClick = useCallback(() => {
@@ -186,7 +195,8 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
                                 );
 
                                 setCopied(true);
-                                setTimeout(() => setCopied(false), 400);
+
+                                debounce(() => setCopied(false), 400)();
                             }}
                             role="menuitem"
                         >
@@ -214,7 +224,10 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
                             className="wallet-adapter-dropdown-list-item"
                             onClick={() => {
                                 onDisconnect();
+
                                 setMenuOpen(false);
+
+                                logout();
                             }}
                             role="menuitem"
                         >

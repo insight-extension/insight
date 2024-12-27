@@ -1,6 +1,5 @@
 import { BrowserRouter } from "react-router";
 import { FC, PropsWithChildren } from "react";
-import { CookiesProvider } from "react-cookie";
 
 import { AppWalletProvider } from "@/providers";
 import { Toaster } from "@/components";
@@ -11,13 +10,11 @@ interface AppProviderProps extends PropsWithChildren {}
 export const AppProvider: FC<AppProviderProps> = ({ children }) => {
     return (
         <BrowserRouter>
-            <CookiesProvider>
-                <AppWalletProvider>
-                    <Toaster />
+            <AppWalletProvider>
+                <Toaster />
 
-                    <LocalizationProvider>{children}</LocalizationProvider>
-                </AppWalletProvider>
-            </CookiesProvider>
+                <LocalizationProvider>{children}</LocalizationProvider>
+            </AppWalletProvider>
         </BrowserRouter>
     );
 };

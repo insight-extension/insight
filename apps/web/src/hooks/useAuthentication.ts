@@ -26,7 +26,7 @@ export const useAuthentication = () => {
         string | null
     >(null);
 
-    const handleAuthentication = useCallback(
+    const authenticate = useCallback(
         async ({
             publicKey,
             signMessage,
@@ -103,7 +103,7 @@ export const useAuthentication = () => {
         []
     );
 
-    const handleRefreshToken = useCallback(() => {
+    const tokenRefresh = useCallback(() => {
         const refreshToken = sessionManager.getToken({
             key: SessionToken.REFRESH,
         });
@@ -128,15 +128,15 @@ export const useAuthentication = () => {
                 token: accessToken,
             })
         ) {
-            handleRefreshToken();
+            tokenRefresh();
         }
-    }, [connected, accessToken, handleRefreshToken]);
+    }, [connected, accessToken, tokenRefresh]);
 
     useEffect(() => {
         if (connected && !accessToken && publicKey && signMessage) {
-            handleAuthentication({ publicKey, signMessage });
+            authenticate({ publicKey, signMessage });
         }
-    }, [connected, accessToken, publicKey, signMessage, handleAuthentication]);
+    }, [connected, accessToken, publicKey, signMessage, authenticate]);
 
     useEffect(() => {
         if (!connected && authenticationError) {

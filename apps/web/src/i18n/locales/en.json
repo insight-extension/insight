@@ -3,7 +3,8 @@
     "error.verifyAccount": "Please verify your account before proceeding.",
     "error.createSignature": "Please sign a message to continue.",
     "error.authentication": "Authentication error occurred.",
-    "error.action.reload": "Reload the page",
+    "action.reload": "Reload the page",
+    "action.retry": "Retry",
 
     "features.wallet.multiButton.changeWallet": "Change wallet",
     "features.wallet.multiButton.connecting": "Connecting ...",
