@@ -128,6 +128,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           transports: ["websocket"],
           extraHeaders: {
             Authorization: `Bearer ${accessToken}`,
+            MyHeader: "MyValue",
           },
         }
       );
