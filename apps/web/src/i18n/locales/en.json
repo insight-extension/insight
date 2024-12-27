@@ -1,8 +1,8 @@
 {
     "error.unexpected": "Unexpected error occurred.",
-    "error.verifyAccount": "Please verify your account before proceeding.",
     "error.createSignature": "Please sign a message to continue.",
     "error.authentication": "Authentication error occurred.",
+
     "action.reload": "Reload the page",
     "action.retry": "Retry",
 

@@ -4,12 +4,14 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { pipe } from "fp-ts/function";
 import { chain, left, right, mapLeft } from "fp-ts/TaskEither";
+import { match } from "ts-pattern";
 
 import { SessionToken } from "@repo/shared/constants";
 import { SessionExpiredError } from "@/errors/error";
 import { isTokenExpired } from "@/lib";
 import { authService } from "@/services";
 import { sessionManager } from "@/services/session";
+import { TraceId } from "@/errors";
 
 // todo: add autoconnect
 // todo: connect on click
@@ -58,11 +60,23 @@ export const useAuthentication = () => {
                     )
                 ),
                 mapLeft((error) => {
-                    setAuthenticationError(
-                        intl.formatMessage({ id: "error.authentication" })
-                    );
+                    match(error)
+                        .with({ traceId: TraceId.CREATE_SIGNATURE }, () =>
+                            setAuthenticationError(
+                                intl.formatMessage({
+                                    id: "error.createSignature",
+                                })
+                            )
+                        )
+                        .otherwise(() =>
+                            setAuthenticationError(
+                                intl.formatMessage({
+                                    id: "error.authentication",
+                                })
+                            )
+                        );
 
-                    return left(error);
+                    return left(void 0);
                 })
             )();
         },
