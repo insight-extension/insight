@@ -1,7 +1,13 @@
-import ky, { Options } from "ky";
+import ky from "ky";
 import { TaskEither, tryCatch } from "fp-ts/lib/TaskEither";
 
-import { type APIError, parseAPIError } from ".";
+import {
+    type APIError,
+    type FetchParams,
+    type MutationParams,
+    type RequestParams,
+    parseAPIError,
+} from "@/api";
 
 class APIClient {
     private baseURL: string = import.meta.env.VITE_API_URL;
@@ -13,60 +19,76 @@ class APIClient {
         return this.baseURL + url;
     }
 
-    private request<R>(url: string, options: Options): TaskEither<APIError, R> {
-        return tryCatch(
-            async () => await ky(this.getURL(url), options).json<R>(),
-            (error: unknown) => parseAPIError(error)
+    private request = <R>({
+        url,
+        options,
+        traceId,
+    }: RequestParams): TaskEither<APIError, R> =>
+        tryCatch(
+            async () =>
+                await ky(this.getURL(url), {
+                    headers: this.headers,
+                    ...options,
+                }).json<R>(),
+            (error: unknown) => parseAPIError(error, traceId)
         );
-    }
 
-    get<R>(url: string): TaskEither<APIError, R> {
-        const options: Options = {
-            method: "GET",
-            headers: this.headers,
-        };
+    public get = <R>({ url, traceId }: FetchParams): TaskEither<APIError, R> =>
+        this.request<R>({
+            url,
+            options: {
+                method: "GET",
+            },
+            traceId,
+        });
 
-        return this.request<R>(url, options);
-    }
+    public post = <B, R>({
+        url,
+        body,
+        traceId,
+    }: MutationParams<B>): TaskEither<APIError, R> =>
+        this.request<R>({
+            url,
+            options: {
+                method: "POST",
+                json: body,
+            },
+            traceId,
+        });
 
-    post<B, R>(url: string, body: B): TaskEither<APIError, R> {
-        const options: Options = {
-            method: "POST",
-            headers: this.headers,
-            json: body,
-        };
+    public patch = <B, R>({
+        url,
+        body,
+        traceId,
+    }: MutationParams<B>): TaskEither<APIError, R> =>
+        this.request<R>({
+            url,
+            options: {
+                method: "PATCH",
+                json: body,
+            },
+            traceId,
+        });
 
-        return this.request<R>(url, options);
-    }
+    public put = <B, R>({
+        url,
+        body,
+        traceId,
+    }: MutationParams<B>): TaskEither<APIError, R> =>
+        this.request<R>({
+            url,
+            options: {
+                method: "PUT",
+                json: body,
+            },
+            traceId,
+        });
 
-    patch<B, R>(url: string, body: B): TaskEither<APIError, R> {
-        const options: Options = {
-            method: "PATCH",
-            headers: this.headers,
-            json: body,
-        };
-
-        return this.request<R>(url, options);
-    }
-
-    put<B, R>(url: string, body: B): TaskEither<APIError, R> {
-        const options: Options = {
-            method: "PUT",
-            headers: this.headers,
-            json: body,
-        };
-
-        return this.request<R>(url, options);
-    }
-
-    delete<R>(url: string): TaskEither<APIError, R> {
-        const options: Options = {
-            method: "DELETE",
-            headers: this.headers,
-        };
-
-        return this.request<R>(url, options);
-    }
+    public delete = <R>({
+        url,
+        traceId,
+    }: MutationParams<R>): TaskEither<APIError, R> =>
+        this.request<R>({ url, options: { method: "DELETE" }, traceId });
 }
 
 export const apiClient = Object.freeze(new APIClient());

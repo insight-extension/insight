@@ -5,15 +5,15 @@ import {
     RelayResponse,
     RelayRoute,
     RelayStatus,
-} from "@/relay";
+} from "@/services/relay";
 
 class RelayMessenger {
-    public async deposit({
+    public deposit = async ({
         token,
         amount,
         subscriptionType,
         transactionSignature,
-    }: DepositMessage) {
+    }: DepositMessage) => {
         // todo: review
         try {
             const { status } = await sendToBackgroundViaRelay<
@@ -33,7 +33,7 @@ class RelayMessenger {
         } catch (error) {
             return RelayStatus.ERROR;
         }
-    }
+    };
 }
 
-export const relayMessenger = new RelayMessenger();
+export const relayMessenger = Object.freeze(new RelayMessenger());

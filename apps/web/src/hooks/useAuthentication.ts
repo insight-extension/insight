@@ -2,18 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { match, P } from "ts-pattern";
 import { pipe } from "fp-ts/function";
-import { tryCatch, chain, left, right } from "fp-ts/TaskEither";
+import { chain, left, right, mapLeft } from "fp-ts/TaskEither";
 
-import { SessionExpiredError } from "@/errors";
+import { SessionToken } from "@repo/shared/constants";
+import { SessionExpiredError } from "@/errors/error";
 import { isTokenExpired } from "@/lib";
 import { authService } from "@/services";
-import { sessionManager } from "@/session";
-import { ResponseStatus } from "@/http";
-import { SessionToken } from "@repo/shared/constants";
+import { sessionManager } from "@/services/session";
 
 // todo: add autoconnect
+// todo: connect on click
 export const useAuthentication = () => {
     const intl = useIntl();
     const accessToken = sessionManager.getToken({
@@ -34,70 +33,37 @@ export const useAuthentication = () => {
             publicKey: PublicKey;
             signMessage: (message: Uint8Array) => Promise<Uint8Array>;
         }) => {
-            const handleErrorMessage = (errorMessage: string) => {
-                setAuthenticationError(errorMessage);
-
-                return ResponseStatus.ERROR;
-            };
-
-            const handleRejectedError = (error: any) => {
-                setAuthenticationError(error.message);
-
-                return left(ResponseStatus.ERROR);
-            };
-
-            // todo: should catch nullish? review response object for error/parse error
-            await pipe(
-                tryCatch(
-                    () => authService.claimNonce({ publicKey }),
-                    (error: any) => handleErrorMessage(error.message)
-                ),
-                chain(({ data: nonceResponse }) =>
-                    match(nonceResponse)
-                        .with(P.nullish, handleRejectedError)
-                        .otherwise(({ nonce }) =>
-                            tryCatch(
-                                () =>
-                                    authService.createSignature({
-                                        nonce,
-                                        signMessageFn: signMessage,
-                                    }),
-                                () =>
-                                    handleErrorMessage(
-                                        intl.formatMessage({
-                                            id: "error.createSignature",
-                                        })
-                                    )
-                            )
-                        )
+            // todo: twice execution
+            console.log("CALLED", new Date().getTime());
+            pipe(
+                authService.claimNonce({ publicKey }),
+                chain((nonceResponse) =>
+                    authService.createSignature({
+                        nonce: nonceResponse.nonce,
+                        signMessageFn: signMessage,
+                    })
                 ),
                 chain((signatureResponse) =>
-                    match(signatureResponse)
-                        .with(P.nullish, handleRejectedError)
-                        .otherwise(({ signature }) =>
-                            tryCatch(
-                                () =>
-                                    authService.verifyAccount({
-                                        publicKey,
-                                        signature,
-                                    }),
-                                (error: any) =>
-                                    handleErrorMessage(error.message)
-                            )
-                        )
+                    authService.verifyAccount({
+                        publicKey,
+                        signature: signatureResponse.signature,
+                    })
                 ),
-                chain(({ data: authTokensResponse }) =>
-                    match(authTokensResponse)
-                        .with(P.nullish, handleRejectedError)
-                        .otherwise(({ accessToken, refreshToken }) =>
-                            right(
-                                sessionManager.saveTokens({
-                                    accessToken,
-                                    refreshToken,
-                                })
-                            )
-                        )
-                )
+                chain((tokensResponse) =>
+                    right(
+                        sessionManager.saveTokens({
+                            accessToken: tokensResponse.accessToken,
+                            refreshToken: tokensResponse.refreshToken,
+                        })
+                    )
+                ),
+                mapLeft((error) => {
+                    setAuthenticationError(
+                        intl.formatMessage({ id: "error.authentication" })
+                    );
+
+                    return left(error);
+                })
             )();
         },
         []

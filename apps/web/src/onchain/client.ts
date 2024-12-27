@@ -10,7 +10,7 @@ import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import IDL, { type DepositProgram } from "@/onchain/idl";
 import { DepositToken, TOKEN_CURRENCIES } from "@repo/shared/constants";
-import { TokenAccountNotFoundError } from "@/errors";
+import { TokenAccountNotFoundError } from "@/errors/error";
 
 export class AnchorClient {
     private TOKEN_ADDRESSES: Record<DepositToken, string> = {

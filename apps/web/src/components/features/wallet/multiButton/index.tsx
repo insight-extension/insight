@@ -22,7 +22,7 @@ import { BaseWalletConnectionButton } from "./base";
 import { WalletButtonLabel, WalletButtonState } from "./types";
 import { useWalletMultiButton } from "./hooks";
 import { useLogout } from "@/hooks";
-import { sessionManager } from "@/session";
+import { sessionManager } from "@/services/session";
 
 interface WalletMultiButtonProps extends HTMLAttributes<HTMLButtonElement> {
     namespace?: string;

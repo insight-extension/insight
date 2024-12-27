@@ -1,7 +1,6 @@
 import { FC } from "react";
 
 import GlobalIcon from "@/assets/icons/Global.svg";
-import { NAV_LINKS } from "@/configs";
 import {
     UpcomingSoonBadge,
     WalletMultiButton,
@@ -13,6 +12,13 @@ import { cn } from "@/lib";
 export interface HeaderProps {
     className?: string;
 }
+
+export const NAV_LINKS = [
+    { title: "How It Works?", url: "#howItWork" },
+    { title: "Features", url: "#features" },
+    { title: "Pricing", url: "#pricing" },
+    { title: "FAQs", url: "#faqs" },
+];
 
 export const Header: FC<HeaderProps> = ({ className }) => {
     return (

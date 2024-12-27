@@ -1,7 +1,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useCallback } from "react";
 
-import { sessionManager } from "@/session";
+import { sessionManager } from "@/services/session";
 import { SessionToken } from "@repo/shared/constants";
 
 export const useLogout = () => {

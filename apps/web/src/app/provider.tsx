@@ -5,6 +5,9 @@ import { AppWalletProvider } from "@/providers";
 import { Toaster } from "@/components";
 import { LocalizationProvider } from "@/i18n/provider";
 
+// styles for wallet adapter
+import "@solana/wallet-adapter-react-ui/styles.css";
+
 interface AppProviderProps extends PropsWithChildren {}
 
 export const AppProvider: FC<AppProviderProps> = ({ children }) => {

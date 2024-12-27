@@ -1,6 +1,6 @@
 import { z, ZodType } from "zod";
 
-import { AuthNonce, AuthTokens } from "./types";
+import { AuthNonce, AuthTokens } from "@/services/auth/types";
 
 // todo: move to io-ts
 export const AuthTokensSchema = z.object({

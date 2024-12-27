@@ -11,9 +11,7 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { PropsWithChildren, useMemo } from "react";
 
-import "@solana/wallet-adapter-react-ui/styles.css";
-
-import { SOLANA_NETWORK } from "../../configs/network";
+import { SOLANA_NETWORK } from "@repo/shared/constants";
 
 export const AppWalletProvider = ({ children }: PropsWithChildren) => {
     /**

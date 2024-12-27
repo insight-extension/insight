@@ -20,14 +20,10 @@
     "typescript": "^5.4.5"
   },
   "exports": {
-    "./client/http": "./src/client/http/index.ts",
-    "./client/services": "./src/client/services/index.ts",
-    "./configs": "./src/configs/index.ts",
     "./constants": "./src/constants/index.ts",
     "./errors": "./src/errors/index.ts",
     "./types": "./src/types/index.ts",
-    "./utils": "./src/utils/index.ts",
-    "./validation": "./src/validation/index.ts"
+    "./utils": "./src/utils/index.ts"
   },
   "private": true,
   "scripts": {}

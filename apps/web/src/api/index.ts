@@ -1,4 +1,4 @@
 export * from "./client";
 export * from "./error";
 export * from "./utils";
-export * from "./statusCode";
+export * from "./types";
