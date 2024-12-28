@@ -20,7 +20,7 @@ import {
     SelectValue,
 } from "@/components";
 import { cn } from "@/lib/cn";
-import { AnchorClient } from "@/onchain";
+import { AnchorClient } from "@/services";
 import { anchorProviderAtom } from "@/store";
 import {
     DepositToken,

@@ -5,6 +5,7 @@ import { DepositToken } from "@repo/shared/constants";
 
 export const anchorProviderAtom = atom<AnchorProvider | null>(null);
 
+// todo: use
 export const onDepositFunctionAtom = atom<
     | (({
           amount,

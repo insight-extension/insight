@@ -8,8 +8,8 @@ import {
 } from "@solana/spl-token";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
-import IDL, { type DepositProgram } from "@/onchain/idl";
 import { DepositToken, TOKEN_CURRENCIES } from "@repo/shared/constants";
+import IDL, { type DepositProgram } from "@/services/onchain/idl";
 import { TokenAccountNotFoundError } from "@/errors/error";
 
 export class AnchorClient {
@@ -27,13 +27,13 @@ export class AnchorClient {
         this.provider = provider;
     }
 
-    public async depositToSubscriptionVault({
+    public depositToSubscriptionVault = async ({
         token,
         amount,
     }: {
         amount: BN;
         token: DepositToken;
-    }): Promise<string> {
+    }): Promise<string> => {
         const program = new Program(IDL as DepositProgram, this.provider);
 
         const transactionSignature = await program.methods
@@ -46,15 +46,15 @@ export class AnchorClient {
             .rpc();
 
         return transactionSignature;
-    }
+    };
 
-    public async depositToTimedVault({
+    public depositToTimedVault = async ({
         token,
         amount,
     }: {
         amount: BN;
         token: DepositToken;
-    }): Promise<string> {
+    }): Promise<string> => {
         const program = new Program(IDL as DepositProgram, this.provider);
 
         const transactionSignature = await program.methods
@@ -67,15 +67,15 @@ export class AnchorClient {
             .rpc();
 
         return transactionSignature;
-    }
+    };
 
-    private async getTokenMint(token: PublicKey) {
+    private getTokenMint = async (token: PublicKey) => {
         const tokenMint = await getMint(this.provider.connection, token);
 
         return tokenMint;
-    }
+    };
 
-    private async getAirdropSOL(): Promise<void> {
+    private getAirdropSOL = async (): Promise<void> => {
         try {
             const [latestBlockhash, signature] = await Promise.all([
                 this.provider.connection.getLatestBlockhash(),
@@ -96,9 +96,14 @@ export class AnchorClient {
         } catch (error: any) {
             console.error("You are Rate limited for Airdrop", error.message);
         }
-    }
+    };
 
-    public async checkUserTokenAccount({ token }: { token: DepositToken }) {
+    public checkUserTokenAccount = async ({
+        token,
+    }: {
+        token: DepositToken;
+    }) => {
+        // todo: handle all cases
         const tokenMint = await this.getTokenMint(
             new PublicKey(this.TOKEN_ADDRESSES[token])
         );
@@ -120,9 +125,9 @@ export class AnchorClient {
         } catch {
             throw new TokenAccountNotFoundError();
         }
-    }
+    };
 
-    public async getTokenBalance({ token }: { token: DepositToken }) {
+    public getTokenBalance = async ({ token }: { token: DepositToken }) => {
         try {
             const tokenMint = await this.getTokenMint(
                 new PublicKey(this.TOKEN_ADDRESSES[token])
@@ -146,16 +151,16 @@ export class AnchorClient {
         } catch {
             return 0;
         }
-    }
+    };
 
     // for test usage
-    public async checkTestSenderMintAccount({
+    public checkTestSenderMintAccount = async ({
         user,
         token,
     }: {
         user: Keypair;
         token: DepositToken;
-    }) {
+    }) => {
         const tokenMint = await this.getTokenMint(
             new PublicKey(this.TOKEN_ADDRESSES[token])
         );
@@ -184,16 +189,16 @@ export class AnchorClient {
                 this.TOKEN_PROGRAM
             );
         }
-    }
+    };
 
     // aidrops for devnet
-    public async airdropSOLIfRequired() {
+    public airdropSOLIfRequired = async () => {
         const balance = await this.getSOLBalance();
 
         if (balance === 0) {
             await this.getAirdropSOL();
         }
-    }
+    };
 
     private getSOLBalance = async () =>
         this.provider.connection.getBalance(this.user);
