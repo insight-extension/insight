@@ -11,7 +11,7 @@ interface LoaderProps {
 
 export const Loader: FC<LoaderProps> = ({ className, withContainer }) => {
     const Component = () => (
-        <Icon name="loader" className={cn("animate-spin", className)} />
+        <Icon name="Loader" className={cn("animate-spin", className)} />
     );
 
     return (

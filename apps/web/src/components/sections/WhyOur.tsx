@@ -117,7 +117,7 @@ export const WhyOur = () => {
                                         zIndex: cards.length - index,
                                         rotate: index * 5,
                                     }}
-                                    drag={canDrag ? "x" : false}
+                                    drag={canDrag ? "X" : false}
                                     dragConstraints={{
                                         left: 0,
                                         right: 0,

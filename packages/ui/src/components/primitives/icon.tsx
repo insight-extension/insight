@@ -1,32 +1,46 @@
+import type { FC } from "react";
+
 import {
-    LucideProps,
-    X,
-    AlertCircleIcon,
-    Loader,
-    Circle,
-    Check,
-    ChevronDown,
-    ChevronUp,
+  type LucideProps,
+  X,
+  AlertCircleIcon,
+  Loader,
+  Circle,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ChevronsUpDown,
+  Sidebar,
+  CircleX,
+  Languages,
+  Play,
+  Square,
 } from "lucide-react";
 
 const IconsList = {
-    x: X,
-    alertCircleIcon: AlertCircleIcon,
-    loader: Loader,
-    circle: Circle,
-    check: Check,
-    chevronDown: ChevronDown,
-    chevronUp: ChevronUp,
+  X,
+  AlertCircleIcon,
+  Loader,
+  Circle,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ChevronsUpDown,
+  Sidebar,
+  CircleX,
+  Languages,
+  Play,
+  Square,
 };
 
 export type IconName = keyof typeof IconsList;
 
 interface IconProps extends LucideProps {
-    name: IconName;
+  name: IconName;
 }
 
-export const Icon: React.FC<IconProps> = ({ name, ...props }) => {
-    const LucideIcon = IconsList[name];
+export const Icon: FC<IconProps> = ({ name, ...props }) => {
+  const LucideIcon = IconsList[name];
 
-    return <LucideIcon {...props} />;
+  return <LucideIcon {...props} />;
 };

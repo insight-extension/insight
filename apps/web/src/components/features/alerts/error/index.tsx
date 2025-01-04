@@ -25,7 +25,7 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = memo(
                 className="mx-auto flex w-fit flex-col gap-4"
             >
                 <div className="flex items-center gap-2">
-                    <Icon name="alertCircleIcon" className="h-4 w-4" />
+                    <Icon name="AlertCircleIcon" className="h-4 w-4" />
 
                     <AlertTitle className="m-0 text-lg">{title}</AlertTitle>
                 </div>

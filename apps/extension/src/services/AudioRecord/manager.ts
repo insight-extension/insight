@@ -6,7 +6,7 @@ import { P, match } from "ts-pattern";
 import { SubscriptionType } from "@repo/shared/constants";
 import { createAuthorizationHeader } from "@repo/shared/utils";
 
-import { ConnectionStatus } from "@/constants";
+import { ConnectionStatus, WEBSOCKET_URL } from "@/constants";
 import { Observable } from "@/lib/Observable";
 
 import { MessageType, PCM_PROCESSOR_MODULE, SAMPLE_RATE } from "./constants";
@@ -114,9 +114,11 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   };
 
   private handleException = (error: any): void => {
-    this.reset();
-
     this.emit("error", error);
+
+    // todo: review logic
+    this.stop();
+    // this.reset();
   };
 
   private handlePCMModuleMessage = (event: any): void => {
@@ -132,6 +134,10 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
         this.handleException(new InvalidAudioDataError(event.data))
       );
   };
+
+  public handleDisconnect(): void {
+    // todo: complete logic
+  }
 
   private captureStream = (): void => {
     // todo: complete logic for different tabs
@@ -150,8 +156,8 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     });
   };
 
-  public initWebSocketConnection(): void {
-    this.webSocket = io(process.env.PLASMO_PUBLIC_WEBSOCKET_URL as string, {
+  private initWebSocketConnection(): void {
+    this.webSocket = io(WEBSOCKET_URL, {
       transports: ["websocket"],
       extraHeaders: {
         Authorization: createAuthorizationHeader(this.accessToken),
@@ -164,7 +170,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
       this.handleException(new ConnectionError(error.message))
     );
     this.webSocket.on("message", this.handleWebSocketMessage);
-    this.webSocket.on("disconnect", this.destroy);
+    this.webSocket.on("disconnect", this.handleDisconnect);
   }
 
   private initProcessing(stream: MediaStream): void {
@@ -214,19 +220,18 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   }
 
   public destroy(): void {
-    this.clear();
     this.stop();
+
+    this.webSocket?.disconnect();
 
     this.capturedStream?.getTracks().forEach((track) => track.stop());
     this.streamSourceNode?.disconnect();
-    this.webSocket?.disconnect();
     this.audioContext?.close();
   }
 
   private reset(): void {
     this.destroy();
 
-    this.webSocket = null;
     this.audioContext = null;
     this.streamSourceNode = null;
     this.pcmProcessor = null;
@@ -239,7 +244,17 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     this.initWebSocketConnection();
   }
 
+  // todo: use for restart after error handling
+  public restart(): void {
+    this.emit("status", ConnectionStatus.CONNECTING);
+    this.emit("error", null);
+
+    this.initWebSocketConnection();
+  }
+
   public resume(): void {
+    this.emit("error", null);
+
     match(this.isReady)
       .with(true, () => {
         this.streamSourceNode!.connect(this.pcmProcessor!);
@@ -254,5 +269,3 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
       .otherwise(() => this.handleException(new ResumeAudioProcessingError()));
   }
 }
-
-// todo: review stop/destroy methods

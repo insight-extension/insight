@@ -2,7 +2,7 @@ import React from "react";
 
 interface LogoProps {}
 
-const Logo: React.FC<LogoProps> = () => {
+export const Logo: React.FC<LogoProps> = () => {
   return (
     <svg
       width="70"
@@ -45,5 +45,3 @@ const Logo: React.FC<LogoProps> = () => {
     </svg>
   );
 };
-
-export default Logo;

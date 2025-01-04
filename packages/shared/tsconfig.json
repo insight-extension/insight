@@ -13,7 +13,8 @@
     "rootDir": "./src"
   },
   "include": [
-    "src"
+    "src",
+    "../ui/src/component.tsx"
   ],
   "exclude": [
     "node_modules",

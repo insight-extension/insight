@@ -1,61 +1,49 @@
 import { type FC, useCallback, useEffect, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 
-import {
-  ChevronsUpDown,
-  CircleX,
-  Languages,
-  Play,
-  Sidebar,
-  Square
-} from "lucide-react";
+import { match } from "ts-pattern";
 
-import { Component } from "@repo/shared/component";
 import { SessionToken, SubscriptionType } from "@repo/shared/constants";
+import { ErrorAlert, Icon } from "@repo/ui/components";
+import { cn } from "@repo/ui/lib";
 
 import { storage } from "@/background";
-import Logo from "@/components/logo";
-import { Button } from "@/components/ui/button";
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import { TextBlock } from "@/components/ui/textBlock";
-import { ConnectionStatus, StorageKey } from "@/constants";
+  DropdownMenuTrigger,
+  Logo,
+  TextBlock
+} from "@/components";
+import "@/components/ui/textBlock";
+import {
+  ConnectionStatus,
+  SUPPORTED_LANGUAGES,
+  StorageKey,
+  UI_URL
+} from "@/constants";
 import "@/global.css";
 import { useAudioRecord, useExtensionControls } from "@/hooks";
 import { type Language } from "@/types";
 import { constructURLWithParams } from "@/utils";
-
-console.log("Component", Component);
-console.log("Button", Button);
 
 // todo: add env WSS var for manifest
 //    "content_security_policy": {
 //       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
 //     }
 
-// List of supported languages
-const supportedLanguages: Language[] = [
-  { name: "English", flagCode: "US" },
-  { name: "Українська", flagCode: "UA" },
-  { name: "Français", flagCode: "FR" }
-  // Add other languages if necessary
-];
-
 interface AppProps {
   isSidebar: boolean;
 }
 
 export const App: FC<AppProps> = ({ isSidebar }) => {
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(
-    supportedLanguages[0]
-  );
-
   const { getMessage } = chrome.i18n;
 
+  const [currentLanguage, setCurrentLanguage] = useState<Language>(
+    SUPPORTED_LANGUAGES[0]
+  );
   const [accessToken, setAccessToken] = useState<string | null>("access-token");
   const [subscriptionType, setSubscriptionType] =
     useState<SubscriptionType | null>(SubscriptionType.FREE_TRIAL);
@@ -81,27 +69,22 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     (async () => {
       const token = await storage.get(SessionToken.ACCESS);
 
-      console.log("INIT", token);
-
       setAccessToken(token || null);
     })();
   }, []);
 
   storage.watch({
     [SessionToken.ACCESS]: ({ newValue }) => {
-      console.log("WATCH", newValue);
       setAccessToken(newValue);
     },
     [StorageKey.DEPOSIT]: ({ newValue }) => {
       console.log(StorageKey.DEPOSIT, newValue);
-    },
-    [StorageKey.BALANCE]: ({ newValue }) => {
-      console.log([StorageKey.BALANCE], newValue);
     }
   });
 
   const handleLanguageChange = useCallback((language: Language) => {
     setCurrentLanguage(language);
+
     chrome.storage.sync.set({ language: language });
   }, []);
 
@@ -117,11 +100,9 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                 size="icon"
                 variant="raw"
                 className="bg-transparent rotate-180"
-                onClick={() => {
-                  close();
-                  openSidePanel();
-                }}>
-                <Sidebar
+                onClick={openSidePanel}>
+                <Icon
+                  name="Sidebar"
                   className="text-primary-foreground hover:text-primary-foreground/80"
                   size={24}
                 />
@@ -133,7 +114,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
               variant="raw"
               className="bg-transparent"
               onClick={close}>
-              <CircleX
+              <Icon
+                name="CircleX"
                 size={24}
                 className="text-primary-foreground hover:text-primary-foreground/80"
               />
@@ -141,26 +123,22 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           </div>
         </div>
 
-        <h1 className="bg-blue-500 text-white p-4">{error}</h1>
-
-        {/* <ErrorAlert
-          title={intl.formatMessage({
-            id: `${namespace}.unexpected`
-          })}
-          message={error.message}
-          actionMessage={intl.formatMessage({
-            id: `${actionNamespace}.reload`
-          })}
-        /> */}
-
-        <Component />
+        {/* // todo: complete the styles */}
+        {error && (
+          <ErrorAlert
+            className={cn("bg-red-500 text-white", "my-6")}
+            message={error.message}
+            actionMessage={getMessage("retry")}
+            title={getMessage("error")}
+            onAction={resume} // todo: change to restart
+          />
+        )}
 
         <div className="flex flex-row justify-between items-center mb-3">
           <Button variant="default" className="w-38">
             <a
               href={constructURLWithParams({
-                //todo: make it const
-                url: process.env.PLASMO_PUBLIC_UI_URL as string,
+                url: UI_URL,
                 params: {
                   action: "connect-wallet"
                 }
@@ -174,7 +152,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <Button variant="default" className="w-38">
             <a
               href={constructURLWithParams({
-                url: process.env.PLASMO_PUBLIC_UI_URL as string,
+                url: UI_URL,
                 params: {
                   action: "deposit"
                 }
@@ -197,16 +175,16 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <DropdownMenu>
             <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary bg-secondary px-3 rounded">
               <div className="flex flex-row items-center gap-2">
-                <Languages size={16} />
+                <Icon name="Languages" size={16} />
 
                 <span className="text-sm">{currentLanguage.name}</span>
               </div>
 
-              <ChevronsUpDown size={12} />
+              <Icon name="ChevronsUpDown" size={12} />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300">
-              {supportedLanguages.map(({ flagCode, name: language }) => (
+              {SUPPORTED_LANGUAGES.map(({ flagCode, name: language }) => (
                 <DropdownMenuItem
                   key={flagCode}
                   className="cursor-pointer w-36"
@@ -232,13 +210,11 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         <p className="px-3 text-primary-foreground font-medium text-sm">
           {`${getMessage("status")}: `}
           <span
-            className={
-              status === ConnectionStatus.CONNECTED
-                ? "text-green-500"
-                : status === ConnectionStatus.CONNECTING
-                  ? "text-yellow-500"
-                  : "text-red-500"
-            }>
+            className={match(status)
+              .with(ConnectionStatus.CONNECTED, () => "text-green-500")
+              .with(ConnectionStatus.CONNECTING, () => "text-yellow-500")
+              .with(ConnectionStatus.DISCONNECTED, () => "text-red-500")
+              .exhaustive()}>
             {status}
           </span>
         </p>
@@ -257,9 +233,10 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <Button
             disabled={isRecording}
             size="lg"
-            onClick={() => (isReady ? resume() : start())}>
-            <Play className="mr-2" />
-            START-v2{" "}
+            onClick={isReady ? resume : start}>
+            <Icon name="Play" className="mr-2" />
+
+            {isReady ? getMessage("resume") : getMessage("start")}
           </Button>
 
           <Button
@@ -267,8 +244,9 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
             size="lg"
             variant={"destructive"}
             onClick={stop}>
-            <Square className="mr-2" />
-            STOP-v2{" "}
+            <Icon name="Square" className="mr-2" />
+
+            {getMessage("stop")}
           </Button>
         </div>
       </div>

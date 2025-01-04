@@ -1,12 +1,18 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
-import { left, mapLeft, tryCatch } from "fp-ts/lib/TaskEither";
+import { chain, left, mapLeft, right, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { P, match } from "ts-pattern";
 
 import { InvalidTabIdError, QueringTabError } from "./errors";
+import { UseExtensionControls } from "./types";
 
-export const useExtensionControls = () => {
+export const useExtensionControls = (): UseExtensionControls => {
+  const [sidepanelError, setSidepanelError] = useState<
+    UseExtensionControls["sidepanelError"] | null
+  >(null);
+  const close = useCallback(() => window.close(), []);
+
   const openSidePanel = useCallback(async () => {
     pipe(
       tryCatch(
@@ -15,6 +21,8 @@ export const useExtensionControls = () => {
             active: true,
             lastFocusedWindow: true
           });
+
+          console.error("TAB", tab);
 
           match(tab)
             .with({ id: P.intersection(P.number, P.select()) }, async (id) => {
@@ -30,16 +38,16 @@ export const useExtensionControls = () => {
         },
         (error: any) => left(new QueringTabError(error.message))
       ),
+      chain(() => right(close())),
       mapLeft((error) => {
-        throw error;
+        setSidepanelError(error);
       })
     )();
   }, []);
 
-  const close = useCallback(() => window.close(), []);
-
   return {
     openSidePanel,
-    close
+    close,
+    sidepanelError
   };
 };

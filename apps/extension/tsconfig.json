@@ -34,7 +34,8 @@
       "ESNext"
     ],
     "types": [
-      "chrome"
+      "chrome",
+      "node"
     ],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

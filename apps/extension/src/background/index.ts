@@ -4,7 +4,7 @@ import { P, match } from "ts-pattern";
 import { SessionToken } from "@repo/shared/constants";
 import { extractDomainFromURL } from "@repo/shared/utils";
 
-import { UI_URL } from "@/configs";
+import { UI_URL } from "@/constants";
 
 export const storage = new Storage({ area: "sync" });
 

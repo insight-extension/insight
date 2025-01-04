@@ -1,29 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 
-import { SubscriptionType } from "@repo/shared/constants";
-
 import { ConnectionStatus } from "@/constants";
 import { AudioRecordManager } from "@/services";
 
-import { UseAudioRecord } from "./types";
+import { UseAudioRecord, UseAudioRecordProps } from "./types";
 
 export const useAudioRecord = ({
   subscriptionType,
   accessToken
-}: {
-  accessToken: string | null;
-  subscriptionType: SubscriptionType | null;
-}): UseAudioRecord => {
-  const [status, setStatus] = useState<ConnectionStatus>(
+}: UseAudioRecordProps): UseAudioRecord => {
+  const [status, setStatus] = useState<UseAudioRecord["status"]>(
     ConnectionStatus.DISCONNECTED
   );
-  const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [transcription, setTranscription] = useState<string>("");
-  const [translation, setTranslation] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
+  const [isRecording, setIsRecording] =
+    useState<UseAudioRecord["isRecording"]>(false);
+  const [transcription, setTranscription] =
+    useState<UseAudioRecord["transcription"]>("");
+  const [translation, setTranslation] =
+    useState<UseAudioRecord["translation"]>("");
+  const [error, setError] = useState<UseAudioRecord["error"] | null>(null);
+
+  console.log("ERROR", error);
 
   const audioRecordManagerRef = useRef<AudioRecordManager | null>(null);
 
+  // todo: add immer
   useEffect(() => {
     if (accessToken && subscriptionType) {
       audioRecordManagerRef.current = new AudioRecordManager(
@@ -33,28 +34,41 @@ export const useAudioRecord = ({
 
       audioRecordManagerRef.current.on(
         "transcription",
-        (transcript: string) => {
+        (transcript: UseAudioRecord["transcription"]) => {
           setTranscription((previous) => previous + ` ${transcript}`);
         }
       );
-      audioRecordManagerRef.current.on("translation", (translation: string) => {
-        setTranslation((previous) => previous + ` ${translation}`);
-      });
-      audioRecordManagerRef.current.on("status", (status: ConnectionStatus) => {
-        setStatus(status);
-      });
-      audioRecordManagerRef.current.on("recording", (isRecording: boolean) => {
-        setIsRecording(isRecording);
-      });
-      audioRecordManagerRef.current.on("error", (error: any) => {
-        setError(error.message);
-      });
+      audioRecordManagerRef.current.on(
+        "translation",
+        (translation: UseAudioRecord["translation"]) => {
+          setTranslation((previous) => previous + ` ${translation}`);
+        }
+      );
+      audioRecordManagerRef.current.on(
+        "status",
+        (status: UseAudioRecord["status"]) => {
+          setStatus(status);
+        }
+      );
+      audioRecordManagerRef.current.on(
+        "recording",
+        (isRecording: UseAudioRecord["isRecording"]) => {
+          setIsRecording(isRecording);
+        }
+      );
+      audioRecordManagerRef.current.on(
+        "error",
+        (error: UseAudioRecord["error"]) => {
+          setError(error);
+        }
+      );
     }
   }, [accessToken, subscriptionType]);
 
   useEffect(() => {
     return () => {
       audioRecordManagerRef.current?.destroy();
+      audioRecordManagerRef.current?.clear();
     };
   }, []);
 
@@ -67,6 +81,7 @@ export const useAudioRecord = ({
     start: () => audioRecordManagerRef.current?.start(),
     resume: () => audioRecordManagerRef.current?.resume(),
     stop: () => audioRecordManagerRef.current?.stop(),
+    restart: () => audioRecordManagerRef.current?.restart(),
     isReady: Boolean(audioRecordManagerRef.current?.isReady)
   };
 };

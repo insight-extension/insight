@@ -43,7 +43,7 @@ const RadioGroupItem = React.forwardRef<
         >
             <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
                 <Icon
-                    name="circle"
+                    name="Circle"
                     className={cn(
                         colorVariants[color].icon,
                         "w-2.50 h-2.5 text-current"
