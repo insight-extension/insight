@@ -8,10 +8,10 @@
     "@types/eslint": "^8.56.10",
     "@types/node": "22.7.4",
     "eslint": "^8.57.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.7.2"
   },
   "exports": {
-    "./constants": "./src/constants/index.ts"
+    "./components": "./src/components/index.ts"
   },
   "private": true,
   "scripts": {}

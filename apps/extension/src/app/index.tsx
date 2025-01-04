@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import { type FC, useCallback, useEffect, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 
 import {
@@ -10,7 +10,8 @@ import {
   Square
 } from "lucide-react";
 
-import { SubscriptionType } from "@repo/shared/constants";
+import { Component } from "@repo/shared/component";
+import { SessionToken, SubscriptionType } from "@repo/shared/constants";
 
 import { storage } from "@/background";
 import Logo from "@/components/logo";
@@ -22,11 +23,14 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { TextBlock } from "@/components/ui/textBlock";
-import { ConnectionStatus } from "@/constants";
+import { ConnectionStatus, StorageKey } from "@/constants";
 import "@/global.css";
 import { useAudioRecord, useExtensionControls } from "@/hooks";
 import { type Language } from "@/types";
 import { constructURLWithParams } from "@/utils";
+
+console.log("Component", Component);
+console.log("Button", Button);
 
 // todo: add env WSS var for manifest
 //    "content_security_policy": {
@@ -73,34 +77,33 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
   const { openSidePanel, close } = useExtensionControls();
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const token = await storage.get(SessionToken.ACCESS);
+  useEffect(() => {
+    (async () => {
+      const token = await storage.get(SessionToken.ACCESS);
 
-  //     console.log("INIT", token);
+      console.log("INIT", token);
 
-  //     setAccessToken(token || null);
-  //   })();
-  // }, []);
+      setAccessToken(token || null);
+    })();
+  }, []);
 
-  // storage.watch({
-  //   [SessionToken.ACCESS]: ({ newValue }) => {
-  //     console.log("WATCH", newValue);
-  //     setAccessToken(newValue);
-  //   },
-  //   [StorageKey.DEPOSIT]: ({ newValue }) => {
-  //     console.log(StorageKey.DEPOSIT, newValue);
-  //   },
-  //   [StorageKey.BALANCE]: ({ newValue }) => {
-  //     console.log([StorageKey.BALANCE], newValue);
-  //   }
-  // });
+  storage.watch({
+    [SessionToken.ACCESS]: ({ newValue }) => {
+      console.log("WATCH", newValue);
+      setAccessToken(newValue);
+    },
+    [StorageKey.DEPOSIT]: ({ newValue }) => {
+      console.log(StorageKey.DEPOSIT, newValue);
+    },
+    [StorageKey.BALANCE]: ({ newValue }) => {
+      console.log([StorageKey.BALANCE], newValue);
+    }
+  });
 
-  // Function to change the language
-  const handleLanguageChange = (language: Language) => {
+  const handleLanguageChange = useCallback((language: Language) => {
     setCurrentLanguage(language);
     chrome.storage.sync.set({ language: language });
-  };
+  }, []);
 
   return (
     <div className="w-84">
@@ -139,6 +142,18 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         </div>
 
         <h1 className="bg-blue-500 text-white p-4">{error}</h1>
+
+        {/* <ErrorAlert
+          title={intl.formatMessage({
+            id: `${namespace}.unexpected`
+          })}
+          message={error.message}
+          actionMessage={intl.formatMessage({
+            id: `${actionNamespace}.reload`
+          })}
+        /> */}
+
+        <Component />
 
         <div className="flex flex-row justify-between items-center mb-3">
           <Button variant="default" className="w-38">
