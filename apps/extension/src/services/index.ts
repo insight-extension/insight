@@ -1,1 +1,1 @@
-export * from "./AudioRecordManager/index.service";
+export * from "./AudioRecord"

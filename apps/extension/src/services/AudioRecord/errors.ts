@@ -45,3 +45,19 @@ export class UnexpectedMessageTypeError extends Error {
     this.name = "UnexpectedMessageTypeError";
   }
 }
+
+export class InvalidAudioDataError extends Error {
+  constructor(data: string) {
+    super(data);
+
+    this.name = "InvalidAudioDataError";
+  }
+}
+
+export class ResumeAudioProcessingError extends Error {
+  constructor() {
+    super();
+
+    this.name = "ResumeAudioProcessingError";
+  }
+}

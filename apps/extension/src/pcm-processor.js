@@ -1,6 +1,9 @@
 class PCMProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
+    console.log("RATTTTTTTTTTTTTTTTTTTTTE", sampleRate);
+
+    this.sampleRate = sampleRate;
   }
 
   /**

@@ -1,4 +1,4 @@
-import { App } from "~components/App";
+import { App } from "@/app";
 
 const SidePanel = () => {
   return <App isSidebar={true} />;
