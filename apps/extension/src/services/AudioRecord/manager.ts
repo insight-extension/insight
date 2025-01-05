@@ -1,3 +1,4 @@
+import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 import { left, mapLeft, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { Socket, io } from "socket.io-client";

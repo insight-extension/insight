@@ -12,8 +12,6 @@ chrome.cookies.get(
   { url: UI_URL, name: SessionToken.ACCESS },
   async (cookie) => {
     if (cookie && cookie.value) {
-      console.log("GET COOKIE", cookie.value);
-
       storage.set(SessionToken.ACCESS, cookie.value);
     }
   }
@@ -21,8 +19,6 @@ chrome.cookies.get(
 
 chrome.cookies.onChanged.addListener(async function (changedInfo) {
   if (changedInfo.cookie.domain === extractDomainFromURL(UI_URL)) {
-    console.log("ONCHANGED COOKIE", changedInfo.cookie);
-
     match(changedInfo)
       .with({ removed: true, cause: P.not("overwrite") }, async () => {
         await storage.set(SessionToken.ACCESS, null);

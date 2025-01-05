@@ -20,8 +20,6 @@ export const useAudioRecord = ({
     useState<UseAudioRecord["translation"]>("");
   const [error, setError] = useState<UseAudioRecord["error"] | null>(null);
 
-  console.log("ERROR", error);
-
   const audioRecordManagerRef = useRef<AudioRecordManager | null>(null);
 
   // todo: add immer
