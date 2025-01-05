@@ -13,7 +13,7 @@ interface ErrorAlertProps {
 
 export const ErrorAlert: React.FC<ErrorAlertProps> = memo(
   ({ message, title, actionMessage }) => {
-    const logout = useLogout();
+    const { logout } = useLogout({ withReload: true });
 
     return (
       <Alert

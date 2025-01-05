@@ -36,7 +36,7 @@ class SessionManager {
     });
   }
 
-  public refreshToken({ refreshToken }: { refreshToken: string }) {
+  public refreshToken(refreshToken: string) {
     pipe(
       authService.refreshToken({ refreshToken }),
       fold(

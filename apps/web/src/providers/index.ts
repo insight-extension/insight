@@ -1,1 +1,1 @@
-export * from "./AppWallet";
+export * from "./WalletAdapter";

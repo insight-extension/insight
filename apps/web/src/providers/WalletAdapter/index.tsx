@@ -1,10 +1,9 @@
 import { PropsWithChildren, useMemo } from "react";
 
 import {
-  ConnectionProvider,
-  WalletProvider
+  ConnectionProvider as BaseConnectionProvider,
+  WalletProvider as BaseWalletProvider
 } from "@solana/wallet-adapter-react";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
@@ -14,7 +13,7 @@ import { clusterApiUrl } from "@solana/web3.js";
 
 import { SOLANA_NETWORK } from "@repo/shared/constants";
 
-export const AppWalletProvider = ({ children }: PropsWithChildren) => {
+export const WalletAdapterProvider = ({ children }: PropsWithChildren) => {
   /**
    * Wallets that implement either of these standards will be available automatically.
    *
@@ -39,10 +38,10 @@ export const AppWalletProvider = ({ children }: PropsWithChildren) => {
   const endpoint = useMemo(() => clusterApiUrl(SOLANA_NETWORK), []);
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
+    <BaseConnectionProvider endpoint={endpoint}>
+      <BaseWalletProvider wallets={wallets} autoConnect>
+        {children}
+      </BaseWalletProvider>
+    </BaseConnectionProvider>
   );
 };

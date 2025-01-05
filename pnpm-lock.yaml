@@ -97,7 +97,7 @@ importers:
         version: 3.4.17(ts-node@10.9.2(typescript@5.7.2))
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.7.4)(typescript@5.7.2)))
+        version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.10.4(@swc/helpers@0.5.15))(@types/node@22.7.4)(typescript@5.7.2)))
       ts-pattern:
         specifier: ^5.5.0
         version: 5.6.0
@@ -228,6 +228,9 @@ importers:
       react:
         specifier: 18.3.1
         version: 18.3.1
+      react-cookie:
+        specifier: ^7.2.2
+        version: 7.2.2(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -251,7 +254,7 @@ importers:
         version: 2.6.0
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.7.4)(typescript@5.7.2)))
+        version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.10.4(@swc/helpers@0.5.15))(@types/node@22.7.4)(typescript@5.7.2)))
       ts-pattern:
         specifier: ^5.5.0
         version: 5.6.0
@@ -5713,6 +5716,10 @@ packages:
     resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
 
+  cookie@0.7.2:
+    resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
+    engines: {node: '>= 0.6'}
+
   cookie@1.0.2:
     resolution: {integrity: sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA==}
     engines: {node: '>=18'}
@@ -8682,6 +8689,11 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
 
+  react-cookie@7.2.2:
+    resolution: {integrity: sha512-e+hi6axHcw9VODoeVu8WyMWyoosa1pzpyjfvrLdF7CexfU+WSGZdDuRfHa4RJgTpfv3ZjdIpHE14HpYBieHFhg==}
+    peerDependencies:
+      react: '>= 16.3.0'
+
   react-country-flag@3.1.0:
     resolution: {integrity: sha512-JWQFw1efdv9sTC+TGQvTKXQg1NKbDU2mBiAiRWcKM9F1sK+/zjhP2yGmm8YDddWyZdXVkR8Md47rPMJmo4YO5g==}
     engines: {node: '>=12'}
@@ -9860,6 +9872,9 @@ packages:
   unique-string@3.0.0:
     resolution: {integrity: sha512-VGXBUVwxKMBUznyffQweQABPRRW1vHZAbadFZud4pLFAqRGvv/96vafgjWFqzourzr8YonlQiPgH0YCJfawoGQ==}
     engines: {node: '>=12'}
+
+  universal-cookie@7.2.2:
+    resolution: {integrity: sha512-fMiOcS3TmzP2x5QV26pIH3mvhexLIT0HmPa3V7Q7knRfT9HG6kTwq02HZGLPw0sAOXrAmotElGRvTLCMbJsvxQ==}
 
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
@@ -17184,6 +17199,8 @@ snapshots:
 
   cookie@0.6.0: {}
 
+  cookie@0.7.2: {}
+
   cookie@1.0.2: {}
 
   copy-anything@2.0.6:
@@ -20625,6 +20642,13 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
+  react-cookie@7.2.2(react@18.3.1):
+    dependencies:
+      '@types/hoist-non-react-statics': 3.3.6
+      hoist-non-react-statics: 3.3.2
+      react: 18.3.1
+      universal-cookie: 7.2.2
+
   react-country-flag@3.1.0(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -21657,7 +21681,7 @@ snapshots:
 
   tailwind-merge@2.6.0: {}
 
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.7.4)(typescript@5.7.2))):
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.10.4(@swc/helpers@0.5.15))(@types/node@22.7.4)(typescript@5.7.2))):
     dependencies:
       tailwindcss: 3.4.17(ts-node@10.9.2(typescript@5.7.2))
 
@@ -22056,6 +22080,11 @@ snapshots:
   unique-string@3.0.0:
     dependencies:
       crypto-random-string: 4.0.0
+
+  universal-cookie@7.2.2:
+    dependencies:
+      '@types/cookie': 0.6.0
+      cookie: 0.7.2
 
   universalify@2.0.1: {}
 

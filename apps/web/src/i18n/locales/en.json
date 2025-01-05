@@ -1,17 +1,17 @@
 {
-    "error.unexpected": "Unexpected error occurred.",
-    "error.createSignature": "Please sign a message to continue.",
-    "error.authentication": "Authentication error occurred.",
+  "error.unexpected": "Unexpected error occurred.",
+  "error.createSignature": "Please sign a message to continue.",
+  "error.authentication": "Authentication error occurred.",
 
-    "action.reload": "Reload the page",
-    "action.retry": "Retry",
+  "action.reload": "Reload the page",
+  "action.retry": "Retry",
 
-    "features.wallet.multiButton.changeWallet": "Change wallet",
-    "features.wallet.multiButton.connecting": "Connecting ...",
-    "features.wallet.multiButton.copyAddress": "Copy address",
-    "features.wallet.multiButton.copied": "Copied",
-    "features.wallet.multiButton.disconnect": "Disconnect",
-    "features.wallet.multiButton.hasWallet": "Connect",
-    "features.wallet.multiButton.noWallet": "Connect Wallet",
-    "features.wallet.multiButton.authenticationRequired": "Sign in"
+  "features.wallet.multiButton.changeWallet": "Change wallet",
+  "features.wallet.multiButton.connecting": "...",
+  "features.wallet.multiButton.copyAddress": "Copy address",
+  "features.wallet.multiButton.copied": "Copied",
+  "features.wallet.multiButton.disconnect": "Disconnect",
+  "features.wallet.multiButton.hasWallet": "Connect",
+  "features.wallet.multiButton.noWallet": "Connect Wallet",
+  "features.wallet.multiButton.authenticationRequired": "Sign in"
 }
