@@ -4,10 +4,12 @@ import {
   Alert,
   AlertTitle,
   AlertDescription,
-  Icon,
   Button,
 } from "@/components";
 import { cn } from "@/lib";
+
+// todo: review
+import { Icon } from "../../../primitives/icon";
 
 interface ErrorAlertProps {
   message: string;

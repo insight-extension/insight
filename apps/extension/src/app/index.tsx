@@ -253,3 +253,10 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     </div>
   );
 };
+
+// todo:
+// 1. auth flow
+// 2. access token flow
+// 3. subscription flow
+// 4. language flow
+// 5. audio recording flow

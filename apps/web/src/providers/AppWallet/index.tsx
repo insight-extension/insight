@@ -1,47 +1,48 @@
+import { PropsWithChildren, useMemo } from "react";
+
 import {
-    WalletProvider,
-    ConnectionProvider,
+  ConnectionProvider,
+  WalletProvider
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { clusterApiUrl } from "@solana/web3.js";
 import {
-    PhantomWalletAdapter,
-    SolflareWalletAdapter,
-    TorusWalletAdapter,
+  PhantomWalletAdapter,
+  SolflareWalletAdapter,
+  TorusWalletAdapter
 } from "@solana/wallet-adapter-wallets";
-import { PropsWithChildren, useMemo } from "react";
+import { clusterApiUrl } from "@solana/web3.js";
 
 import { SOLANA_NETWORK } from "@repo/shared/constants";
 
 export const AppWalletProvider = ({ children }: PropsWithChildren) => {
-    /**
-     * Wallets that implement either of these standards will be available automatically.
-     *
-     *   - Solana Mobile Stack Mobile Wallet Adapter Protocol
-     *     (https://github.com/solana-mobile/mobile-wallet-adapter)
-     *   - Solana Wallet Standard
-     *     (https://github.com/anza-xyz/wallet-standard)
-     *
-     * If you wish to support a wallet that supports neither of those standards,
-     * instantiate its legacy wallet adapter here. Common legacy adapters can be found
-     * in the npm package `@solana/wallet-adapter-wallets`.
-     */
-    const wallets = useMemo(
-        () => [
-            new PhantomWalletAdapter(),
-            new SolflareWalletAdapter({ network: SOLANA_NETWORK }),
-            new TorusWalletAdapter(),
-        ],
-        []
-    );
+  /**
+   * Wallets that implement either of these standards will be available automatically.
+   *
+   *   - Solana Mobile Stack Mobile Wallet Adapter Protocol
+   *     (https://github.com/solana-mobile/mobile-wallet-adapter)
+   *   - Solana Wallet Standard
+   *     (https://github.com/anza-xyz/wallet-standard)
+   *
+   * If you wish to support a wallet that supports neither of those standards,
+   * instantiate its legacy wallet adapter here. Common legacy adapters can be found
+   * in the npm package `@solana/wallet-adapter-wallets`.
+   */
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter({ network: SOLANA_NETWORK }),
+      new TorusWalletAdapter()
+    ],
+    []
+  );
 
-    const endpoint = useMemo(() => clusterApiUrl(SOLANA_NETWORK), []);
+  const endpoint = useMemo(() => clusterApiUrl(SOLANA_NETWORK), []);
 
-    return (
-        <ConnectionProvider endpoint={endpoint}>
-            <WalletProvider wallets={wallets} autoConnect>
-                <WalletModalProvider>{children}</WalletModalProvider>
-            </WalletProvider>
-        </ConnectionProvider>
-    );
+  return (
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  );
 };
