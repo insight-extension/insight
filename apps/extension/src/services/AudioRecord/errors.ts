@@ -7,7 +7,7 @@ export class AccessTokenRequiredError extends Error {
 }
 
 export class CaptureAudioStreamError extends Error {
-  constructor(message: string) {
+  constructor(public message: string) {
     super(message);
 
     this.name = "CaptureAudioStreamError";
@@ -15,7 +15,7 @@ export class CaptureAudioStreamError extends Error {
 }
 
 export class ConnectionError extends Error {
-  constructor(message: string) {
+  constructor(public message: string) {
     super(message);
 
     this.name = "ConnectionError";
@@ -23,7 +23,7 @@ export class ConnectionError extends Error {
 }
 
 export class MessageError extends Error {
-  constructor(message: string) {
+  constructor(public message: string) {
     super(message);
 
     this.name = "MessageError";
@@ -31,7 +31,7 @@ export class MessageError extends Error {
 }
 
 export class AudioProcessingError extends Error {
-  constructor(message: string) {
+  constructor(public message: string) {
     super(message);
 
     this.name = "AudioProcessingError";

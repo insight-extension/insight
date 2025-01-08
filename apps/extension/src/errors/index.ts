@@ -1,5 +1,5 @@
 export class AccessTokenRequiredError extends Error {
-  constructor(message: string) {
+  constructor(public message: string) {
     super(message);
 
     this.name = "AccessTokenRequiredError";

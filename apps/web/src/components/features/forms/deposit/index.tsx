@@ -7,7 +7,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useAtomValue } from "jotai";
-import { match } from "ts-pattern";
 import { z } from "zod";
 
 import {
@@ -15,6 +14,7 @@ import {
   SubscriptionType,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
+import { AnchorClient } from "@repo/shared/services";
 
 import {
   Label,
@@ -29,7 +29,7 @@ import {
 import { useToast } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
 import { cn } from "@/lib/cn";
-import { AnchorClient, relayMessenger } from "@/services";
+import { relayMessenger } from "@/services";
 import { anchorProviderAtom } from "@/store";
 
 import { DepositFormFields, depositFormSchema } from "./validation";
@@ -79,6 +79,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         throw new WalletNotConnectedError();
       }
 
+      // todo use pipe
       try {
         const normalizedAmount = new BN(
           (amount * 10 ** TOKEN_CURRENCIES[token].decimals) /
@@ -92,28 +93,11 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
         await anchorClient.airdropSOLIfRequired();
 
-        const signature = await match(subscriptionType)
-          .returnType<Promise<string>>()
-          .with(
-            SubscriptionType.FREE_TRIAL,
-            () => Promise.resolve("signature")
-            // todo: complete
-          )
-          .with(SubscriptionType.PER_MONTH, () =>
-            anchorClient.depositToSubscriptionVault({
-              amount: normalizedAmount,
-              token
-            })
-          )
-          .with(SubscriptionType.PER_USAGE, () =>
-            anchorClient.depositToTimedVault({
-              amount: normalizedAmount,
-              token
-            })
-          )
-          .exhaustive();
-
-        console.log("signature", signature);
+        const signature = await anchorClient.depositToVault({
+          amount: normalizedAmount,
+          token,
+          subscriptionType
+        });
 
         relayMessenger.deposit({
           amount: Number(normalizedAmount),
@@ -232,7 +216,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                         "cursor-pointer",
                         "h-10",
                         "px-3 py-2",
-                        "border-input rounded border bg-dark"
+                        "border-input bg-dark rounded border"
                       )}
                     />
                   </div>
@@ -266,7 +250,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                   />
                 </SelectTrigger>
 
-                <SelectContent className="z-10 w-2/6 rounded bg-dark">
+                <SelectContent className="bg-dark z-10 w-2/6 rounded">
                   {Object.values(DepositToken).map((token) => {
                     const tokenValue = TOKEN_CURRENCIES[token].symbol;
                     const isDisabled = state.value !== tokenValue;
@@ -294,7 +278,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
           ]}>
           {([canSubmit, isSubmitting, isPristine]) => (
             <button
-              className="h-10 cursor-pointer rounded bg-green-300 font-bold text-dark"
+              className="text-dark h-10 cursor-pointer rounded bg-green-300 font-bold"
               type="submit"
               disabled={!canSubmit || isPristine}>
               {isSubmitting

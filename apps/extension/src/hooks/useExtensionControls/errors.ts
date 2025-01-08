@@ -1,5 +1,5 @@
 export class QueringTabError extends Error {
-  constructor(message: string) {
+  constructor(public message: string) {
     super(message);
 
     this.name = "QueringTabError";
@@ -15,7 +15,7 @@ export class InvalidTabIdError extends Error {
 }
 
 export class OpeningSidePanelError extends Error {
-  constructor(message: string) {
+  constructor(public message: string) {
     super(message);
 
     this.name = "OpeningSidePanelError";
