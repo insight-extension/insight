@@ -29,7 +29,7 @@ import {
 import { useToast } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
 import { cn } from "@/lib/cn";
-import { AnchorClient } from "@/services";
+import { AnchorClient, relayMessenger } from "@/services";
 import { anchorProviderAtom } from "@/store";
 
 import { DepositFormFields, depositFormSchema } from "./validation";
@@ -115,13 +115,12 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
         console.log("signature", signature);
 
-        // todo: complete
-        // await relayMessenger.deposit({
-        //     amount: Number(normalizedAmount),
-        //     subscriptionType,
-        //     transactionSignature: signature,
-        //     token,
-        // });
+        relayMessenger.deposit({
+          amount: Number(normalizedAmount),
+          subscriptionType,
+          transactionSignature: signature,
+          token
+        });
 
         handleSuccessSubmit();
       } catch (error: any) {

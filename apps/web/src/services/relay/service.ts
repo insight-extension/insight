@@ -1,38 +1,36 @@
 import { sendToBackgroundViaRelay } from "@plasmohq/messaging";
+import { tryCatch } from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/function";
 
-import {
-  DepositMessage,
-  RelayResponse,
-  RelayRoute,
-  RelayStatus
-} from "@/services/relay";
+import { DepositMessage, RelayResponse, RelayRoute } from "@/services/relay";
+
+import { RelayMessageError } from "./errors";
 
 class RelayMessenger {
-  public async deposit({
+  public deposit({
     token,
     amount,
     subscriptionType,
     transactionSignature
   }: DepositMessage) {
-    // todo: review
-    try {
-      const { status } = await sendToBackgroundViaRelay<
-        DepositMessage,
-        RelayResponse
-      >({
-        name: RelayRoute.DEPOSIT as never,
-        body: {
-          token,
-          subscriptionType,
-          amount,
-          transactionSignature
+    pipe(
+      tryCatch(
+        async () =>
+          await sendToBackgroundViaRelay<DepositMessage, RelayResponse>({
+            name: RelayRoute.DEPOSIT as never,
+            body: {
+              token,
+              subscriptionType,
+              amount,
+              transactionSignature
+            }
+          }),
+        (error: any) => {
+          // todo: catchException
+          throw new RelayMessageError(error.message);
         }
-      });
-
-      return status;
-    } catch (error) {
-      return RelayStatus.ERROR;
-    }
+      )
+    )();
   }
 }
 

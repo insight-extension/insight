@@ -9,7 +9,7 @@ export default {
   singleQuote: false,
   trailingComma: "none",
   bracketSpacing: true,
-  bracketSameLine: true,
+  bracketSameLine: true, // falseeeeeee
   plugins: [
     "@trivago/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss"

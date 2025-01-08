@@ -5,16 +5,16 @@ import { StorageKey } from "@/constants";
 import { Status } from "@/types/index";
 
 // todo: complete
-// make request for getting use tbalance here
+// make request for getting use balance here
 const handler: PlasmoMessaging.MessageHandler = async ({ body }, response) => {
   storage.set(StorageKey.DEPOSIT, {
     subscriptionType: body.subscriptionType,
     amount: body.amount,
-    transactionSignature: body.transactionSignature,
+    transactionSignature: body.transactionSignature
   });
 
   response.send({
-    status: Status.SUCCESS,
+    status: Status.SUCCESS
   });
 };
 
