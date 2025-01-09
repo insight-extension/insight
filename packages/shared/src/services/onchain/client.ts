@@ -1,43 +1,44 @@
 import { AnchorProvider, BN, Program } from "@coral-xyz/anchor";
 import {
   TOKEN_PROGRAM_ID,
-  createAssociatedTokenAccount,
+  TokenAccountNotFoundError,
   createAssociatedTokenAccountInstruction,
   getAccount,
   getAssociatedTokenAddress,
   getMint
 } from "@solana/spl-token";
-import {
-  Keypair,
-  LAMPORTS_PER_SOL,
-  PublicKey,
-  Transaction
-} from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
 import { fold, left, right, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
-import { match } from "ts-pattern";
+import { P, match } from "ts-pattern";
 
 import {
   DepositToken,
   SubscriptionType,
+  TOKEN_ADDRESSES,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
+import { numberToBN } from "@repo/shared/utils";
 
-import IDL, { type DepositProgram } from "@/services/onchain/idl";
+import { Observable } from "../observable";
+import {
+  AssociatedTokenAddressError,
+  CreateTokenAccountError,
+  DepositToVaultError,
+  DropSOLError
+} from "./errors";
+import IDL, { type DepositProgram } from "./idl";
+import { EventCallbackMap } from "./types";
 
-import { DepositToVaultError, TokenAccountNotFoundError } from "./errors";
-
-export class AnchorClient {
-  private TOKEN_ADDRESSES: Record<DepositToken, string> = {
-    [DepositToken.USDC]: "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
-    [DepositToken.SOL]: ""
-  };
+export class AnchorClient extends Observable<EventCallbackMap> {
   private TOKEN_PROGRAM = TOKEN_PROGRAM_ID;
 
   constructor(
     private user: PublicKey,
     private provider: AnchorProvider
   ) {
+    super();
+
     this.user = user;
     this.provider = provider;
   }
@@ -51,43 +52,52 @@ export class AnchorClient {
     token: DepositToken;
     subscriptionType: SubscriptionType;
   }): Promise<string> {
-    const program = new Program(IDL as DepositProgram, this.provider);
+    try {
+      const program = new Program(IDL as DepositProgram, this.provider);
 
-    const payload = {
-      user: this.user,
-      token: this.TOKEN_ADDRESSES[token],
-      tokenProgram: this.TOKEN_PROGRAM
-    };
+      const payload = {
+        user: this.user,
+        token: TOKEN_ADDRESSES[token],
+        tokenProgram: this.TOKEN_PROGRAM
+      };
 
-    const transactionSignature = await match(subscriptionType)
-      .returnType<Promise<string>>()
-      .with(
-        SubscriptionType.FREE_TRIAL,
-        // todo: complete
-        () => Promise.resolve("signature")
-      )
-      .with(
-        SubscriptionType.PER_MONTH,
-        async () =>
-          await program.methods
-            .depositToSubscriptionVault(new BN(amount))
-            .accounts({ ...payload })
-            .rpc()
-      )
-      .with(
-        SubscriptionType.PER_USAGE,
-        async () =>
-          await program.methods
-            .depositToTimedVault(new BN(amount))
-            .accounts({ ...payload })
-            .rpc()
-      )
-      .exhaustive();
+      const normalizedAmount = numberToBN(
+        amount,
+        TOKEN_CURRENCIES[token].decimals
+      );
 
-    return transactionSignature;
+      const transactionSignature = await match(subscriptionType)
+        .returnType<Promise<string>>()
+        .with(
+          SubscriptionType.FREE_TRIAL,
+          // todo: complete
+          () => Promise.resolve("signature")
+        )
+        .with(
+          SubscriptionType.PER_MONTH,
+          async () =>
+            await program.methods
+              .depositToSubscriptionVault(normalizedAmount)
+              .accounts({ ...payload })
+              .rpc()
+        )
+        .with(
+          SubscriptionType.PER_USAGE,
+          async () =>
+            await program.methods
+              .depositToTimedVault(normalizedAmount)
+              .accounts({ ...payload })
+              .rpc()
+        )
+        .exhaustive();
+
+      return transactionSignature;
+    } catch (error: any) {
+      throw new DepositToVaultError(error.message);
+    }
   }
 
-  public depositToVaultFN({
+  private _depositToVaultFN({
     token,
     amount,
     subscriptionType
@@ -100,7 +110,7 @@ export class AnchorClient {
 
     const payload = {
       user: this.user,
-      token: this.TOKEN_ADDRESSES[token],
+      token: TOKEN_ADDRESSES[token],
       tokenProgram: this.TOKEN_PROGRAM
     };
 
@@ -142,27 +152,6 @@ export class AnchorClient {
     )();
   }
 
-  public async depositToTimedVault({
-    token,
-    amount
-  }: {
-    amount: BN;
-    token: DepositToken;
-  }): Promise<string> {
-    const program = new Program(IDL as DepositProgram, this.provider);
-
-    const transactionSignature = await program.methods
-      .depositToTimedVault(new BN(amount))
-      .accounts({
-        user: this.user,
-        token: this.TOKEN_ADDRESSES[token],
-        tokenProgram: this.TOKEN_PROGRAM
-      })
-      .rpc();
-
-    return transactionSignature;
-  }
-
   private async getTokenMint(token: PublicKey) {
     const tokenMint = await getMint(this.provider.connection, token);
 
@@ -170,10 +159,15 @@ export class AnchorClient {
   }
 
   private async getAirdropSOL() {
+    const SOL_AMOUNT = 1;
+
     try {
       const [latestBlockhash, signature] = await Promise.all([
         this.provider.connection.getLatestBlockhash(),
-        this.provider.connection.requestAirdrop(this.user, 1 * LAMPORTS_PER_SOL)
+        this.provider.connection.requestAirdrop(
+          this.user,
+          SOL_AMOUNT * LAMPORTS_PER_SOL
+        )
       ]);
       const signatureResult = await this.provider.connection.confirmTransaction(
         { signature, ...latestBlockhash },
@@ -181,10 +175,10 @@ export class AnchorClient {
       );
 
       if (signatureResult) {
-        console.log("Airdrop was confirmed!");
+        this.emit("airdropSOL");
       }
     } catch (error: any) {
-      console.error("You are Rate limited for Airdrop", error.message);
+      throw new DropSOLError(error.message);
     }
   }
 
@@ -193,10 +187,9 @@ export class AnchorClient {
 
     try {
       const tokenMint = await this.getTokenMint(
-        new PublicKey(this.TOKEN_ADDRESSES[token])
+        new PublicKey(TOKEN_ADDRESSES[token])
       );
 
-      // Try to calculate the user's associated token account
       userATA = await getAssociatedTokenAddress(
         tokenMint.address,
         this.user,
@@ -204,13 +197,10 @@ export class AnchorClient {
         this.TOKEN_PROGRAM
       );
     } catch (error: any) {
-      throw new Error(
-        `Failed to calculate associated token account: ${error.message}`
-      );
+      throw new AssociatedTokenAddressError(error.message);
     }
 
     try {
-      // Fetch the account details to check if it exists
       await getAccount(
         this.provider.connection,
         userATA,
@@ -218,42 +208,51 @@ export class AnchorClient {
         this.TOKEN_PROGRAM
       );
     } catch (error: any) {
-      if (error.message.includes("Token account not found")) {
-        console.log(
-          "Token account not found. Creating a new associated token account..."
-        );
-        const tokenMint = await this.getTokenMint(
-          new PublicKey(this.TOKEN_ADDRESSES[token])
-        );
-        await this.createAssociatedTokenAccount(tokenMint.address, userATA);
-      } else {
-        throw new TokenAccountNotFoundError(error.message);
-      }
+      match(error)
+        .with(P.instanceOf(TokenAccountNotFoundError), async () => {
+          const tokenMint = await this.getTokenMint(
+            new PublicKey(TOKEN_ADDRESSES[token])
+          );
+
+          await this.createAssociatedTokenAccount({
+            tokenMintAddress: tokenMint.address,
+            userATA
+          });
+        })
+        .otherwise(() => {
+          throw error;
+        });
     }
   }
 
-  // todo: test it
-  private async createAssociatedTokenAccount(
-    tokenMintAddress: PublicKey,
-    userATA: PublicKey
-  ) {
-    const transaction = new Transaction().add(
-      createAssociatedTokenAccountInstruction(
-        this.user,
-        userATA,
-        this.user,
-        tokenMintAddress,
-        this.TOKEN_PROGRAM
-      )
-    );
+  private async createAssociatedTokenAccount({
+    tokenMintAddress,
+    userATA
+  }: {
+    tokenMintAddress: PublicKey;
+    userATA: PublicKey;
+  }) {
+    try {
+      const transaction = new Transaction().add(
+        createAssociatedTokenAccountInstruction(
+          this.user,
+          userATA,
+          this.user,
+          tokenMintAddress,
+          this.TOKEN_PROGRAM
+        )
+      );
 
-    await this.provider.sendAndConfirm(transaction, []);
+      await this.provider.sendAndConfirm(transaction, []);
+    } catch (error: any) {
+      throw new CreateTokenAccountError(error.message);
+    }
   }
 
   public async getTokenBalance({ token }: { token: DepositToken }) {
     try {
       const tokenMint = await this.getTokenMint(
-        new PublicKey(this.TOKEN_ADDRESSES[token])
+        new PublicKey(TOKEN_ADDRESSES[token])
       );
 
       const userATA = await getAssociatedTokenAddress(
@@ -276,50 +275,29 @@ export class AnchorClient {
     }
   }
 
-  // for test usage
-  public async checkTestSenderMintAccount({
-    user,
-    token
-  }: {
-    user: Keypair;
-    token: DepositToken;
-  }) {
-    const tokenMint = await this.getTokenMint(
-      new PublicKey(this.TOKEN_ADDRESSES[token])
-    );
-
-    const userATA = await getAssociatedTokenAddress(
-      tokenMint.address,
-      this.user,
-      false,
-      this.TOKEN_PROGRAM
-    );
-
+  public async airdropSOLIfRequired() {
     try {
-      await getAccount(
-        this.provider.connection,
-        userATA,
-        undefined,
-        this.TOKEN_PROGRAM
-      );
-    } catch {
-      await createAssociatedTokenAccount(
-        this.provider.connection,
-        user,
-        tokenMint.address,
-        user.publicKey,
-        undefined,
-        this.TOKEN_PROGRAM
-      );
+      const balance = await this.getSOLBalance();
+
+      if (!balance) {
+        await this.getAirdropSOL();
+      }
+    } catch (error: any) {
+      throw new DropSOLError(error.message);
     }
   }
 
-  // aidrops for devnet
-  public async airdropSOLIfRequired() {
-    const balance = await this.getSOLBalance();
+  public async poolSOLBalanceChange(retries = 10, delay = 700) {
+    for (let i = 0; i < retries; i++) {
+      const balance = await this.getSOLBalance();
 
-    if (balance === 0) {
-      await this.getAirdropSOL();
+      if (balance > 0) {
+        this.emit("SOLbalanceChange", balance);
+
+        return;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 

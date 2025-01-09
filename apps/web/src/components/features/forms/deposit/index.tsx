@@ -1,7 +1,6 @@
 import { FC, FormEvent, memo, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 
-import { BN } from "@coral-xyz/anchor";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useForm } from "@tanstack/react-form";
@@ -42,6 +41,12 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   const { toast } = useToast();
   const [searchParams, _] = useSearchParams();
 
+  const [isAirdroppedSOL, setIsAirdroppedSOL] = useState<boolean>(false);
+  const [isSOLBalanceChanged, setIsSOLBalanceChanged] =
+    useState<boolean>(false);
+
+  // todo: aidrop flow
+
   const [userTokenBalance, setUserTokenBalance] = useState<number>(0);
   const [anchorClient, setAnchorClient] = useState<AnchorClient | null>(null);
 
@@ -79,40 +84,37 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         throw new WalletNotConnectedError();
       }
 
-      // todo use pipe
+      // todo: use pipe
       try {
-        const normalizedAmount = new BN(
-          (amount * 10 ** TOKEN_CURRENCIES[token].decimals) /
-            // todo: remove
-            1000
-        );
-
         await anchorClient.checkUserTokenAccount({
           token
         });
 
         await anchorClient.airdropSOLIfRequired();
 
-        const signature = await anchorClient.depositToVault({
-          amount: normalizedAmount,
+        const transactionSignature = await anchorClient.depositToVault({
+          amount:
+            amount /
+            // todo:remove
+            1000,
           token,
           subscriptionType
         });
 
         relayMessenger.deposit({
-          amount: Number(normalizedAmount),
+          amount,
           subscriptionType,
-          transactionSignature: signature,
+          transactionSignature,
           token
         });
 
         handleSuccessSubmit();
       } catch (error: any) {
+        // todo: catch exeption
         toast({
           title: TRANSLATIONS.depositForm.toast.transactionFailedTitle,
           description:
-            TRANSLATIONS.depositForm.toast.transactionFailedDescription +
-            `${error.message && ": " + error.message}`,
+            TRANSLATIONS.depositForm.toast.transactionFailedDescription,
           variant: "error"
         });
       }
@@ -122,6 +124,14 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
       onChange: depositFormSchema
     }
   });
+
+  const handleAirdropSOL = useCallback(() => {
+    toast({
+      title: "Airdrop",
+      description: "SOL airdropped successfully",
+      variant: "success"
+    });
+  }, []);
 
   const handleFormSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -135,7 +145,17 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
   useEffect(() => {
     if (publicKey && anchorProvider) {
-      setAnchorClient(new AnchorClient(publicKey, anchorProvider));
+      const _anchorClient = new AnchorClient(publicKey, anchorProvider);
+
+      setAnchorClient(_anchorClient);
+
+      _anchorClient.on("airdropSOL", () => {
+        setIsAirdroppedSOL(true);
+      });
+
+      _anchorClient.on("SOLbalanceChange", () => {
+        setIsSOLBalanceChanged(true);
+      });
     }
   }, [publicKey, anchorProvider]);
 
@@ -150,6 +170,14 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
       }
     })();
   }, [anchorClient, isSubmitted]);
+
+  useEffect(() => {
+    if (isAirdroppedSOL) {
+      handleAirdropSOL();
+
+      setIsAirdroppedSOL(false);
+    }
+  }, [isAirdroppedSOL]);
 
   return (
     <form onSubmit={handleFormSubmit}>

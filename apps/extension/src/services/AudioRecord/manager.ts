@@ -1,14 +1,13 @@
-import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 import { left, mapLeft, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { Socket, io } from "socket.io-client";
 import { P, match } from "ts-pattern";
 
 import { SubscriptionType } from "@repo/shared/constants";
+import { Observable } from "@repo/shared/services";
 import { createAuthorizationHeader } from "@repo/shared/utils";
 
 import { ConnectionStatus, WEBSOCKET_URL } from "@/constants";
-import { Observable } from "@/lib/Observable";
 
 import { MessageType, PCM_PROCESSOR_MODULE, SAMPLE_RATE } from "./constants";
 import {
