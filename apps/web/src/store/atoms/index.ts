@@ -1,14 +1,13 @@
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import { atom } from "jotai";
 
-import { DepositToken } from "@repo/shared/constants";
+import { SPLToken } from "@repo/shared/constants";
 
 export const anchorProviderAtom = atom<AnchorProvider | null>(null);
 
 // todo: review
 export const onDepositFunctionAtom = atom<
-  | (({ amount, token }: { amount: BN; token: DepositToken }) => Promise<void>)
-  | null
+  (({ amount, token }: { amount: BN; token: SPLToken }) => Promise<void>) | null
 >(async () => {
   throw new Error("Cannot deposit!");
 });
