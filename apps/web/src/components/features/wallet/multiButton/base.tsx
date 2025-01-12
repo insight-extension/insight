@@ -28,7 +28,6 @@ export const BaseWalletConnectionButton: FC<
 > = ({
   className,
   children,
-  endIcon,
   walletIcon,
   walletName,
   isHighlighted,

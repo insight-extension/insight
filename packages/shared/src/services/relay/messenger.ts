@@ -13,7 +13,6 @@ class RelayMessenger {
     transactionSignature
   }: DepositMessage) {
     try {
-      console.log("SENDING DEPOSIT MESSAGE");
       const response = await sendToBackgroundViaRelay<
         DepositMessage,
         RelayResponse
@@ -26,11 +25,7 @@ class RelayMessenger {
           transactionSignature
         }
       });
-
-      console.log("RESPONSE", response);
     } catch (error: any) {
-      console.log("RESPONSE", error);
-
       // todo: catchException
       throw new RelayMessageError(error.message);
     }

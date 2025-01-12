@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { SessionToken } from "@repo/shared/constants";
 
@@ -8,6 +8,12 @@ import { StorageChange } from "@/types/chrome";
 export const useAccessToken = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
+  const handleNewAccessToken = useCallback(({ newValue }: StorageChange) => {
+    if (!newValue === undefined) return;
+
+    setAccessToken(newValue);
+  }, []);
+
   useEffect(() => {
     (async () => {
       const token = await storage.get(SessionToken.ACCESS);
@@ -16,11 +22,7 @@ export const useAccessToken = () => {
     })();
 
     const callbackMap = {
-      [SessionToken.ACCESS]: ({ newValue }: StorageChange) => {
-        if (!newValue === undefined) return;
-
-        setAccessToken(newValue);
-      }
+      [SessionToken.ACCESS]: handleNewAccessToken
     };
 
     storage.watch(callbackMap);

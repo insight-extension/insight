@@ -1,18 +1,22 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging";
 
 import { StorageKey } from "@repo/shared/constants";
+import { DepositMessage } from "@repo/shared/services";
 
 import { storage } from "@/background";
 import { Status } from "@/types/index";
 
-const handler: PlasmoMessaging.MessageHandler = async ({ body }, response) => {
+const handler: PlasmoMessaging.MessageHandler<DepositMessage, any> = async (
+  { body },
+  response
+) => {
+  if (!body) return;
+
   storage.set(StorageKey.DEPOSIT, {
     subscriptionType: body.subscriptionType,
     amount: body.amount,
     transactionSignature: body.transactionSignature
   });
-
-  console.log("Deposit message received", body);
 
   response.send({
     status: Status.SUCCESS

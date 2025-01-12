@@ -32,5 +32,5 @@ export const convertBNToNumberWithDecimals = (
   decimals: number
 ): number => Number(value) / getDecimalMultiplier(decimals);
 
-export const roundToDecimals = (value: number, decimals = 2): number =>
+export const roundToDecimals = (value: number, decimals = 1): number =>
   Math.round(value * 10 ** decimals) / 10 ** decimals;

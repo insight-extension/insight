@@ -31,12 +31,15 @@ export const useTokenBalance = ({
 
   const updateBalance = useCallback(async () => {
     const anchorClient = anchorClientRef.current;
-    console.log("GET BALANCE", anchorClient);
 
     if (!anchorClient) return;
-
+    // todo: doesnt get actual balance event with timeout
     setBalance(await anchorClient.getTokenBalance({ token }));
   }, [token]);
+
+  const handleBalanceChange = useCallback(async () => {
+    setHasBalanceChanged(true);
+  }, []);
 
   useEffect(() => {
     if (!hasBalanceChanged) return;
@@ -50,11 +53,7 @@ export const useTokenBalance = ({
 
   useEffect(() => {
     const callbackMap = {
-      [StorageKey.DEPOSIT]: () => {
-        console.log("Deposit WATHCER");
-
-        setHasBalanceChanged(true);
-      }
+      [StorageKey.DEPOSIT]: handleBalanceChange
     };
 
     storage.watch(callbackMap);

@@ -22,8 +22,6 @@ export const useExtensionControls = (): UseExtensionControls => {
             lastFocusedWindow: true
           });
 
-          console.error("TAB", tab);
-
           match(tab)
             .with({ id: P.intersection(P.number, P.select()) }, async (id) => {
               await chrome.sidePanel.open({ tabId: id });
