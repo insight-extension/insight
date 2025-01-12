@@ -3,7 +3,11 @@ import ReactCountryFlag from "react-country-flag";
 
 import { match } from "ts-pattern";
 
-import { SubscriptionType } from "@repo/shared/constants";
+import {
+  SPLToken,
+  SubscriptionType,
+  TOKEN_CURRENCIES
+} from "@repo/shared/constants";
 import { roundToDecimals } from "@repo/shared/utils";
 import { ErrorAlert, Icon } from "@repo/ui/components";
 import { cn } from "@repo/ui/lib";
@@ -51,7 +55,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   );
   // todo: make it dynamic from current user subscription
   const [subscriptionType, _] = useState<SubscriptionType | null>(
-    SubscriptionType.FREE_TRIAL
+    SubscriptionType.PER_USAGE
   );
 
   const { accessToken } = useAccessToken();
@@ -160,7 +164,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         <div className="flex flex-row justify-between items-center mb-2">
           <div className="flex flex-row items-center h-8 w-38 bg-accent-foreground rounded">
             <p className="px-3 text-primary-foreground font-medium text-sm">
-              {`${getMessage("balance")}: ${balance ? roundToDecimals(balance) : "..."}`}
+              {`${getMessage("balance")}: ${balance ? roundToDecimals(balance) : "..."} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol}`}
             </p>
           </div>
 

@@ -12,6 +12,8 @@ const handler: PlasmoMessaging.MessageHandler = async ({ body }, response) => {
     transactionSignature: body.transactionSignature
   });
 
+  console.log("Deposit message received", body);
+
   response.send({
     status: Status.SUCCESS
   });

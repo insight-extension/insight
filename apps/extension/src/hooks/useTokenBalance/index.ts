@@ -25,11 +25,13 @@ export const useTokenBalance = ({
   token = TOKEN_CURRENCIES[SPLToken.USDC].symbol
 }: UseTokenBalanceProps) => {
   const [balance, setBalance] = useState<number | null>(null);
+  const [hasBalanceChanged, setHasBalanceChanged] = useState(false);
 
   const anchorClientRef = useRef<AnchorClient | null>(null);
 
   const updateBalance = useCallback(async () => {
     const anchorClient = anchorClientRef.current;
+    console.log("GET BALANCE", anchorClient);
 
     if (!anchorClient) return;
 
@@ -37,8 +39,22 @@ export const useTokenBalance = ({
   }, [token]);
 
   useEffect(() => {
+    if (!hasBalanceChanged) return;
+
+    (async () => {
+      await updateBalance();
+
+      setHasBalanceChanged(false);
+    })();
+  }, [hasBalanceChanged, updateBalance]);
+
+  useEffect(() => {
     const callbackMap = {
-      [StorageKey.DEPOSIT]: updateBalance
+      [StorageKey.DEPOSIT]: () => {
+        console.log("Deposit WATHCER");
+
+        setHasBalanceChanged(true);
+      }
     };
 
     storage.watch(callbackMap);
@@ -54,15 +70,13 @@ export const useTokenBalance = ({
     (async () => {
       const publicKey = sessionManager.decodeToken(accessToken);
 
-      const anchorClient = new AnchorClient(
+      anchorClientRef.current = new AnchorClient(
         new AnchorProvider(new Connection(SOLANA_CLUSTER_URL), {
           publicKey: new PublicKey(publicKey),
           signTransaction: async (_) => _,
           signAllTransactions: async (_) => []
         })
       );
-
-      anchorClientRef.current = anchorClient;
 
       await storage.set(StorageKey.PUBLIC_KEY, publicKey);
 
