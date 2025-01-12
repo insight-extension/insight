@@ -30,10 +30,10 @@ export class CreateTokenAccountError extends Error {
   }
 }
 
-export class DropSOLError extends Error {
+export class AirDropSOLError extends Error {
   constructor(public message: string) {
     super(message);
 
-    this.name = "DropSOLError";
+    this.name = "AirDropSOLError";
   }
 }

@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 
-import { AnchorProvider } from "@coral-xyz/anchor";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useSetAtom } from "jotai";
+
+import { AnchorProvider } from "@repo/shared/anchor";
 
 import { anchorProviderAtom } from "@/store";
 

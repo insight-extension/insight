@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1",
+    "@plasmohq/messaging": "^0.6.2",
     "@solana/spl-token": "^0.4.9",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/web3.js": "^1.95.4",
@@ -24,6 +25,7 @@
     "typescript": "^5.7.2"
   },
   "exports": {
+    "./anchor": "./src/anchor/index.ts",
     "./constants": "./src/constants/index.ts",
     "./errors": "./src/errors/index.ts",
     "./services": "./src/services/index.ts",

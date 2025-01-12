@@ -13,19 +13,22 @@ import { pipe } from "fp-ts/lib/function";
 import { P, match } from "ts-pattern";
 
 import {
-  DepositToken,
+  SPLToken,
   SubscriptionType,
   TOKEN_ADDRESSES,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
-import { numberToBN } from "@repo/shared/utils";
-
-import { Observable } from "../observable";
 import {
+  Observable,
+  convertBNToNumberWithDecimals,
+  convertNumberToBNWithDecimals
+} from "@repo/shared/utils";
+
+import {
+  AirDropSOLError,
   AssociatedTokenAddressError,
   CreateTokenAccountError,
-  DepositToVaultError,
-  DropSOLError
+  DepositToVaultError
 } from "./errors";
 import IDL, { type DepositProgram } from "./idl";
 import { EventCallbackMap } from "./types";
@@ -33,14 +36,18 @@ import { EventCallbackMap } from "./types";
 export class AnchorClient extends Observable<EventCallbackMap> {
   private TOKEN_PROGRAM = TOKEN_PROGRAM_ID;
 
-  constructor(
-    private user: PublicKey,
-    private provider: AnchorProvider
-  ) {
+  constructor(private provider: AnchorProvider) {
     super();
 
-    this.user = user;
     this.provider = provider;
+  }
+
+  private get user() {
+    return this.provider.wallet.publicKey;
+  }
+
+  private get connection() {
+    return this.provider.connection;
   }
 
   public async depositToVault({
@@ -49,7 +56,7 @@ export class AnchorClient extends Observable<EventCallbackMap> {
     subscriptionType
   }: {
     amount: BN;
-    token: DepositToken;
+    token: SPLToken;
     subscriptionType: SubscriptionType;
   }): Promise<string> {
     try {
@@ -61,18 +68,13 @@ export class AnchorClient extends Observable<EventCallbackMap> {
         tokenProgram: this.TOKEN_PROGRAM
       };
 
-      const normalizedAmount = numberToBN(
+      const normalizedAmount = convertNumberToBNWithDecimals(
         amount,
         TOKEN_CURRENCIES[token].decimals
       );
 
       const transactionSignature = await match(subscriptionType)
         .returnType<Promise<string>>()
-        .with(
-          SubscriptionType.FREE_TRIAL,
-          // todo: complete
-          () => Promise.resolve("signature")
-        )
         .with(
           SubscriptionType.PER_MONTH,
           async () =>
@@ -103,7 +105,7 @@ export class AnchorClient extends Observable<EventCallbackMap> {
     subscriptionType
   }: {
     amount: BN;
-    token: DepositToken;
+    token: SPLToken;
     subscriptionType: SubscriptionType;
   }) {
     const program = new Program(IDL as DepositProgram, this.provider);
@@ -116,12 +118,6 @@ export class AnchorClient extends Observable<EventCallbackMap> {
 
     return pipe(
       match(subscriptionType)
-        .with(SubscriptionType.FREE_TRIAL, () =>
-          tryCatch(
-            () => Promise.resolve("signature"),
-            (error: any) => left(new DepositToVaultError(error.message))
-          )
-        )
         .with(SubscriptionType.PER_MONTH, () =>
           tryCatch(
             () =>
@@ -153,23 +149,20 @@ export class AnchorClient extends Observable<EventCallbackMap> {
   }
 
   private async getTokenMint(token: PublicKey) {
-    const tokenMint = await getMint(this.provider.connection, token);
+    const tokenMint = await getMint(this.connection, token);
 
     return tokenMint;
   }
 
-  private async getAirdropSOL() {
+  private async airdropSOL() {
     const SOL_AMOUNT = 1;
 
     try {
       const [latestBlockhash, signature] = await Promise.all([
-        this.provider.connection.getLatestBlockhash(),
-        this.provider.connection.requestAirdrop(
-          this.user,
-          SOL_AMOUNT * LAMPORTS_PER_SOL
-        )
+        this.connection.getLatestBlockhash(),
+        this.connection.requestAirdrop(this.user, SOL_AMOUNT * LAMPORTS_PER_SOL)
       ]);
-      const signatureResult = await this.provider.connection.confirmTransaction(
+      const signatureResult = await this.connection.confirmTransaction(
         { signature, ...latestBlockhash },
         "confirmed"
       );
@@ -178,11 +171,11 @@ export class AnchorClient extends Observable<EventCallbackMap> {
         this.emit("airdropSOL");
       }
     } catch (error: any) {
-      throw new DropSOLError(error.message);
+      throw new AirDropSOLError(error.message);
     }
   }
 
-  public async checkUserTokenAccount({ token }: { token: DepositToken }) {
+  public async checkUserTokenAccount({ token }: { token: SPLToken }) {
     let userATA: PublicKey;
 
     try {
@@ -201,12 +194,7 @@ export class AnchorClient extends Observable<EventCallbackMap> {
     }
 
     try {
-      await getAccount(
-        this.provider.connection,
-        userATA,
-        undefined,
-        this.TOKEN_PROGRAM
-      );
+      await getAccount(this.connection, userATA, undefined, this.TOKEN_PROGRAM);
     } catch (error: any) {
       match(error)
         .with(P.instanceOf(TokenAccountNotFoundError), async () => {
@@ -249,7 +237,7 @@ export class AnchorClient extends Observable<EventCallbackMap> {
     }
   }
 
-  public async getTokenBalance({ token }: { token: DepositToken }) {
+  public async getTokenBalance({ token }: { token: SPLToken }) {
     try {
       const tokenMint = await this.getTokenMint(
         new PublicKey(TOKEN_ADDRESSES[token])
@@ -263,13 +251,16 @@ export class AnchorClient extends Observable<EventCallbackMap> {
       );
 
       const { amount } = await getAccount(
-        this.provider.connection,
+        this.connection,
         userATA,
         undefined,
         this.TOKEN_PROGRAM
       );
 
-      return Number(amount) / 10 ** TOKEN_CURRENCIES[token].decimals;
+      return convertBNToNumberWithDecimals(
+        amount,
+        TOKEN_CURRENCIES[token].decimals
+      );
     } catch {
       return 0;
     }
@@ -280,28 +271,14 @@ export class AnchorClient extends Observable<EventCallbackMap> {
       const balance = await this.getSOLBalance();
 
       if (!balance) {
-        await this.getAirdropSOL();
+        await this.airdropSOL();
       }
     } catch (error: any) {
-      throw new DropSOLError(error.message);
+      throw new AirDropSOLError(error.message);
     }
   }
 
-  public async poolSOLBalanceChange(retries = 10, delay = 700) {
-    for (let i = 0; i < retries; i++) {
-      const balance = await this.getSOLBalance();
-
-      if (balance > 0) {
-        this.emit("SOLbalanceChange", balance);
-
-        return;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-
-  private async getSOLBalance() {
-    return this.provider.connection.getBalance(this.user);
+  public async getSOLBalance() {
+    return this.connection.getBalance(this.user);
   }
 }

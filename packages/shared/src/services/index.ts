@@ -1,2 +1,2 @@
 export * from "./onchain";
-export * from "./observable";
+export * from "./relay";

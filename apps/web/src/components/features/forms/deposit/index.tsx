@@ -4,31 +4,27 @@ import {
   memo,
   useCallback,
   useEffect,
-  useMemo,
+  useRef,
   useState
 } from "react";
 import { useSearchParams } from "react-router";
 
-import { BN } from "@coral-xyz/anchor";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useAtomValue } from "jotai";
-import { P, match } from "ts-pattern";
 import { z } from "zod";
 
 import {
-  SOLToken,
   SPLToken,
   SubscriptionType,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
-import { AnchorClient } from "@repo/shared/services";
-import { convertBNToNumberWithDecimals } from "@repo/shared/utils";
+import { AnchorClient, relayMessenger } from "@repo/shared/services";
+import { roundToDecimals } from "@repo/shared/utils";
 
 import {
-  Button,
   Label,
   RadioGroup,
   RadioGroupItem,
@@ -41,7 +37,6 @@ import {
 import { useToast } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
 import { cn } from "@/lib/cn";
-import { relayMessenger } from "@/services";
 import { anchorProviderAtom } from "@/store";
 
 import { DepositFormFields, depositFormSchema } from "./validation";
@@ -50,21 +45,14 @@ interface DepositFormProps {
   onSuccessSubmit: () => void;
 }
 
-// todo: complete
 export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   const { toast } = useToast();
   const [searchParams, _] = useSearchParams();
 
   const [isAirdroppedSOL, setIsAirdroppedSOL] = useState<boolean>(false);
-  const [isSOLBalanceChanged, setIsSOLBalanceChanged] =
-    useState<boolean>(false);
+  const [balance, setBalance] = useState<number>(0);
 
-  const [SOLBalance, setSOLBalance] = useState<number | null>(null);
-
-  // todo: aidrop flow
-
-  const [userTokenBalance, setUserTokenBalance] = useState<number>(0);
-  const [anchorClient, setAnchorClient] = useState<AnchorClient | null>(null);
+  const anchorClientRef = useRef<AnchorClient | null>(null);
 
   const anchorProvider = useAtomValue(anchorProviderAtom);
 
@@ -93,9 +81,11 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
     defaultValues: {
       amount: 0,
       token: SPLToken.USDC,
-      subscriptionType: SubscriptionType.PER_MONTH
+      subscriptionType: SubscriptionType.PER_USAGE
     } as DepositFormFields,
     onSubmit: async ({ value: { amount, token, subscriptionType } }) => {
+      const anchorClient = anchorClientRef.current;
+
       if (!anchorClient) {
         throw new WalletNotConnectedError();
       }
@@ -109,15 +99,12 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         await anchorClient.airdropSOLIfRequired();
 
         const transactionSignature = await anchorClient.depositToVault({
-          amount:
-            amount /
-            // todo:remove
-            1000,
+          amount,
           token,
           subscriptionType
         });
 
-        relayMessenger.deposit({
+        await relayMessenger.deposit({
           amount,
           subscriptionType,
           transactionSignature,
@@ -128,7 +115,6 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
       } catch (error: any) {
         // todo: catch exeption
 
-        console.error("ERROR", error);
         toast({
           title: TRANSLATIONS.depositForm.toast.transactionFailedTitle,
           description:
@@ -145,8 +131,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
   const handleAirdropSOL = useCallback(() => {
     toast({
-      title: "Airdrop",
-      description: "SOL airdropped successfully",
+      title: TRANSLATIONS.depositForm.toast.successfulAirDropTitle,
+      description: TRANSLATIONS.depositForm.toast.successfulAirDropDescription,
       variant: "success"
     });
   }, []);
@@ -161,69 +147,43 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
     [triggerSubmit]
   );
 
-  const hasPositiveSOLBalance = useMemo(
-    () =>
-      match(SOLBalance)
-        .with(P.number, (balance) => balance > 0)
-        .with(null, () => null)
-        .exhaustive(),
-    [anchorClient, SOLBalance]
-  );
+  const updateBalance = useCallback(async () => {
+    const anchorClient = anchorClientRef.current;
+
+    if (!anchorClient) return;
+
+    setBalance(
+      await anchorClient.getTokenBalance({
+        token: getFieldValue("token")
+      })
+    );
+  }, []);
 
   useEffect(() => {
     if (publicKey && anchorProvider) {
-      const _anchorClient = new AnchorClient(anchorProvider);
+      anchorClientRef.current = new AnchorClient(anchorProvider);
 
-      setAnchorClient(_anchorClient);
-
-      _anchorClient.on("airdropSOL", () => {
+      anchorClientRef.current.on("airdropSOL", () => {
         setIsAirdroppedSOL(true);
       });
 
-      _anchorClient.on("SOLbalanceChange", () => {
-        setIsSOLBalanceChanged(true);
-
-        console.log("SOL balance changed");
-      });
+      (async () => {
+        await updateBalance();
+      })();
 
       return () => {
-        if (anchorClient) {
-          anchorClient.clear();
-        }
+        anchorClientRef.current?.clear();
       };
     }
-  }, [publicKey, anchorProvider]);
+  }, [publicKey]);
 
   useEffect(() => {
+    if (!isSubmitted) return;
+
     (async () => {
-      if (anchorClient) {
-        setUserTokenBalance(
-          await anchorClient.getTokenBalance({
-            token: getFieldValue("token")
-          })
-        );
-      }
+      await updateBalance();
     })();
-  }, [anchorClient, isSubmitted]);
-
-  useEffect(() => {
-    (async () => {
-      if (anchorClient) {
-        const SOLbalance = await anchorClient.getSOLBalance();
-
-        setSOLBalance(
-          convertBNToNumberWithDecimals(
-            new BN(SOLbalance),
-            TOKEN_CURRENCIES[SOLToken.SOL].decimals
-          )
-        );
-      }
-    })();
-  }, [anchorClient]);
-
-  useEffect(() => {
-    console.log("SOLBalance", SOLBalance);
-  }, [SOLBalance]);
+  }, [isSubmitted]);
 
   useEffect(() => {
     if (isAirdroppedSOL) {
@@ -362,9 +322,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
             <button
               className="text-dark h-10 cursor-pointer rounded bg-green-300 font-bold"
               type="submit"
-              disabled={
-                !canSubmit || isPristine || hasPositiveSOLBalance === false
-              }>
+              disabled={!canSubmit || isPristine}>
               {isSubmitting
                 ? TRANSLATIONS.depositForm.states.submitting
                 : TRANSLATIONS.depositForm.states.submit}
@@ -373,20 +331,14 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         </Subscribe>
 
         <Subscribe selector={({ isSubmitting }) => [isSubmitting]}>
-          {([isSubmitting]) => (
-            <Label className="font- text-medium">
-              {isSubmitting
-                ? "..."
-                : `${TRANSLATIONS.depositForm.info.balance}: ${userTokenBalance} ${TOKEN_CURRENCIES[getFieldValue("token")].symbol}`}
+          {() => (
+            <Label className="text-medium">
+              {TRANSLATIONS.depositForm.info.balance} {": "}
+              {roundToDecimals(balance)}{" "}
+              {TOKEN_CURRENCIES[getFieldValue("token")].symbol}
             </Label>
           )}
         </Subscribe>
-
-        {hasPositiveSOLBalance === false && (
-          <Button variant="button-dark" className="w-38">
-            AIDROP
-          </Button>
-        )}
       </div>
     </form>
   );

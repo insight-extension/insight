@@ -20,5 +20,17 @@ export const extractRootDomainFromURL = (url: string): string | null =>
 export const createAuthorizationHeader = (accessToken: string): string =>
   `Bearer ${accessToken}`;
 
-export const numberToBN = (amount: number, decimals: number): BN =>
-  new BN(amount * 10 ** decimals);
+export const getDecimalMultiplier = (decimals: number) => 10 ** decimals;
+
+export const convertNumberToBNWithDecimals = (
+  value: number,
+  decimals: number
+): BN => new BN(value * getDecimalMultiplier(decimals));
+
+export const convertBNToNumberWithDecimals = (
+  value: BN,
+  decimals: number
+): number => Number(value) / getDecimalMultiplier(decimals);
+
+export const roundToDecimals = (value: number, decimals = 2): number =>
+  Math.round(value * 10 ** decimals) / 10 ** decimals;

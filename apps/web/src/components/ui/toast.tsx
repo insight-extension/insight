@@ -29,8 +29,10 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        error: "alert alert-error",
-        success: "alert alert-success"
+        error:
+          "bg-dark border-red-500 text-red-500 dark:border-red-500 [&>svg]:text-red-500",
+        success:
+          "bg-dark border-green-500 text-green-500 dark:border-green-500 [&>svg]:text-green-500"
       },
       position: {
         top: "top-0 left-1/2 translate-x-1/2", // todo: review
