@@ -1,4 +1,6 @@
 export enum Status {
   SUCCESS = "success",
-  ERROR = "error",
+  ERROR = "error"
 }
+
+export * from "./chrome";

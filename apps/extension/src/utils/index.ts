@@ -2,7 +2,7 @@ import { SEARCH_PARAMS } from "@/constants";
 
 export const constructURLWithParams = <T extends keyof typeof SEARCH_PARAMS>({
   url,
-  params,
+  params
 }: {
   url: string;
   params: Partial<Record<T, keyof (typeof SEARCH_PARAMS)[T]>>;

@@ -1,13 +1,13 @@
-import { type FC, useCallback, useEffect, useState } from "react";
+import { type FC, useCallback, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 
 import { match } from "ts-pattern";
 
-import { SessionToken, SubscriptionType } from "@repo/shared/constants";
+import { SubscriptionType } from "@repo/shared/constants";
+import { roundToDecimals } from "@repo/shared/utils";
 import { ErrorAlert, Icon } from "@repo/ui/components";
 import { cn } from "@repo/ui/lib";
 
-import { storage } from "@/background";
 import {
   Button,
   DropdownMenu,
@@ -18,14 +18,14 @@ import {
   TextBlock
 } from "@/components";
 import "@/components/ui/textBlock";
-import {
-  ConnectionStatus,
-  SUPPORTED_LANGUAGES,
-  StorageKey,
-  UI_URL
-} from "@/constants";
+import { ConnectionStatus, SUPPORTED_LANGUAGES, UI_URL } from "@/constants";
 import "@/global.css";
-import { useAudioRecord, useExtensionControls } from "@/hooks";
+import {
+  useAccessToken,
+  useAudioRecord,
+  useExtensionControls,
+  useTokenBalance
+} from "@/hooks";
 import { type Language } from "@/types";
 import { constructURLWithParams } from "@/utils";
 
@@ -33,6 +33,11 @@ import { constructURLWithParams } from "@/utils";
 //    "content_security_policy": {
 //       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
 //     }
+// todo: add gobal error handler
+// add styles for alerts
+// setup URLS
+// accordion for translation/transcription
+// add senty
 
 interface AppProps {
   isSidebar: boolean;
@@ -44,9 +49,14 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   const [currentLanguage, setCurrentLanguage] = useState<Language>(
     SUPPORTED_LANGUAGES[0]
   );
-  const [accessToken, setAccessToken] = useState<string | null>("access-token");
-  const [subscriptionType, setSubscriptionType] =
-    useState<SubscriptionType | null>(SubscriptionType.FREE_TRIAL);
+  // todo: make it dynamic from current user subscription
+  const [subscriptionType, _] = useState<SubscriptionType | null>(
+    SubscriptionType.FREE_TRIAL
+  );
+
+  const { accessToken } = useAccessToken();
+
+  const { balance } = useTokenBalance({ accessToken });
 
   const {
     start,
@@ -64,23 +74,6 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   });
 
   const { openSidePanel, close } = useExtensionControls();
-
-  useEffect(() => {
-    (async () => {
-      const token = await storage.get(SessionToken.ACCESS);
-
-      setAccessToken(token || null);
-    })();
-  }, []);
-
-  storage.watch({
-    [SessionToken.ACCESS]: ({ newValue }) => {
-      setAccessToken(newValue);
-    },
-    [StorageKey.DEPOSIT]: ({ newValue }) => {
-      console.log(StorageKey.DEPOSIT, newValue);
-    }
-  });
 
   const handleLanguageChange = useCallback((language: Language) => {
     setCurrentLanguage(language);
@@ -167,8 +160,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         <div className="flex flex-row justify-between items-center mb-2">
           <div className="flex flex-row items-center h-8 w-38 bg-accent-foreground rounded">
             <p className="px-3 text-primary-foreground font-medium text-sm">
-              {/* {`${getMessage("balance")}: ${balance}`} */}
-              {getMessage("balance")}
+              {`${getMessage("balance")}: ${balance ? roundToDecimals(balance) : "..."}`}
             </p>
           </div>
 
@@ -253,10 +245,3 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     </div>
   );
 };
-
-// todo:
-// 1. auth flow +
-// 2. access token flow +
-// 3. subscription flow
-// 4. language flow
-// 5. audio recording flow

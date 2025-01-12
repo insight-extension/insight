@@ -4,8 +4,7 @@ import { Socket, io } from "socket.io-client";
 import { P, match } from "ts-pattern";
 
 import { SubscriptionType } from "@repo/shared/constants";
-import { Observable } from "@repo/shared/services";
-import { createAuthorizationHeader } from "@repo/shared/utils";
+import { Observable, createAuthorizationHeader } from "@repo/shared/utils";
 
 import { ConnectionStatus, WEBSOCKET_URL } from "@/constants";
 
