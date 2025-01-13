@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useSearchParams } from "react-router";
 
+import * as Sentry from "@sentry/react";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useForm } from "@tanstack/react-form";
@@ -113,7 +114,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
         handleSuccessSubmit();
       } catch (error: any) {
-        // todo: catch exeption
+        Sentry.captureException(error);
 
         toast({
           title: TRANSLATIONS.depositForm.toast.transactionFailedTitle,

@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
 
+import * as Sentry from "@sentry/react";
 import { PublicKey } from "@solana/web3.js";
 import { chain, mapLeft, right } from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
@@ -60,6 +61,8 @@ export const useAuthentication = (): UseAuthentication => {
           )
         ),
         mapLeft((error) => {
+          Sentry.captureException(error);
+
           match(error)
             .with({ traceId: TraceId.CREATE_SIGNATURE }, () =>
               handleErrorMessage(

@@ -18,6 +18,8 @@
         "@radix-ui/react-toast": "^1.2.2",
         "@repo/shared": "workspace:*",
         "@repo/ui": "workspace:*",
+        "@sentry/react": "^8.48.0",
+        "@sentry/vite-plugin": "^2.23.0",
         "@solana/spl-token": "^0.4.9",
         "@solana/wallet-adapter-base": "^0.9.23",
         "@solana/wallet-adapter-base-ui": "^0.1.2",
