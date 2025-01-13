@@ -11,7 +11,7 @@ export default defineConfig({
     nodePolyfills(),
     sentryVitePlugin({
       org: "insight-wr",
-      project: "react"
+      project: "web"
     })
   ],
 
