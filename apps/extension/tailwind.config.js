@@ -2,9 +2,6 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx,js}',
-    './components/**/*.{ts,tsx,js}',
-    './app/**/*.{ts,tsx,js}',
     './src/**/*.{ts,tsx,js}',
   ],
   prefix: "",
@@ -18,6 +15,19 @@ module.exports = {
     },
     extend: {
       colors: {
+        dark: '#0A0B0A',
+        white: '#FBFFFC',
+        slate: {
+          '600': '#D9D9D9',
+          '700': '#898989'
+        },
+        green: {
+          '300': '#57FFC1'
+        },
+        purple: {
+          '300': '#515CEC'
+        },
+        // todo: remove and reuse common theme
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

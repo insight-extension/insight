@@ -48,7 +48,14 @@ export const Home = () => {
 
       setIsWalletSelected(false);
     }
-  }, [connected, isWalletSelected, publicKey, signMessage,authenticate,setIsWalletSelected]);
+  }, [
+    connected,
+    isWalletSelected,
+    publicKey,
+    signMessage,
+    authenticate,
+    setIsWalletSelected
+  ]);
 
   useEffect(() => {
     const accessToken = cookies.accessToken;
@@ -61,7 +68,7 @@ export const Home = () => {
     ) {
       tokenRefresh();
     }
-  }, [cookies,tokenRefresh]);
+  }, [cookies, tokenRefresh]);
 
   return (
     <>

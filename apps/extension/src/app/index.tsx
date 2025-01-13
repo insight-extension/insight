@@ -38,9 +38,6 @@ import { constructURLWithParams } from "@/utils";
 //       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
 //     }
 // todo: add gobal error handler
-// add styles for alerts
-// setup URLS
-// accordion for translation/transcription
 // add senty
 
 interface AppProps {
@@ -122,13 +119,14 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
         {/* // todo: complete the styles */}
         {error && (
-          <ErrorAlert
-            className={cn("bg-red-500 text-white", "my-6")}
-            message={error.message}
-            actionMessage={getMessage("retry")}
-            title={getMessage("error")}
-            onAction={resume} // todo: change to restart
-          />
+          <div className="my-6">
+            <ErrorAlert
+              message={error.message}
+              actionMessage={getMessage("retry")}
+              title={getMessage("error")}
+              onAction={resume} // todo: change to restart
+            />
+          </div>
         )}
 
         <div className="flex flex-row justify-between items-center mb-3">
