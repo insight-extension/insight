@@ -10,7 +10,6 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@plasmohq/messaging": "^0.6.2",
         "@radix-ui/react-dialog": "^1.1.2",
         "@radix-ui/react-label": "^2.1.0",
         "@radix-ui/react-radio-group": "^1.2.1",
@@ -20,7 +19,6 @@
         "@repo/ui": "workspace:*",
         "@sentry/react": "^8.48.0",
         "@sentry/vite-plugin": "^2.23.0",
-        "@solana/spl-token": "^0.4.9",
         "@solana/wallet-adapter-base": "^0.9.23",
         "@solana/wallet-adapter-base-ui": "^0.1.2",
         "@solana/wallet-adapter-react": "^0.15.35",
