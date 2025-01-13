@@ -1,4 +1,4 @@
-import React, { memo, type FC } from "react";
+import { memo, type FC } from "react";
 
 import {
   Alert,

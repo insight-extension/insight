@@ -1,4 +1,4 @@
-import { StatusCode } from "@/constants";
+import { StatusCode } from "../constants";
 
 export class ExtendedError extends Error {
   constructor(

@@ -1,6 +1,6 @@
 import { BN } from "@coral-xyz/anchor";
 
-import { ROOT_DOMAIN_PATTERN, TOKEN_CURRENCIES } from "@repo/shared/constants";
+import { ROOT_DOMAIN_PATTERN } from "@repo/shared/constants";
 
 export const isServerSide = typeof window === "undefined";
 

@@ -8,8 +8,6 @@ import {
   getMint
 } from "@solana/spl-token";
 import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
-import { fold, left, right, tryCatch } from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
 import { P, match } from "ts-pattern";
 
 import {
@@ -97,55 +95,6 @@ export class AnchorClient extends Observable<EventCallbackMap> {
     } catch (error: any) {
       throw new DepositToVaultError(error.message);
     }
-  }
-
-  private _depositToVaultFN({
-    token,
-    amount,
-    subscriptionType
-  }: {
-    amount: BN;
-    token: SPLToken;
-    subscriptionType: SubscriptionType;
-  }) {
-    const program = new Program(IDL as DepositProgram, this.provider);
-
-    const payload = {
-      user: this.user,
-      token: TOKEN_ADDRESSES[token],
-      tokenProgram: this.TOKEN_PROGRAM
-    };
-
-    return pipe(
-      match(subscriptionType)
-        .with(SubscriptionType.PER_MONTH, () =>
-          tryCatch(
-            () =>
-              program.methods
-                .depositToSubscriptionVault(new BN(amount))
-                .accounts({ ...payload })
-                .rpc(),
-            (error: any) => left(new DepositToVaultError(error.message))
-          )
-        )
-        .with(SubscriptionType.PER_USAGE, () =>
-          tryCatch(
-            () =>
-              program.methods
-                .depositToTimedVault(new BN(amount))
-                .accounts({ ...payload })
-                .rpc(),
-            (error: any) => left(new DepositToVaultError(error.message))
-          )
-        )
-        .exhaustive(),
-      fold(
-        (error) => {
-          throw error;
-        },
-        (signature) => right(signature)
-      )
-    )();
   }
 
   private async getTokenMint(token: PublicKey) {

@@ -1,6 +1,5 @@
 import { sendToBackgroundViaRelay } from "@plasmohq/messaging";
-import { tryCatch } from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
+import * as Sentry from "@sentry/react";
 
 import { RelayMessageError } from "./errors";
 import { DepositMessage, RelayResponse, RelayRoute } from "./types";
@@ -13,10 +12,7 @@ class RelayMessenger {
     transactionSignature
   }: DepositMessage) {
     try {
-      const response = await sendToBackgroundViaRelay<
-        DepositMessage,
-        RelayResponse
-      >({
+      await sendToBackgroundViaRelay<DepositMessage, RelayResponse>({
         name: RelayRoute.DEPOSIT as never,
         body: {
           token,
@@ -26,8 +22,7 @@ class RelayMessenger {
         }
       });
     } catch (error: any) {
-      // todo: catchException
-      throw new RelayMessageError(error.message);
+      Sentry.captureException(new RelayMessageError(error.message));
     }
   }
 }
