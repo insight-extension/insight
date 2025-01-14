@@ -1,243 +1,218 @@
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import {
-    HTMLAttributes,
-    ReactNode,
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-    memo,
+  HTMLAttributes,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
 } from "react";
-import { PublicKey } from "@solana/web3.js";
-import { match, P } from "ts-pattern";
 import { useIntl } from "react-intl";
-import debounce from "debounce";
 
-import { DepositModal, DialogTrigger } from "@/components";
-import { SessionToken } from "@/constants";
-import { formatPublicKey, isTokenExpired } from "@/lib";
+import { PublicKey } from "@solana/web3.js";
+import debounce from "debounce";
+import { useAtom } from "jotai";
+import { P, match } from "ts-pattern";
+
+import { formatPublicKey } from "@repo/shared/utils";
+
+import { DepositModal, DialogTrigger, WalletModal } from "@/components";
+import { WalletButtonState, useLogout, useWalletMultiButton } from "@/hooks";
+import { walletsModalVisibilityAtom } from "@/store";
 
 import { BaseWalletConnectionButton } from "./base";
-import { WalletButtonLabel, WalletButtonState } from "./types";
-import { useWalletMultiButton } from "./hooks";
-import { useLogout } from "@/hooks";
-import { sessionManager } from "@/session";
+import { WalletButtonLabel } from "./types";
 
 interface WalletMultiButtonProps extends HTMLAttributes<HTMLButtonElement> {
-    namespace?: string;
+  namespace?: string;
 }
 
-// todo: auth action must be with wallet actions
 export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
-    ({ namespace = "features.wallet.multiButton", ...props }) => {
-        const intl = useIntl();
-        // const [{ accessToken }] = useCookies<string>([SessionToken.ACCESS], {
-        //     doNotParse: true,
-        // });
-        const accessToken = sessionManager.getToken({
-            key: SessionToken.ACCESS,
-        });
-        const { setVisible: setModalVisible } = useWalletModal();
-        const logout = useLogout();
+  ({ namespace = "features.wallet.multiButton", ...props }) => {
+    const intl = useIntl();
 
-        const {
-            buttonState,
-            onConnect,
-            onDisconnect,
-            publicKey,
-            walletIcon,
-            walletName,
-        } = useWalletMultiButton({
-            onSelectWallet() {
-                setModalVisible(true);
+    const [isModalVisible, setIsModalVisible] = useAtom(
+      walletsModalVisibilityAtom
+    );
+
+    const { walletState, publicKey, walletIcon, walletName } =
+      useWalletMultiButton();
+
+    const { logout } = useLogout({ withReload: false });
+
+    const [iscopied, setIsCopied] = useState<boolean>(false);
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+    const menuRef = useRef<HTMLUListElement | null>(null);
+
+    const content = useMemo(
+      () =>
+        match({
+          publicKey,
+          walletState
+        })
+          .returnType<string>()
+          .with(
+            {
+              walletState: WalletButtonState.CONNECTED,
+              publicKey: P.intersection(P.instanceOf(PublicKey), P.select())
             },
-        });
+            (key) => formatPublicKey(key)
+          )
+          .with(
+            {
+              walletState: P.not(WalletButtonState.CONNECTED),
+              publicKey: P.instanceOf(PublicKey)
+            },
+            () =>
+              intl.formatMessage({
+                id: `${namespace}.${WalletButtonLabel.CONNECTING}`
+              })
+          )
+          .with(
+            {
+              walletState: WalletButtonState.CONNECTING
+            },
+            () =>
+              intl.formatMessage({
+                id: `${namespace}.${WalletButtonLabel.CONNECTING}`
+              })
+          )
+          .with(
+            {
+              walletState: WalletButtonState.HAS_WALLET
+            },
+            () =>
+              intl.formatMessage({
+                id: `${namespace}.${WalletButtonLabel.HAS_WALLET}`
+              })
+          )
+          .otherwise(() =>
+            intl.formatMessage({
+              id: `${namespace}.${WalletButtonLabel.NO_WALLET}`
+            })
+          ),
+      [walletState, publicKey]
+    );
 
-        const [copied, setCopied] = useState<boolean>(false);
-        const [menuOpen, setMenuOpen] = useState<boolean>(false);
-        const [isAuthenticationRequired, _setIsAuthenticationRequired] =
-            useState<boolean>(false);
-        const ref = useRef<HTMLUListElement>(null);
+    const handleClick = useCallback(
+      () =>
+        match(walletState)
+          .with(WalletButtonState.NO_WALLET, () => setIsModalVisible(true))
+          .with(WalletButtonState.HAS_WALLET, () => setIsModalVisible(true))
+          .with(WalletButtonState.CONNECTED, () => setIsMenuOpen(true))
+          .otherwise(() => {}),
+      [walletState]
+    );
 
-        const content = useMemo(() => {
-            //todo: complete
-            const shouldAuthenticate =
-                buttonState === WalletButtonState.CONNECTED &&
-                isTokenExpired({
-                    token: accessToken,
-                });
+    const handleDisconnect = useCallback(() => {
+      logout();
 
-            // setIsAuthenticationRequired(shouldAuthenticate);
+      setIsMenuOpen(false);
+    }, [logout]);
 
-            return (
-                match({
-                    publicKey,
-                    buttonState,
-                    shouldAuthenticate,
-                })
-                    .returnType<string | ReactNode>()
-                    // .with(
-                    //     {
-                    //          shouldAuthenticate: true,
-                    //     },
-                    //     () =>
-                    //         intl.formatMessage({
-                    //             id: `${namespace}.${WalletButtonLabel.AUTHENTICATION_REQUIRED}`,
-                    //         })
-                    // )
-                    .with(
-                        {
-                            publicKey: P.intersection(
-                                P.instanceOf(PublicKey),
-                                P.select()
-                            ),
-                        },
-                        (publicKey) => formatPublicKey(publicKey)
-                    )
-                    .with(
-                        {
-                            buttonState: WalletButtonState.CONNECTING,
-                        },
-                        () =>
-                            intl.formatMessage({
-                                id: `${namespace}.${WalletButtonLabel.CONNECTING}`,
-                            })
-                    )
-                    .with(
-                        {
-                            buttonState: WalletButtonState.HAS_WALLET,
-                        },
-                        () =>
-                            intl.formatMessage({
-                                id: `${namespace}.${WalletButtonLabel.HAS_WALLET}`,
-                            })
-                    )
-                    .otherwise(() =>
-                        intl.formatMessage({
-                            id: `${namespace}.${WalletButtonLabel.NO_WALLET}`,
-                        })
-                    )
-            );
-        }, [buttonState, publicKey, accessToken]);
+    const handleCopy = useCallback(async () => {
+      if (!publicKey) return;
 
-        const handleClick = useCallback(() => {
-            match(buttonState)
-                .with(WalletButtonState.NO_WALLET, () => setModalVisible(true))
-                .with(
-                    WalletButtonState.HAS_WALLET,
-                    () => onConnect && onConnect()
-                )
-                .with(WalletButtonState.CONNECTED, () => setMenuOpen(true));
-        }, [buttonState, onConnect]);
+      await navigator.clipboard.writeText(publicKey.toBase58());
 
-        useEffect(() => {
-            const listener = (event: MouseEvent | TouchEvent) => {
-                const node = ref.current;
+      setIsCopied(true);
 
-                // Do nothing if clicking dropdown or its descendants
-                if (!node || node.contains(event.target as Node)) {
-                    return;
+      debounce(() => setIsCopied(false), 400)();
+    }, []);
+
+    const handleOpenWallets = useCallback(() => {
+      setIsModalVisible(true);
+      setIsMenuOpen(false);
+    }, []);
+
+    useEffect(() => {
+      const mouseOrTouchListener = (event: MouseEvent | TouchEvent) => {
+        const node = menuRef.current;
+
+        // Do nothing if clicking dropdown or its descendants
+        if (!node || node.contains(event.target as Node)) {
+          return;
+        }
+
+        setIsMenuOpen(false);
+      };
+
+      document.addEventListener("mousedown", mouseOrTouchListener);
+      document.addEventListener("touchstart", mouseOrTouchListener);
+
+      return () => {
+        document.removeEventListener("mousedown", mouseOrTouchListener);
+        document.removeEventListener("touchstart", mouseOrTouchListener);
+      };
+    }, []);
+
+    return (
+      <div className="wallet-adapter-dropdown">
+        <BaseWalletConnectionButton
+          {...props}
+          aria-expanded={isMenuOpen}
+          style={{
+            pointerEvents: isMenuOpen ? "none" : "auto",
+            ...props.style
+          }}
+          onClick={handleClick}
+          walletIcon={walletIcon}
+          walletName={walletName}
+          isHighlighted={walletState !== WalletButtonState.CONNECTED}>
+          {content}
+        </BaseWalletConnectionButton>
+
+        <ul
+          aria-label="dropdown-list"
+          className={`wallet-adapter-dropdown-list ${isMenuOpen && "wallet-adapter-dropdown-list-active"}`}
+          ref={menuRef}
+          role="menu">
+          {publicKey && (
+            <>
+              <DepositModal
+                isDefaultOpen
+                trigger={
+                  <DialogTrigger className="wallet-adapter-dropdown-list-item text-dark bg-green-300 hover:text-white">
+                    Deposit
+                  </DialogTrigger>
                 }
+              />
 
-                setMenuOpen(false);
-            };
+              <li
+                className="wallet-adapter-dropdown-list-item"
+                onClick={handleCopy}
+                role="menuitem">
+                {intl.formatMessage({
+                  id: `${namespace}.${iscopied ? WalletButtonLabel.COPIED : WalletButtonLabel.COPY_ADDRESS}`
+                })}
+              </li>
+            </>
+          )}
 
-            document.addEventListener("mousedown", listener);
-            document.addEventListener("touchstart", listener);
+          <li
+            className="wallet-adapter-dropdown-list-item"
+            onClick={handleOpenWallets}
+            role="menuitem">
+            {intl.formatMessage({
+              id: `${namespace}.${WalletButtonLabel.CHANGE_WALLET}`
+            })}
+          </li>
 
-            return () => {
-                document.removeEventListener("mousedown", listener);
-                document.removeEventListener("touchstart", listener);
-            };
-        }, []);
+          {walletState === WalletButtonState.CONNECTED && (
+            <li
+              className="wallet-adapter-dropdown-list-item"
+              onClick={handleDisconnect}
+              role="menuitem">
+              {intl.formatMessage({
+                id: `${namespace}.${WalletButtonLabel.DISCONNECT}`
+              })}
+            </li>
+          )}
+        </ul>
 
-        return (
-            <div className="wallet-adapter-dropdown">
-                <BaseWalletConnectionButton
-                    {...props}
-                    aria-expanded={menuOpen}
-                    style={{
-                        pointerEvents: menuOpen ? "none" : "auto",
-                        ...props.style,
-                    }}
-                    onClick={handleClick}
-                    walletIcon={walletIcon}
-                    walletName={walletName}
-                    isHighlighted={isAuthenticationRequired}
-                >
-                    {content}
-                </BaseWalletConnectionButton>
-
-                <ul
-                    aria-label="dropdown-list"
-                    className={`wallet-adapter-dropdown-list ${menuOpen && "wallet-adapter-dropdown-list-active"}`}
-                    ref={ref}
-                    role="menu"
-                >
-                    {publicKey && (
-                        <DepositModal
-                            isDefaultOpen
-                            trigger={
-                                <DialogTrigger className="wallet-adapter-dropdown-list-item bg-green-300 text-dark hover:text-white">
-                                    Deposit
-                                </DialogTrigger>
-                            }
-                        />
-                    )}
-
-                    {publicKey ? (
-                        <li
-                            className="wallet-adapter-dropdown-list-item"
-                            onClick={async () => {
-                                await navigator.clipboard.writeText(
-                                    publicKey.toBase58()
-                                );
-
-                                setCopied(true);
-
-                                debounce(() => setCopied(false), 400)();
-                            }}
-                            role="menuitem"
-                        >
-                            {intl.formatMessage({
-                                id: `${namespace}.${copied ? WalletButtonLabel.COPIED : WalletButtonLabel.COPY_ADDRESS}`,
-                            })}
-                        </li>
-                    ) : null}
-
-                    <li
-                        className="wallet-adapter-dropdown-list-item"
-                        onClick={() => {
-                            setModalVisible(true);
-                            setMenuOpen(false);
-                        }}
-                        role="menuitem"
-                    >
-                        {intl.formatMessage({
-                            id: `${namespace}.${WalletButtonLabel.CHANGE_WALLET}`,
-                        })}
-                    </li>
-
-                    {onDisconnect ? (
-                        <li
-                            className="wallet-adapter-dropdown-list-item"
-                            onClick={() => {
-                                onDisconnect();
-
-                                setMenuOpen(false);
-
-                                logout();
-                            }}
-                            role="menuitem"
-                        >
-                            {intl.formatMessage({
-                                id: `${namespace}.${WalletButtonLabel.DISCONNECT}`,
-                            })}
-                        </li>
-                    ) : null}
-                </ul>
-            </div>
-        );
-    }
+        {isModalVisible && <WalletModal />}
+      </div>
+    );
+  }
 );

@@ -1,10 +1,15 @@
 import { FC, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { NAV_LINKS } from "@/configs/";
 import { cn } from "@/lib";
 import GlobalIcon from "@/assets/icons/Global.svg";
-import { HeaderProps, WalletMultiButton, Button, Logo } from "@/components";
+import {
+    HeaderProps,
+    WalletMultiButton,
+    Button,
+    Logo,
+    NAV_LINKS,
+} from "@/components";
 
 interface MobileHeaderProps extends HeaderProps {}
 

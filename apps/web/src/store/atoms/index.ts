@@ -1,23 +1,19 @@
 import { atom } from "jotai";
-import { AnchorProvider, BN } from "@coral-xyz/anchor";
 
-import { DepositToken } from "@/constants";
+import { AnchorProvider } from "@repo/shared/anchor";
+import { SPLToken } from "@repo/shared/constants";
+import { BN } from "@repo/shared/utils";
 
 export const anchorProviderAtom = atom<AnchorProvider | null>(null);
 
+// unused
 export const onDepositFunctionAtom = atom<
-    | (({
-          amount,
-          token,
-      }: {
-          amount: BN;
-          token: DepositToken;
-      }) => Promise<void>)
-    | null
+  (({ amount, token }: { amount: BN; token: SPLToken }) => Promise<void>) | null
 >(async () => {
-    throw new Error("Cannot deposit!");
+  throw new Error("Cannot deposit!");
 });
 
-export const onConnectWalletAtom = atom<((() => void) | undefined) | null>(
-    () => {}
-);
+export const authenticationErrorMessageAtom = atom<string | null>(null);
+
+export const walletsModalVisibilityAtom = atom<boolean>(false);
+export const walletSelectionAtom = atom<boolean>(false);

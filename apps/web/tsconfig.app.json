@@ -32,6 +32,6 @@
     },
     "include": [
         "src",
-        "src/tests"
+        "src/_unused/tests"
     ]
 }

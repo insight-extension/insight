@@ -1,17 +1,33 @@
 {
   "name": "@repo/ui",
   "version": "1.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-radio-group": "^1.2.1",
+    "@radix-ui/react-select": "^2.1.2",
+    "@radix-ui/react-toast": "^1.2.2",
+    "class-variance-authority": "^0.7.1",
+    "framer-motion": "^11.11.11",
+    "lucide-react": "^0.460.0",
+    "react": "18.3.1",
+    "ts-pattern": "^5.5.0"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:^",
     "@types/eslint": "^8.56.10",
     "@types/node": "22.7.4",
+    "@types/react": "18.3.1",
     "eslint": "^8.57.0",
-    "typescript": "^5.4.5"
+    "prettier": "3.3.3",
+    "typescript": "^5.7.2"
   },
   "exports": {
-    "./constants": "./src/constants/index.ts"
+    "./components": "./src/components/index.ts",
+    "./lib": "./src/lib/index.ts",
+    "./tailwind-config": "./tailwind.config.js",
+    "./postcss-config": "./postcss.config"
   },
   "private": true,
   "scripts": {}

@@ -1,6 +1,8 @@
 class PCMProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
+
+    this.sampleRate = sampleRate;
   }
 
   /**
