@@ -1,4 +1,5 @@
-import  {type FC } from "react";
+
+import React from "react";
 
 import {
   type LucideProps,
@@ -39,7 +40,7 @@ interface IconProps extends LucideProps {
   name: IconName;
 }
 
-export const Icon: FC<IconProps> = ({ name, ...props }) => {
+export const Icon: React.FC<IconProps> = ({ name, ...props }) => {
   const LucideIcon = IconsList[name];
 
   return <LucideIcon {...props} />;

@@ -1,3 +1,4 @@
+import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 import { left, mapLeft, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { Socket, io } from "socket.io-client";
@@ -42,8 +43,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   public get isReady(): boolean {
     return Boolean(
-      this.webSocket?.connected &&
-        this.capturedStream?.active &&
+      this.capturedStream?.active &&
         this.audioContext &&
         this.streamSourceNode &&
         this.pcmProcessor
@@ -109,7 +109,18 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   private handleWebSocketConnection = (): void => {
     this.emit("status", ConnectionStatus.CONNECTED);
 
-    this.captureStream();
+    match(this.isReady)
+      .with(true, () => {
+        this.streamSourceNode!.connect(this.pcmProcessor!);
+
+        this.pcmProcessor!.connect(this.audioContext!.destination);
+
+        this.emit("recording", true);
+        this.emit("status", ConnectionStatus.CONNECTED);
+
+        this.isPaused = false;
+      })
+      .otherwise(this.captureStream);
   };
 
   private handleException = (error: any): void => {
@@ -160,7 +171,8 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
       transports: ["websocket"],
       extraHeaders: {
         Authorization: createAuthorizationHeader(this.accessToken),
-        Subscription: this.subscriptionType
+        Subscription: this.subscriptionType,
+        "Accept-Language": "en-US" // todo: dynamic language
       }
     });
 
@@ -210,6 +222,8 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
       type: MessageType.STOP
     });
 
+    this.webSocket?.disconnect();
+
     this.pcmProcessor?.disconnect();
 
     this.emit("recording", false);
@@ -220,8 +234,6 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   public destroy(): void {
     this.stop();
-
-    this.webSocket?.disconnect();
 
     this.capturedStream?.getTracks().forEach((track) => track.stop());
     this.streamSourceNode?.disconnect();
@@ -253,6 +265,9 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   public resume(): void {
     this.emit("error", null);
+    this.emit("status", ConnectionStatus.CONNECTING);
+
+    this.initWebSocketConnection();
 
     match(this.isReady)
       .with(true, () => {

@@ -1,4 +1,5 @@
 import { BN } from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
 
 import { ROOT_DOMAIN_PATTERN } from "@repo/shared/constants";
 
@@ -34,3 +35,13 @@ export const convertBNToNumberWithDecimals = (
 
 export const roundToDecimals = (value: number, decimals = 1): number =>
   Math.round(value * 10 ** decimals) / 10 ** decimals;
+
+export const formatPublicKey = (key: PublicKey | string, visibleNumber = 4) => {
+  let publicKey = typeof key === "string" ? new PublicKey(key) : key;
+
+  return (
+    publicKey.toBase58().slice(0, visibleNumber) +
+    ".." +
+    publicKey.toBase58().slice(-visibleNumber)
+  );
+};

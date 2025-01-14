@@ -12,7 +12,9 @@ import {
 class APIClient {
   private baseURL: string = import.meta.env.VITE_API_URL;
   private headers: HeadersInit = {
-    "Content-Type": "application/json"
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "Accept-Language": "en-US" // todo: dynamic language
   };
 
   private getURL(url: string) {

@@ -14,9 +14,10 @@ import debounce from "debounce";
 import { useAtom } from "jotai";
 import { P, match } from "ts-pattern";
 
+import { formatPublicKey } from "@repo/shared/utils";
+
 import { DepositModal, DialogTrigger, WalletModal } from "@/components";
 import { WalletButtonState, useLogout, useWalletMultiButton } from "@/hooks";
-import { formatPublicKey } from "@/lib";
 import { walletsModalVisibilityAtom } from "@/store";
 
 import { BaseWalletConnectionButton } from "./base";
@@ -172,7 +173,7 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
               <DepositModal
                 isDefaultOpen
                 trigger={
-                  <DialogTrigger className="wallet-adapter-dropdown-list-item bg-green-300 text-dark hover:text-white">
+                  <DialogTrigger className="wallet-adapter-dropdown-list-item text-dark bg-green-300 hover:text-white">
                     Deposit
                   </DialogTrigger>
                 }

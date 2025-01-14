@@ -1,6 +1,7 @@
 import { type FC, useCallback, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 
+import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 import { match } from "ts-pattern";
 
 import {
@@ -8,7 +9,7 @@ import {
   SubscriptionType,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
-import { roundToDecimals } from "@repo/shared/utils";
+import { formatPublicKey, roundToDecimals } from "@repo/shared/utils";
 import { ErrorAlert, Icon } from "@repo/ui/components";
 import { cn } from "@repo/ui/lib";
 
@@ -55,9 +56,10 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     SubscriptionType.PER_USAGE
   );
 
+  // todo: use refresh token
   const { accessToken } = useAccessToken();
 
-  const { balance } = useTokenBalance({ accessToken });
+  const { balance, publicKey } = useTokenBalance({ accessToken });
 
   const {
     start,
@@ -131,17 +133,21 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
         <div className="flex flex-row justify-between items-center mb-3">
           <Button variant="default" className="w-38">
-            <a
-              href={constructURLWithParams({
-                url: UI_URL,
-                params: {
-                  action: "connect-wallet"
-                }
-              })}
-              target="_blank"
-              rel="noopener noreferrer">
-              {getMessage("connectWallet")}
-            </a>
+            {publicKey ? (
+              formatPublicKey(publicKey)
+            ) : (
+              <a
+                href={constructURLWithParams({
+                  url: UI_URL,
+                  params: {
+                    action: "connect-wallet"
+                  }
+                })}
+                target="_blank"
+                rel="noopener noreferrer">
+                {getMessage("connectWallet")}
+              </a>
+            )}
           </Button>
 
           <Button variant="default" className="w-38">
@@ -162,7 +168,9 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         <div className="flex flex-row justify-between items-center mb-2">
           <div className="flex flex-row items-center h-8 w-38 bg-accent-foreground rounded">
             <p className="px-3 text-primary-foreground font-medium text-sm">
-              {`${getMessage("balance")}: ${balance ? roundToDecimals(balance) : "..."} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol}`}
+              {/* <p className="text-xs">{`${getMessage("balance")}`}:</p> */}
+
+              {`${balance ? `${roundToDecimals(balance)} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol}` : "..."} `}
             </p>
           </div>
 
@@ -225,7 +233,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
         <div className="flex flex-col gap-2">
           <Button
-            disabled={isRecording}
+            disabled={isRecording || !accessToken}
             size="lg"
             onClick={isReady ? resume : start}>
             <Icon name="Play" className="mr-2" />
@@ -234,7 +242,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           </Button>
 
           <Button
-            disabled={!isRecording}
+            disabled={!isRecording || !accessToken}
             size="lg"
             variant={"destructive"}
             onClick={stop}>
@@ -247,3 +255,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     </div>
   );
 };
+
+// todo: apply correct env
+// why record doesnt click?
+// deplot to cloudflare
+// build extension

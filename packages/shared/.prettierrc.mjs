@@ -9,9 +9,8 @@ export default {
   singleQuote: false,
   trailingComma: "none",
   bracketSpacing: true,
-  bracketSameLine: true,
-  plugins: [
-    "@trivago/prettier-plugin-sort-imports",],
+  bracketSameLine: false,
+  plugins: ["@trivago/prettier-plugin-sort-imports",],
   "importOrder": [
     "^react(.*)$",
     "<THIRD_PARTY_MODULES>",

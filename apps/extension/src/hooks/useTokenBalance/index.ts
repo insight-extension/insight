@@ -25,6 +25,8 @@ export const useTokenBalance = ({
   token = TOKEN_CURRENCIES[SPLToken.USDC].symbol
 }: UseTokenBalanceProps) => {
   const [balance, setBalance] = useState<number | null>(null);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
+
   const [hasBalanceChanged, setHasBalanceChanged] = useState(false);
 
   const anchorClientRef = useRef<AnchorClient | null>(null);
@@ -67,8 +69,14 @@ export const useTokenBalance = ({
     if (!accessToken) return;
 
     (async () => {
-      const publicKey = sessionManager.decodeToken(accessToken);
+      setPublicKey(sessionManager.decodeToken(accessToken));
+    })();
+  }, [accessToken]);
 
+  useEffect(() => {
+    if (!publicKey) return;
+
+    (async () => {
       anchorClientRef.current = new AnchorClient(
         new AnchorProvider(new Connection(SOLANA_CLUSTER_URL), {
           publicKey: new PublicKey(publicKey),
@@ -81,9 +89,10 @@ export const useTokenBalance = ({
 
       await updateBalance();
     })();
-  }, [accessToken]);
+  }, [publicKey]);
 
   return {
-    balance
+    balance,
+    publicKey
   };
 };

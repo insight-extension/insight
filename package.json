@@ -32,9 +32,6 @@
     "syncpack:format": "pnpm exec syncpack format",
     "syncpack:list": "pnpm exec syncpack list",
     "syncpack:list-mismatches": "pnpm exec syncpack list-mismatches",
-    "syncpack:update": "pnpm exec syncpack update",
-    "build:api": "turbo run build --filter=api",
-    "dev:api": "turbo run start:dev --filter=api",
-    "start:api-prod": "turbo run start:prod --filter=api"
+    "syncpack:update": "pnpm exec syncpack update"
   }
 }
