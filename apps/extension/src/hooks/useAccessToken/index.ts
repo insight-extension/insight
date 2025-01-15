@@ -9,7 +9,7 @@ export const useAccessToken = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const handleNewAccessToken = useCallback(({ newValue }: StorageChange) => {
-    if (!newValue === undefined) return;
+    if (newValue === undefined) return;
 
     setAccessToken(newValue);
   }, []);

@@ -66,7 +66,12 @@ export const useTokenBalance = ({
   }, []);
 
   useEffect(() => {
-    if (!accessToken) return;
+    if (!accessToken) {
+      setPublicKey(null);
+      setBalance(null);
+
+      return;
+    }
 
     (async () => {
       setPublicKey(sessionManager.decodeToken(accessToken));

@@ -8,16 +8,23 @@ import {
   useState
 } from "react";
 import { useIntl } from "react-intl";
+import { useSearchParams } from "react-router";
 
 import { PublicKey } from "@solana/web3.js";
 import debounce from "debounce";
 import { useAtom } from "jotai";
 import { P, match } from "ts-pattern";
 
+import { SEARCH_PARAMS } from "@repo/shared/constants";
 import { formatPublicKey } from "@repo/shared/utils";
 
 import { DepositModal, DialogTrigger, WalletModal } from "@/components";
-import { WalletButtonState, useLogout, useWalletMultiButton } from "@/hooks";
+import {
+  WalletButtonState,
+  useLogout,
+  useSearchParamValue,
+  useWalletMultiButton
+} from "@/hooks";
 import { walletsModalVisibilityAtom } from "@/store";
 
 import { BaseWalletConnectionButton } from "./base";
@@ -30,6 +37,13 @@ interface WalletMultiButtonProps extends HTMLAttributes<HTMLButtonElement> {
 export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
   ({ namespace = "features.wallet.multiButton", ...props }) => {
     const intl = useIntl();
+
+    const action = useSearchParamValue("action");
+    const [searchParams] = useSearchParams();
+
+    const [autoconnect] = useState<boolean>(
+      action === SEARCH_PARAMS.action.deposit
+    );
 
     const [isModalVisible, setIsModalVisible] = useAtom(
       walletsModalVisibilityAtom
@@ -95,6 +109,24 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
       [walletState, publicKey]
     );
 
+    useEffect(() => {
+      if (walletState === WalletButtonState.CONNECTED) {
+        // todo: complete this
+        if (searchParams.get("action")) {
+          searchParams.delete("action");
+        }
+      }
+    }, [walletState]);
+
+    useEffect(() => {
+      if (
+        (autoconnect && walletState === WalletButtonState.NO_WALLET) ||
+        WalletButtonState.HAS_WALLET
+      ) {
+        setIsModalVisible(true);
+      }
+    }, [autoconnect, walletState]);
+
     const handleClick = useCallback(
       () =>
         match(walletState)
@@ -109,6 +141,10 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
       logout();
 
       setIsMenuOpen(false);
+
+      if (searchParams.get("action")) {
+        searchParams.delete("action");
+      }
     }, [logout]);
 
     const handleCopy = useCallback(async () => {
@@ -159,7 +195,8 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
           onClick={handleClick}
           walletIcon={walletIcon}
           walletName={walletName}
-          isHighlighted={walletState !== WalletButtonState.CONNECTED}>
+          isHighlighted={walletState !== WalletButtonState.CONNECTED}
+        >
           {content}
         </BaseWalletConnectionButton>
 
@@ -167,7 +204,8 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
           aria-label="dropdown-list"
           className={`wallet-adapter-dropdown-list ${isMenuOpen && "wallet-adapter-dropdown-list-active"}`}
           ref={menuRef}
-          role="menu">
+          role="menu"
+        >
           {publicKey && (
             <>
               <DepositModal
@@ -182,7 +220,8 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
               <li
                 className="wallet-adapter-dropdown-list-item"
                 onClick={handleCopy}
-                role="menuitem">
+                role="menuitem"
+              >
                 {intl.formatMessage({
                   id: `${namespace}.${iscopied ? WalletButtonLabel.COPIED : WalletButtonLabel.COPY_ADDRESS}`
                 })}
@@ -193,7 +232,8 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
           <li
             className="wallet-adapter-dropdown-list-item"
             onClick={handleOpenWallets}
-            role="menuitem">
+            role="menuitem"
+          >
             {intl.formatMessage({
               id: `${namespace}.${WalletButtonLabel.CHANGE_WALLET}`
             })}
@@ -203,7 +243,8 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
             <li
               className="wallet-adapter-dropdown-list-item"
               onClick={handleDisconnect}
-              role="menuitem">
+              role="menuitem"
+            >
               {intl.formatMessage({
                 id: `${namespace}.${WalletButtonLabel.DISCONNECT}`
               })}
