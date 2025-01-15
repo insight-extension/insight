@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { SessionToken } from "@repo/shared/constants";
+import { isTokenExpired } from "@repo/shared/utils";
 
 import { storage } from "@/background";
+import { sessionManager } from "@/session/manager";
 import { StorageChange } from "@/types/chrome";
 
 export const useAccessToken = () => {
@@ -13,6 +15,17 @@ export const useAccessToken = () => {
 
     setAccessToken(newValue);
   }, []);
+
+  useEffect(() => {
+    if (
+      accessToken &&
+      isTokenExpired({
+        token: accessToken
+      })
+    ) {
+      sessionManager.refreshToken(accessToken);
+    }
+  }, [accessToken]);
 
   useEffect(() => {
     (async () => {

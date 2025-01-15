@@ -6,6 +6,7 @@ export type ObservableEventCallbackMap = {
   status: (status: ConnectionStatus) => void;
   recording: (recording: boolean) => void;
   error: (error: any) => void;
+  refreshToken: () => void;
 };
 
 export type WebSocketEventCallbackMap = {

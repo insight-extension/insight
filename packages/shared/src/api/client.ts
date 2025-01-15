@@ -10,7 +10,7 @@ import {
 } from "@/api";
 
 class APIClient {
-  private baseURL: string = import.meta.env.VITE_API_URL;
+  private baseURL: string = process.env.API_URL as string;
   private headers: HeadersInit = {
     Accept: "application/json",
     "Content-Type": "application/json",
