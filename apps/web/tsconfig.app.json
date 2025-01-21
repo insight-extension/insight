@@ -32,6 +32,7 @@
     },
     "include": [
         "src",
-        "src/_unused/tests"
+        "src/_unused/tests",
+        "../../packages/shared/src/errors/trace.ts"
     ]
 }

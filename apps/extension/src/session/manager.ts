@@ -1,8 +1,9 @@
-import { fold, right, tryCatch } from "fp-ts/lib/TaskEither";
+import { chain, fold, mapLeft, right, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { P, match } from "ts-pattern";
 
 import { StorageKey } from "@repo/shared/constants";
+import { authService } from "@repo/shared/services";
 import {
   SessionTokenPayload,
   SessionTokenPayloadCodec
@@ -51,6 +52,23 @@ export class SessionManager {
           return right(void 0);
         }
       )
+    )();
+  }
+
+  public refreshToken(refreshToken: string) {
+    pipe(
+      authService.refreshToken({ refreshToken }),
+      chain((response) =>
+        tryCatch(
+          async () => {
+            await storage.set(StorageKey.ACCESS_TOKEN, response.accessToken);
+          },
+          (error: any) => error
+        )
+      ),
+      mapLeft((error) => {
+        throw error;
+      })
     )();
   }
 }

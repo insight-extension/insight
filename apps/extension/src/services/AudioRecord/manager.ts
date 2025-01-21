@@ -1,11 +1,14 @@
-import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 import { left, mapLeft, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { Socket, io } from "socket.io-client";
 import { P, match } from "ts-pattern";
 
 import { SubscriptionType } from "@repo/shared/constants";
-import { Observable, createAuthorizationHeader } from "@repo/shared/utils";
+import {
+  Observable,
+  createAuthorizationHeader,
+  isTokenExpired
+} from "@repo/shared/utils";
 
 import { ConnectionStatus, WEBSOCKET_URL } from "@/constants";
 
@@ -167,6 +170,18 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   };
 
   private initWebSocketConnection(): void {
+    if (
+      this.accessToken &&
+      isTokenExpired({
+        token: this.accessToken
+      })
+    ) {
+      //todo: review logic
+      this.emit("refreshToken");
+
+      return;
+    }
+
     this.webSocket = io(WEBSOCKET_URL, {
       transports: ["websocket"],
       extraHeaders: {

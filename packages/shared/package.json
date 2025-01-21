@@ -12,6 +12,7 @@
     "fp-ts": "^2.16.9",
     "io-ts": "^2.2.22",
     "jwt-decode": "^4.0.0",
+    "ky": "^1.7.4",
     "ts-pattern": "^5.5.0",
     "zod": "^3.23.8"
   },
@@ -27,6 +28,7 @@
   },
   "exports": {
     "./anchor": "./src/anchor/index.ts",
+    "./api": "./src/api/index.ts",
     "./constants": "./src/constants/index.ts",
     "./errors": "./src/errors/index.ts",
     "./services": "./src/services/index.ts",

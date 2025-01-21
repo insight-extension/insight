@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { ConnectionStatus } from "@/constants";
 import { AudioRecordManager } from "@/services";
+import { sessionManager } from "@/session/manager";
 
 import { UseAudioRecord, UseAudioRecordProps } from "./types";
 
@@ -19,6 +20,7 @@ export const useAudioRecord = ({
   const [translation, setTranslation] =
     useState<UseAudioRecord["translation"]>("");
   const [error, setError] = useState<UseAudioRecord["error"] | null>(null);
+  const [shouldRefreshToken, setShouldRefreshToken] = useState<boolean>(false);
 
   const audioRecordManagerRef = useRef<AudioRecordManager | null>(null);
 
@@ -60,8 +62,20 @@ export const useAudioRecord = ({
           setError(error);
         }
       );
+
+      audioRecordManagerRef.current.on("refreshToken", () => {
+        setShouldRefreshToken(true);
+      });
     }
   }, [accessToken, subscriptionType]);
+
+  useEffect(() => {
+    if (accessToken && shouldRefreshToken) {
+      sessionManager.refreshToken(accessToken);
+
+      audioRecordManagerRef.current?.resume();
+    }
+  }, [shouldRefreshToken]);
 
   useEffect(() => {
     return () => {
