@@ -13,7 +13,7 @@ import {
   type AuthSignature,
   type AuthTokens,
   type AuthVerifyAccount
-} from "@/services/auth";
+} from "./types";
 
 // todo: use validation
 class AuthService {
