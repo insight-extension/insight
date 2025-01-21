@@ -66,19 +66,19 @@ export const Footer = () => {
             </a>
 
             <a
-              href="https://www.linkedin.com/company/insight-xyz/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img src={Linked} className="h-[40x] w-[40x]" alt="LinkedIn" />
-            </a>
-
-            <a
               href="https://www.instagram.com/insight.xyz/"
               target="_blank"
               rel="noopener noreferrer"
             >
               <img src={Insta} className="h-[40x] w-[40x]" alt="Instagram" />
+            </a>
+
+            <a
+              href="https://www.linkedin.com/company/insight-xyz/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img src={Linked} className="h-[40x] w-[40x]" alt="LinkedIn" />
             </a>
           </div>
         </div>
