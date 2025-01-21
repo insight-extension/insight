@@ -2,8 +2,8 @@ import bs58 from "bs58";
 import { TaskEither, tryCatch } from "fp-ts/lib/TaskEither";
 
 import { APIError, apiClient } from "@repo/shared/api";
+import { CreateSignatureError, TraceId } from "@repo/shared/errors";
 
-import { CreateSignatureError, TraceId } from "@/errors";
 import {
   type AuthClaimNonce,
   type AuthCreateSignature,

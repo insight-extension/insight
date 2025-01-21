@@ -7,15 +7,22 @@ import {
   type MutationParams,
   type RequestParams,
   parseAPIError
-} from "@/api";
+} from "@repo/shared/api";
+
+import { API_URL } from "./config";
 
 class APIClient {
-  private baseURL: string = process.env.API_URL as string;
-  private headers: HeadersInit = {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-    "Accept-Language": "en-US" // todo: dynamic language
-  };
+  private baseURL: string;
+  private headers: HeadersInit;
+
+  constructor() {
+    this.baseURL = API_URL;
+    this.headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "Accept-Language": "en-US" // todo: dynamic language
+    };
+  }
 
   private getURL(url: string) {
     return this.baseURL + url;
