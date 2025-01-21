@@ -2,9 +2,9 @@ import { KeyboardEvent, RefObject, useRef, useState } from "react";
 
 import Kumeka from "@/assets/icons/Kumeka.svg";
 import Solana from "@/assets/icons/Solana.svg";
+import X from "@/assets/icons/X.svg";
 import Insta from "@/assets/icons/insta.svg";
 import Linked from "@/assets/icons/linked.svg";
-import Twitter from "@/assets/icons/twiter.svg";
 import { Button, Logo, UpcomingSoonBadge } from "@/components";
 
 export const Footer = () => {
@@ -58,25 +58,27 @@ export const Footer = () => {
           </div>
           <div className="flex gap-8">
             <a
-              href="https://www.instagram.com/insight.xyz/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img src={Insta} className="h-auto w-[40x]" alt="Instagram" />
-            </a>
-            <a
               href="https://x.com/insight_xyz"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img src={Twitter} className="h-auto w-[40x]" alt="Twitter" />
+              <img src={X} className="h-[40x] w-[40x]" alt="Twitter" />
             </a>
+
+            <a
+              href="https://www.instagram.com/insight.xyz/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img src={Insta} className="h-[40x] w-[40x]" alt="Instagram" />
+            </a>
+
             <a
               href="https://www.linkedin.com/company/insight-xyz/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img src={Linked} className="h-auto w-[40x]" alt="LinkedIn" />
+              <img src={Linked} className="h-[40x] w-[40x]" alt="LinkedIn" />
             </a>
           </div>
         </div>
