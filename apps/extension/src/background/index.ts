@@ -1,29 +1,18 @@
 import { Storage } from "@plasmohq/storage";
-import { match, P } from "ts-pattern";
+import { P, match } from "ts-pattern";
 
-import { SessionToken } from "@repo/ui/constants";
-import { extractDomainFromURL, jwtDecode } from "@repo/shared/utils";
-import type { TokenPayload } from "@repo/shared/types";
+import { SessionToken } from "@repo/shared/constants";
+import { extractDomainFromURL } from "@repo/shared/utils";
 
-import { StorageKey } from "~constants";
-import { UI_URL } from "~configs";
+import { UI_URL } from "@/constants";
 
 export const storage = new Storage({ area: "sync" });
 
 chrome.cookies.get(
   { url: UI_URL, name: SessionToken.ACCESS },
   async (cookie) => {
-    if (cookie) {
-      // review
-      try {
-        const { publicKey } = jwtDecode<TokenPayload>(cookie.value);
-
-        await storage.set(SessionToken.ACCESS, publicKey);
-      } catch (error) {
-        await storage.set(SessionToken.ACCESS, null);
-      }
-    } else {
-      storage.set(StorageKey.ACCESS_TOKEN, null);
+    if (cookie && cookie.value) {
+      storage.set(SessionToken.ACCESS, cookie.value);
     }
   }
 );
@@ -34,16 +23,8 @@ chrome.cookies.onChanged.addListener(async function (changedInfo) {
       .with({ removed: true, cause: P.not("overwrite") }, async () => {
         await storage.set(SessionToken.ACCESS, null);
       })
-      .otherwise(async () => {
-        try {
-          const { publicKey } = jwtDecode<TokenPayload>(
-            changedInfo.cookie.value
-          );
-
-          await storage.set(SessionToken.ACCESS, publicKey);
-        } catch (error) {
-          await storage.set(SessionToken.ACCESS, null);
-        }
-      });
+      .otherwise(() =>
+        storage.set(SessionToken.ACCESS, changedInfo.cookie.value)
+      );
   }
 });

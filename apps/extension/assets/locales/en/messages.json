@@ -27,8 +27,24 @@
     "message": "Start",
     "description": "Button to start."
   },
+  "resume": {
+    "message": "Resume",
+    "description": "Button to resume."
+  },
   "stop": {
     "message": "Stop",
     "description": "Button to stop."
+  },
+  "error": {
+    "message": "Error occured",
+    "description": "Label for error."
+  },
+  "retry": {
+    "message": "Retry",
+    "description": "Button to retry."
+  },
+  "close": {
+    "message": "Close",
+    "description": "Button to close."
   }
 }

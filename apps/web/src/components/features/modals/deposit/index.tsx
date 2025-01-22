@@ -9,7 +9,7 @@ import {
 } from "@/components";
 import { TRANSLATIONS } from "@/i18n";
 import { useSearchParamValue } from "@/hooks";
-import { SEARCH_PARAMS } from "@/constants";
+import { SEARCH_PARAMS } from "@repo/shared/constants";
 
 interface DepositModalProps {
     isDefaultOpen?: boolean;

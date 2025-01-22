@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@repo/ui/*": [
+      "@/*": [
         "./src/*"
       ]
     },
@@ -15,7 +15,6 @@
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "incremental": true,

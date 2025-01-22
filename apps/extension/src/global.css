@@ -63,3 +63,20 @@
     @apply bg-background text-foreground font-stolzl;
   }
 }
+
+@layer components {
+  .button {
+    @apply rounded-[32px] px-5 py-[11px] text-lg leading-none;
+  }
+
+  .button-white {
+    @apply border bg-white text-dark transition-all hover:border-white hover:bg-dark hover:text-white;
+  }
+
+  .button-dark-border {
+    @apply border border-white bg-dark text-white transition-all hover:border-dark hover:bg-white hover:text-dark;
+  }
+  .button-dark {
+    @apply border border-dark bg-dark px-[50px] py-4 text-[30px] text-white transition-all hover:bg-white hover:text-dark;
+  }
+}

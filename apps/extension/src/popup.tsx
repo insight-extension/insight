@@ -1,4 +1,4 @@
-import { App } from "~components/App";
+import { App } from "@/app/";
 
 const IndexPopup = () => {
   return <App isSidebar={false} />;

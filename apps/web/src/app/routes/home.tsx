@@ -1,51 +1,97 @@
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { useIntl } from "react-intl";
 
-import { useSetupAnchorProvider, useAuthentication } from "@/hooks";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useAtom } from "jotai";
+
+import { SessionToken } from "@repo/shared/constants";
+
 import {
-    ErrorAlert,
-    Hero,
-    HowItWorks,
-    WhyOur,
-    Web3Community,
-    Prices,
-    Faqs,
-    Comments,
-    Footer,
+  Comments,
+  ErrorAlert,
+  Faqs,
+  Footer,
+  Hero,
+  HowItWorks,
+  Prices,
+  Web3Community,
+  WhyOur
 } from "@/components";
+import { useAuthentication, useSetupAnchorProvider } from "@/hooks";
+import { isTokenExpired } from "@/lib";
+import { walletSelectionAtom } from "@/store";
 
 const Header = lazy(() => import("@/components/sections/Header"));
 const MobileHeader = lazy(() => import("@/components/sections/MobileHeader"));
 
 export const Home = () => {
-    const intl = useIntl();
+  const intl = useIntl();
 
-    const { authenticationError } = useAuthentication();
+  const [cookies] = useCookies([SessionToken.ACCESS]);
 
-    useSetupAnchorProvider();
+  const [isWalletSelected, setIsWalletSelected] = useAtom(walletSelectionAtom);
 
-    return (
-        <>
-            <Header className="hidden lg:flex" />
-            <MobileHeader className="block lg:hidden" />
+  const { connected, publicKey, signMessage } = useWallet();
 
-            {authenticationError && (
-                <ErrorAlert
-                    title={intl.formatMessage({ id: "error.authentication" })}
-                    message={authenticationError}
-                    actionMessage={intl.formatMessage({ id: "action.retry" })}
-                />
-            )}
+  const {
+    authenticate,
+    tokenRefresh,
+    errorMessage: authenticationErrorMessage
+  } = useAuthentication();
 
-            <Hero />
-            <HowItWorks />
-            <WhyOur />
-            <Web3Community />
-            <Prices />
-            <Faqs />
-            <Comments />
+  useSetupAnchorProvider();
 
-            <Footer />
-        </>
-    );
+  useEffect(() => {
+    if (isWalletSelected && connected && publicKey && signMessage) {
+      authenticate({ publicKey, signMessage });
+
+      setIsWalletSelected(false);
+    }
+  }, [
+    connected,
+    isWalletSelected,
+    publicKey,
+    signMessage,
+    authenticate,
+    setIsWalletSelected
+  ]);
+
+  useEffect(() => {
+    const accessToken = cookies.accessToken;
+
+    if (
+      accessToken &&
+      isTokenExpired({
+        token: accessToken
+      })
+    ) {
+      tokenRefresh();
+    }
+  }, [cookies, tokenRefresh]);
+
+  return (
+    <>
+      <Header className="hidden lg:flex" />
+      <MobileHeader className="block lg:hidden" />
+
+      {authenticationErrorMessage && (
+        <ErrorAlert
+          title={intl.formatMessage({ id: "error.authentication" })}
+          message={authenticationErrorMessage}
+          actionMessage={intl.formatMessage({ id: "action.retry" })}
+        />
+      )}
+
+      <Hero />
+      <HowItWorks />
+      <WhyOur />
+      <Web3Community />
+      <Prices />
+      <Faqs />
+      <Comments />
+
+      <Footer />
+    </>
+  );
 };

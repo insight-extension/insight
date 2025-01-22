@@ -1,345 +1,346 @@
-import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
-import { FC, FormEvent, memo, useCallback, useEffect, useState } from "react";
-import { z } from "zod";
-import { useAtomValue } from "jotai";
-import { BN } from "@coral-xyz/anchor";
-import { match } from "ts-pattern";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
+import {
+  FC,
+  FormEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 import { useSearchParams } from "react-router";
 
+import * as Sentry from "@sentry/react";
+import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useForm } from "@tanstack/react-form";
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import { useAtomValue } from "jotai";
+import { z } from "zod";
+
 import {
-    Label,
-    RadioGroup,
-    RadioGroupItem,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  SPLToken,
+  SubscriptionType,
+  TOKEN_CURRENCIES
+} from "@repo/shared/constants";
+import { AnchorClient, relayMessenger } from "@repo/shared/services";
+import { roundToDecimals } from "@repo/shared/utils";
+
+import {
+  Label,
+  RadioGroup,
+  RadioGroupItem,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components";
-import { cn } from "@/lib/cn";
-import { AnchorClient } from "@/onchain";
-import { anchorProviderAtom } from "@/store";
-import { DepositToken, SubscriptionType, TOKEN_CURRENCIES } from "@/constants";
 import { useToast } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
+import { cn } from "@/lib/cn";
+import { anchorProviderAtom } from "@/store";
 
 import { DepositFormFields, depositFormSchema } from "./validation";
 
 interface DepositFormProps {
-    onSuccessSubmit: () => void;
+  onSuccessSubmit: () => void;
 }
 
 export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
-    const { toast } = useToast();
-    const [searchParams, _] = useSearchParams();
+  const { toast } = useToast();
+  const [searchParams, _] = useSearchParams();
 
-    const [userTokenBalance, setUserTokenBalance] = useState<number>(0);
-    const [anchorClient, setAnchorClient] = useState<AnchorClient | null>(null);
+  const [isAirdroppedSOL, setIsAirdroppedSOL] = useState<boolean>(false);
+  const [balance, setBalance] = useState<number>(0);
 
-    const anchorProvider = useAtomValue(anchorProviderAtom);
+  const anchorClientRef = useRef<AnchorClient | null>(null);
 
-    const { publicKey } = useWallet();
+  const anchorProvider = useAtomValue(anchorProviderAtom);
 
-    const handleSuccessSubmit = useCallback(() => {
-        toast({
-            title: TRANSLATIONS.depositForm.toast.successfulTransactionTitle,
-            description:
-                TRANSLATIONS.depositForm.toast.successfulTransactionDescription,
-            variant: "success",
-        });
+  const { publicKey } = useWallet();
 
-        searchParams.delete("action");
-
-        onSuccessSubmit();
-    }, []);
-
-    const {
-        Field,
-        Subscribe,
-        handleSubmit: triggerSubmit,
-        getFieldValue,
-        state: { isSubmitted },
-    } = useForm({
-        defaultValues: {
-            amount: 0,
-            token: DepositToken.USDC,
-            subscriptionType: SubscriptionType.PER_MONTH,
-        } as DepositFormFields,
-        onSubmit: async ({ value: { amount, token, subscriptionType } }) => {
-            if (!anchorClient) {
-                throw new WalletNotConnectedError();
-            }
-
-            try {
-                const normalizedAmount = new BN(
-                    (amount * 10 ** TOKEN_CURRENCIES[token].decimals) /
-                        // todo: remove
-                        1000
-                );
-
-                await anchorClient.checkUserTokenAccount({
-                    token,
-                });
-
-                await anchorClient.airdropSOLIfRequired();
-
-                const signature = await match(subscriptionType)
-                    .returnType<Promise<string>>()
-                    .with(SubscriptionType.PER_MONTH, () =>
-                        anchorClient.depositToSubscriptionVault({
-                            amount: normalizedAmount,
-                            token,
-                        })
-                    )
-                    .with(SubscriptionType.PER_USAGE, () =>
-                        anchorClient.depositToTimedVault({
-                            amount: normalizedAmount,
-                            token,
-                        })
-                    )
-                    .exhaustive();
-
-                console.log("signature", signature);
-
-                // todo: complete
-                // await relayMessenger.deposit({
-                //     amount: Number(normalizedAmount),
-                //     subscriptionType,
-                //     transactionSignature: signature,
-                //     token,
-                // });
-
-                // await relayMessenger.balance({
-                //     amount: Number(normalizedAmount),
-                //     token,
-                // });
-
-                handleSuccessSubmit();
-            } catch (error: any) {
-                toast({
-                    title: TRANSLATIONS.depositForm.toast
-                        .transactionFailedTitle,
-                    description:
-                        TRANSLATIONS.depositForm.toast
-                            .transactionFailedDescription +
-                        `${error.message && ": " + error.message}`,
-                    variant: "error",
-                });
-            }
-        },
-        validatorAdapter: zodValidator(),
-        validators: {
-            onChange: depositFormSchema,
-        },
+  const handleSuccessSubmit = useCallback(() => {
+    toast({
+      title: TRANSLATIONS.depositForm.toast.successfulTransactionTitle,
+      description:
+        TRANSLATIONS.depositForm.toast.successfulTransactionDescription,
+      variant: "success"
     });
 
-    const handleFormSubmit = useCallback(
-        (event: FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            event.stopPropagation();
+    searchParams.delete("action");
 
-            triggerSubmit();
-        },
-        [triggerSubmit]
+    onSuccessSubmit();
+  }, []);
+
+  const {
+    Field,
+    Subscribe,
+    handleSubmit: triggerSubmit,
+    getFieldValue,
+    state: { isSubmitted }
+  } = useForm({
+    defaultValues: {
+      amount: 0,
+      token: SPLToken.USDC,
+      subscriptionType: SubscriptionType.PER_USAGE
+    } as DepositFormFields,
+    onSubmit: async ({ value: { amount, token, subscriptionType } }) => {
+      const anchorClient = anchorClientRef.current;
+
+      if (!anchorClient) {
+        throw new WalletNotConnectedError();
+      }
+
+      // todo: use pipe
+      try {
+        await anchorClient.checkUserTokenAccount({
+          token
+        });
+
+        await anchorClient.airdropSOLIfRequired();
+
+        const transactionSignature = await anchorClient.depositToVault({
+          amount,
+          token,
+          subscriptionType
+        });
+
+        await relayMessenger.deposit({
+          amount,
+          subscriptionType,
+          transactionSignature,
+          token
+        });
+
+        handleSuccessSubmit();
+      } catch (error: any) {
+        Sentry.captureException(error);
+
+        toast({
+          title: TRANSLATIONS.depositForm.toast.transactionFailedTitle,
+          description:
+            TRANSLATIONS.depositForm.toast.transactionFailedDescription,
+          variant: "error"
+        });
+      }
+    },
+    validatorAdapter: zodValidator(),
+    validators: {
+      onChange: depositFormSchema
+    }
+  });
+
+  const handleAirdropSOL = useCallback(() => {
+    toast({
+      title: TRANSLATIONS.depositForm.toast.successfulAirDropTitle,
+      description: TRANSLATIONS.depositForm.toast.successfulAirDropDescription,
+      variant: "success"
+    });
+  }, []);
+
+  const handleFormSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      triggerSubmit();
+    },
+    [triggerSubmit]
+  );
+
+  const updateBalance = useCallback(async () => {
+    const anchorClient = anchorClientRef.current;
+
+    if (!anchorClient) return;
+
+    setBalance(
+      await anchorClient.getTokenBalance({
+        token: getFieldValue("token")
+      })
     );
+  }, []);
 
-    useEffect(() => {
-        if (publicKey && anchorProvider) {
-            setAnchorClient(new AnchorClient(publicKey, anchorProvider));
-        }
-    }, [publicKey, anchorProvider]);
+  useEffect(() => {
+    if (publicKey && anchorProvider) {
+      anchorClientRef.current = new AnchorClient(anchorProvider);
 
-    useEffect(() => {
-        (async () => {
-            if (anchorClient) {
-                setUserTokenBalance(
-                    await anchorClient.getTokenBalance({
-                        token: getFieldValue("token"),
-                    })
-                );
-            }
-        })();
-    }, [anchorClient, isSubmitted]);
+      anchorClientRef.current.on("airdropSOL", () => {
+        setIsAirdroppedSOL(true);
+      });
 
-    return (
-        <form onSubmit={handleFormSubmit}>
-            <div className="flex flex-col gap-5">
-                <Field name="subscriptionType">
-                    {({ state, name, handleChange }) => (
-                        <RadioGroup
-                            name={name}
-                            defaultValue={state.value}
-                            onValueChange={(value) =>
-                                handleChange(value as SubscriptionType)
-                            }
-                            className="flex gap-8"
-                        >
-                            {Object.values(SubscriptionType).map((type) => (
-                                <div key={type} className="flex gap-2">
-                                    <RadioGroupItem
-                                        color="green"
-                                        key={type}
-                                        value={type}
-                                        id={type}
-                                    />
+      (async () => {
+        await updateBalance();
+      })();
 
-                                    <Label htmlFor={type}>
-                                        {
-                                            TRANSLATIONS.depositForm.fields
-                                                .subscription[type]
-                                        }
-                                    </Label>
-                                </div>
-                            ))}
-                        </RadioGroup>
-                    )}
-                </Field>
+      return () => {
+        anchorClientRef.current?.clear();
+      };
+    }
+  }, [publicKey]);
 
-                <div className="flex gap-4">
-                    <Field
-                        name="amount"
-                        validators={{
-                            onChange: z
-                                .number()
-                                .min(
-                                    1,
-                                    TRANSLATIONS.depositForm.validation.amount
-                                        .minimum
-                                ),
-                            onChangeAsyncDebounceMs: 500,
-                        }}
-                    >
-                        {({ name, state, handleChange, handleBlur }) => {
-                            const {
-                                meta: { errors, isTouched, isValidating },
-                            } = state;
+  useEffect(() => {
+    if (!isSubmitted) return;
 
-                            return (
-                                <div className="flex w-4/6 flex-col gap-2">
-                                    <div className="flex flex-col gap-2">
-                                        <input
-                                            id={name}
-                                            name={name}
-                                            value={state.value}
-                                            onBlur={handleBlur}
-                                            onChange={({ target }) => {
-                                                const sanitizedValue =
-                                                    target.value.replace(
-                                                        /[^0-9]/g,
-                                                        ""
-                                                    );
-                                                const value =
-                                                    Number(sanitizedValue);
+    (async () => {
+      await updateBalance();
+    })();
+  }, [isSubmitted]);
 
-                                                handleChange(
-                                                    isNaN(value) ? 0 : value
-                                                );
-                                            }}
-                                            type="text"
-                                            className={cn(
-                                                "relative z-10",
-                                                "cursor-pointer",
-                                                "h-10",
-                                                "px-3 py-2",
-                                                "border-input rounded border bg-dark"
-                                            )}
-                                        />
-                                    </div>
+  useEffect(() => {
+    if (isAirdroppedSOL) {
+      handleAirdropSOL();
 
-                                    <span>
-                                        {isTouched && errors.length ? (
-                                            <span className="text-xs text-red-500">
-                                                {errors.join(",")}
-                                            </span>
-                                        ) : null}
+      setIsAirdroppedSOL(false);
+    }
+  }, [isAirdroppedSOL]);
 
-                                        {isValidating
-                                            ? TRANSLATIONS.depositForm.states
-                                                  .validating
-                                            : null}
-                                    </span>
-                                </div>
-                            );
-                        }}
-                    </Field>
+  return (
+    <form onSubmit={handleFormSubmit}>
+      <div className="flex flex-col gap-5">
+        <Field name="subscriptionType">
+          {({ state, name, handleChange }) => (
+            <RadioGroup
+              name={name}
+              defaultValue={state.value}
+              onValueChange={(value) => handleChange(value as SubscriptionType)}
+              className="flex gap-8">
+              {Object.values(SubscriptionType).map((type) => (
+                <div key={type} className="flex gap-2">
+                  <RadioGroupItem
+                    color="green"
+                    key={type}
+                    value={type}
+                    id={type}
+                  />
 
-                    <Field name="token">
-                        {({ state, name, handleChange }) => (
-                            <Select
-                                disabled
-                                name={name}
-                                defaultValue={state.value}
-                                onValueChange={(value) =>
-                                    handleChange(value as DepositToken)
-                                }
-                            >
-                                <SelectTrigger className="w-2/6">
-                                    <SelectValue
-                                        placeholder={
-                                            TRANSLATIONS.depositForm.fields
-                                                .token.select
-                                        }
-                                    />
-                                </SelectTrigger>
-
-                                <SelectContent className="z-10 w-2/6 rounded bg-dark">
-                                    {Object.values(DepositToken).map(
-                                        (token) => {
-                                            const tokenValue =
-                                                TOKEN_CURRENCIES[token].symbol;
-                                            const isDisabled =
-                                                state.value !== tokenValue;
-
-                                            return (
-                                                <SelectItem
-                                                    disabled={isDisabled}
-                                                    key={token.toString()}
-                                                    value={tokenValue}
-                                                >
-                                                    {tokenValue}
-                                                </SelectItem>
-                                            );
-                                        }
-                                    )}
-                                </SelectContent>
-                            </Select>
-                        )}
-                    </Field>
+                  <Label htmlFor={type}>
+                    {TRANSLATIONS.depositForm.fields.subscription[type]}
+                  </Label>
                 </div>
+              ))}
+            </RadioGroup>
+          )}
+        </Field>
 
-                <Subscribe
-                    selector={({ canSubmit, isSubmitting, isPristine }) => [
-                        canSubmit,
-                        isSubmitting,
-                        isPristine,
-                    ]}
-                >
-                    {([canSubmit, isSubmitting, isPristine]) => (
-                        <button
-                            className="h-10 cursor-pointer rounded bg-green-300 font-bold text-dark"
-                            type="submit"
-                            disabled={!canSubmit || isPristine}
-                        >
-                            {isSubmitting
-                                ? TRANSLATIONS.depositForm.states.submitting
-                                : TRANSLATIONS.depositForm.states.submit}
-                        </button>
-                    )}
-                </Subscribe>
+        <div className="flex gap-4">
+          <Field
+            name="amount"
+            validators={{
+              onChange: z
+                .number()
+                .min(1, TRANSLATIONS.depositForm.validation.amount.minimum),
+              onChangeAsyncDebounceMs: 500
+            }}>
+            {({ name, state, handleChange, handleBlur }) => {
+              const {
+                meta: { errors, isTouched, isValidating }
+              } = state;
 
-                <Subscribe selector={({ isSubmitting }) => [isSubmitting]}>
-                    {([isSubmitting]) => (
-                        <Label className="font- text-medium">
-                            {isSubmitting
-                                ? "..."
-                                : `${TRANSLATIONS.depositForm.info.balance}: ${userTokenBalance} ${TOKEN_CURRENCIES[getFieldValue("token")].symbol}`}
-                        </Label>
-                    )}
-                </Subscribe>
-            </div>
-        </form>
-    );
+              return (
+                <div className="flex w-4/6 flex-col gap-2">
+                  <div className="flex flex-col gap-2">
+                    <input
+                      id={name}
+                      name={name}
+                      value={state.value}
+                      onBlur={handleBlur}
+                      onChange={({ target }) => {
+                        const sanitizedValue = target.value.replace(
+                          /[^0-9]/g,
+                          ""
+                        );
+                        const value = Number(sanitizedValue);
+
+                        handleChange(isNaN(value) ? 0 : value);
+                      }}
+                      type="text"
+                      className={cn(
+                        "relative z-10",
+                        "cursor-pointer",
+                        "h-10",
+                        "px-3 py-2",
+                        "border-input bg-dark rounded border"
+                      )}
+                    />
+                  </div>
+
+                  <span>
+                    {isTouched && errors.length ? (
+                      <span className="text-xs text-red-500">
+                        {errors.join(",")}
+                      </span>
+                    ) : null}
+
+                    {isValidating
+                      ? TRANSLATIONS.depositForm.states.validating
+                      : null}
+                  </span>
+                </div>
+              );
+            }}
+          </Field>
+
+          <Field name="token">
+            {({ state, name, handleChange }) => (
+              <Select
+                disabled
+                name={name}
+                defaultValue={state.value}
+                onValueChange={(value) => handleChange(value as SPLToken)}>
+                <SelectTrigger className="w-2/6">
+                  <SelectValue
+                    placeholder={TRANSLATIONS.depositForm.fields.token.select}
+                  />
+                </SelectTrigger>
+
+                <SelectContent className="bg-dark z-10 w-2/6 rounded">
+                  {Object.values(SPLToken).map((token) => {
+                    const tokenValue = TOKEN_CURRENCIES[token].symbol;
+                    const isDisabled = state.value !== tokenValue;
+
+                    return (
+                      <SelectItem
+                        disabled={isDisabled}
+                        key={token.toString()}
+                        value={tokenValue}>
+                        {tokenValue}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            )}
+          </Field>
+        </div>
+
+        <Subscribe
+          selector={({ canSubmit, isSubmitting, isPristine }) => [
+            canSubmit,
+            isSubmitting,
+            isPristine
+          ]}>
+          {([canSubmit, isSubmitting, isPristine]) => (
+            <button
+              className="text-dark h-10 cursor-pointer rounded bg-green-300 font-bold"
+              type="submit"
+              disabled={!canSubmit || isPristine}>
+              {isSubmitting
+                ? TRANSLATIONS.depositForm.states.submitting
+                : TRANSLATIONS.depositForm.states.submit}
+            </button>
+          )}
+        </Subscribe>
+
+        <Subscribe selector={({ isSubmitting }) => [isSubmitting]}>
+          {() => (
+            <Label className="text-medium">
+              {TRANSLATIONS.depositForm.info.balance} {": "}
+              {roundToDecimals(balance)}{" "}
+              {TOKEN_CURRENCIES[getFieldValue("token")].symbol}
+            </Label>
+          )}
+        </Subscribe>
+      </div>
+    </form>
+  );
 });

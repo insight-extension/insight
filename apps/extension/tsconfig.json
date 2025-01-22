@@ -8,11 +8,12 @@
     "./**/*.ts",
     "./**/*.tsx",
     "src/**/*",
-    "pcm-processor.js"
+    "pcm-processor.js",
+    "plasmo.config.mts"
   ],
   "compilerOptions": {
     "paths": {
-      "~*": [
+      "@/*": [
         "./src/*"
       ]
     },
@@ -24,7 +25,7 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmitOnError": false,
-    "outDir": "build/chrome-mv3-prod/public/processors",
+    "outDir": "build/chrome-mv3-prod",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "lib": [
@@ -33,7 +34,8 @@
       "ESNext"
     ],
     "types": [
-      "chrome"
+      "chrome",
+      "node"
     ],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

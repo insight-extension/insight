@@ -1,10 +1,13 @@
-import type { PlasmoCSConfig } from "plasmo";
 import { relayMessage } from "@plasmohq/messaging";
+import type { PlasmoCSConfig } from "plasmo";
+
+import { RelayRoute } from "@repo/shared/services";
 
 export const config: PlasmoCSConfig = {
-  matches: ["<all_urls>"],
+  // todo: use only with ENV urls
+  matches: ["<all_urls>"]
 };
 
 relayMessage({
-  name: "deposit",
+  name: RelayRoute.DEPOSIT
 });

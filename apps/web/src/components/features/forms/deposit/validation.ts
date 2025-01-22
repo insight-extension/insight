@@ -1,27 +1,27 @@
 import { z } from "zod";
 
+import { SubscriptionType } from "@repo/shared/constants";
+import { SPLToken } from "@repo/shared/constants";
+
 import { TRANSLATIONS } from "@/i18n";
-import { SubscriptionType } from "@/constants";
-import { DepositToken } from "@/constants";
 
 export const depositFormSchema = z.object({
-    amount: z
-        .number()
-        .min(1, { message: TRANSLATIONS.depositForm.validation.amount.minimum })
-        .max(10, {
-            message: TRANSLATIONS.depositForm.validation.amount.maximum,
-        }),
-    token: z.nativeEnum(DepositToken, {
-        errorMap: () => ({
-            message: TRANSLATIONS.depositForm.validation.token.required,
-        }),
+  amount: z
+    .number()
+    .min(1, { message: TRANSLATIONS.depositForm.validation.amount.minimum })
+    .max(10, {
+      message: TRANSLATIONS.depositForm.validation.amount.maximum
     }),
-    subscriptionType: z.nativeEnum(SubscriptionType, {
-        errorMap: () => ({
-            message:
-                TRANSLATIONS.depositForm.validation.subscriptionType.required,
-        }),
-    }),
+  token: z.nativeEnum(SPLToken, {
+    errorMap: () => ({
+      message: TRANSLATIONS.depositForm.validation.token.required
+    })
+  }),
+  subscriptionType: z.nativeEnum(SubscriptionType, {
+    errorMap: () => ({
+      message: TRANSLATIONS.depositForm.validation.subscriptionType.required
+    })
+  })
 });
 
 export type DepositFormFields = z.infer<typeof depositFormSchema>;
