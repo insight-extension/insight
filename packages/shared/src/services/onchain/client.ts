@@ -73,14 +73,15 @@ export class AnchorClient extends Observable<EventCallbackMap> {
 
       const transactionSignature = await match(subscriptionType)
         .returnType<Promise<string>>()
-        .with(
-          SubscriptionType.PER_MONTH,
-          async () =>
-            await program.methods
-              .depositToSubscriptionVault(normalizedAmount)
-              .accounts({ ...payload })
-              .rpc()
-        )
+        // not used for now
+        // .with(
+        //   SubscriptionType.PER_MONTH,
+        //   async () =>
+        //     await program.methods
+        //       .depositToSubscriptionVault(normalizedAmount)
+        //       .accounts({ ...payload })
+        //       .rpc()
+        // )
         .with(
           SubscriptionType.PER_USAGE,
           async () =>

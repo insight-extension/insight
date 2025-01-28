@@ -1,5 +1,6 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin";
-import react from "@vitejs/plugin-react-swc";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import viteReact from "@vitejs/plugin-react-swc";
 import dotenv from "dotenv";
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
@@ -13,7 +14,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      react(),
+      TanStackRouterVite(),
+
+      viteReact(),
       nodePolyfills(),
       sentryVitePlugin({
         org: "insight-wr",

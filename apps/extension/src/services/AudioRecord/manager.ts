@@ -105,8 +105,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
           "error",
           new MessageError(errors.map((error) => error.message).join(", "))
         );
-      })
-      .exhaustive();
+      });
   };
 
   private handleWebSocketConnection = (): void => {

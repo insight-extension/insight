@@ -1,15 +1,17 @@
-import { SEARCH_PARAMS } from "@/constants";
+import { APP_SEARCH_PARAMS } from "@/constants";
 
-export const constructURLWithParams = <T extends keyof typeof SEARCH_PARAMS>({
+export const constructURLWithParams = <
+  T extends keyof typeof APP_SEARCH_PARAMS
+>({
   url,
   params
 }: {
   url: string;
-  params: Partial<Record<T, keyof (typeof SEARCH_PARAMS)[T]>>;
+  params: Partial<Record<T, keyof (typeof APP_SEARCH_PARAMS)[T]>>;
 }): string => {
   const queryParams = Object.entries(params)
     .map(([key, value]) => {
-      const paramOptions = SEARCH_PARAMS[key as T];
+      const paramOptions = APP_SEARCH_PARAMS[key as T];
 
       return `${key}=${paramOptions[value as keyof typeof paramOptions]}`;
     })

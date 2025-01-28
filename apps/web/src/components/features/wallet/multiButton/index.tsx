@@ -12,10 +12,11 @@ import { useSearchParams } from "react-router";
 
 import { PublicKey } from "@solana/web3.js";
 import debounce from "debounce";
+import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 import { useAtom } from "jotai";
 import { P, match } from "ts-pattern";
 
-import { SEARCH_PARAMS } from "@repo/shared/constants";
+import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
 import { formatPublicKey } from "@repo/shared/utils";
 
 import { DepositModal, DialogTrigger, WalletModal } from "@/components";
@@ -42,7 +43,7 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
     const [searchParams] = useSearchParams();
 
     const [autoconnect] = useState<boolean>(
-      action === SEARCH_PARAMS.action.deposit
+      action === APP_SEARCH_PARAMS.action["connect-wallet"]
     );
 
     const [isModalVisible, setIsModalVisible] = useAtom(
@@ -119,10 +120,7 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
     }, [walletState]);
 
     useEffect(() => {
-      if (
-        (autoconnect && walletState === WalletButtonState.NO_WALLET) ||
-        WalletButtonState.HAS_WALLET
-      ) {
+      if (autoconnect && walletState !== WalletButtonState.CONNECTED) {
         setIsModalVisible(true);
       }
     }, [autoconnect, walletState]);
