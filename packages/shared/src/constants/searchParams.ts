@@ -7,3 +7,4 @@ export const APP_SEARCH_PARAMS = {
 };
 
 export type AppSearchParams = typeof APP_SEARCH_PARAMS;
+export type AppSearchParamsKeys = keyof typeof APP_SEARCH_PARAMS;

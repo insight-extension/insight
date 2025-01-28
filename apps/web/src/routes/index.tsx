@@ -1,4 +1,8 @@
-import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  retainSearchParams,
+  stripSearchParams
+} from "@tanstack/react-router";
 import * as t from "io-ts";
 
 import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
@@ -21,6 +25,9 @@ export const Route = createFileRoute("/")({
   component: () => <Home />,
   validateSearch: ioTsValidator(ActionCodec, defaultValues),
   search: {
-    middlewares: [stripSearchParams(defaultValues)]
+    middlewares: [
+      stripSearchParams(defaultValues),
+      retainSearchParams(["action" satisfies keyof typeof APP_SEARCH_PARAMS])
+    ]
   }
 });
