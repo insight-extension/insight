@@ -7,17 +7,18 @@ import {
   useRef,
   useState
 } from "react";
-import { useSearchParams } from "react-router";
 
 import * as Sentry from "@sentry/react";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useForm } from "@tanstack/react-form";
+import { useNavigate } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useAtomValue } from "jotai";
 import { z } from "zod";
 
 import {
+  APP_SEARCH_PARAMS,
   SPLToken,
   SubscriptionType,
   TOKEN_CURRENCIES
@@ -48,7 +49,7 @@ interface DepositFormProps {
 
 export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   const { toast } = useToast();
-  const [searchParams, _] = useSearchParams();
+  const navigate = useNavigate();
 
   const [isAirdroppedSOL, setIsAirdroppedSOL] = useState<boolean>(false);
   const [balance, setBalance] = useState<number>(0);
@@ -67,7 +68,10 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
       variant: "success"
     });
 
-    searchParams.delete("action");
+    navigate({
+      to: "/",
+      search: { action: APP_SEARCH_PARAMS.action.default }
+    });
 
     onSuccessSubmit();
   }, []);

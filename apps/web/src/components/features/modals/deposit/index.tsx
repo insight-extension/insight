@@ -1,5 +1,7 @@
 import { ReactNode, memo, useCallback, useState } from "react";
 
+import { getRouteApi } from "@tanstack/react-router";
+
 import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
 
 import {
@@ -9,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components";
-import { useSearchParamValue } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
 
 interface DepositModalProps {
@@ -18,7 +19,8 @@ interface DepositModalProps {
 }
 
 export const DepositModal: React.FC<DepositModalProps> = memo(({ trigger }) => {
-  const action = useSearchParamValue("action");
+  const { action } = getRouteApi("/").useSearch();
+
   const [isOpen, setIsOpen] = useState<boolean>(
     action === APP_SEARCH_PARAMS.action.deposit
   );
