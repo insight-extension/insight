@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-router";
 import * as t from "io-ts";
 
-import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
+import { APP_SEARCH_PARAMS, AppSearchParamsKeys } from "@repo/shared/constants";
 
 import { Home } from "@/app/pages/home";
 import { ioTsValidator } from "@/lib/utils/io-ts-adapters/validator";
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
   search: {
     middlewares: [
       stripSearchParams(defaultValues),
-      retainSearchParams(["action" satisfies keyof typeof APP_SEARCH_PARAMS])
+      retainSearchParams(["action" satisfies AppSearchParamsKeys])
     ]
   }
 });

@@ -1,7 +1,6 @@
 import { type FC, useCallback, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 
-import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 import { match } from "ts-pattern";
 
 import {
@@ -11,7 +10,6 @@ import {
 } from "@repo/shared/constants";
 import { formatPublicKey, roundToDecimals } from "@repo/shared/utils";
 import { ErrorAlert, Icon } from "@repo/ui/components";
-import { cn } from "@repo/ui/lib";
 
 import {
   Button,
@@ -96,7 +94,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                 size="icon"
                 variant="raw"
                 className="bg-transparent rotate-180"
-                onClick={openSidePanel}>
+                onClick={openSidePanel}
+              >
                 <Icon
                   name="Sidebar"
                   className="text-primary-foreground hover:text-primary-foreground/80"
@@ -109,7 +108,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
               size="icon"
               variant="raw"
               className="bg-transparent"
-              onClick={close}>
+              onClick={close}
+            >
               <Icon
                 name="CircleX"
                 size={24}
@@ -144,7 +144,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                   }
                 })}
                 target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer"
+              >
                 {getMessage("connectWallet")}
               </a>
             )}
@@ -159,7 +160,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                 }
               })}
               target="_blank"
-              rel="noopener noreferrer">
+              rel="noopener noreferrer"
+            >
               {getMessage("depositFunds")}
             </a>
           </Button>
@@ -192,7 +194,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                   className="cursor-pointer w-36"
                   onClick={() =>
                     handleLanguageChange({ flagCode, name: language })
-                  }>
+                  }
+                >
                   <ReactCountryFlag
                     countryCode={flagCode}
                     svg
@@ -216,7 +219,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
               .with(ConnectionStatus.CONNECTED, () => "text-green-500")
               .with(ConnectionStatus.CONNECTING, () => "text-yellow-500")
               .with(ConnectionStatus.DISCONNECTED, () => "text-red-500")
-              .exhaustive()}>
+              .exhaustive()}
+          >
             {status}
           </span>
         </p>
@@ -235,7 +239,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <Button
             disabled={isRecording || !accessToken}
             size="lg"
-            onClick={isReady ? resume : start}>
+            onClick={isReady ? resume : start}
+          >
             <Icon name="Play" className="mr-2" />
 
             {isReady ? getMessage("resume") : getMessage("start")}
@@ -245,7 +250,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
             disabled={!isRecording || !accessToken}
             size="lg"
             variant={"destructive"}
-            onClick={stop}>
+            onClick={stop}
+          >
             <Icon name="Square" className="mr-2" />
 
             {getMessage("stop")}
