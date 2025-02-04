@@ -20,10 +20,7 @@ export const ioTsValidator = <
       pipe(
         codec.decode(input),
         fold(
-          (errors) => {
-            console.log("ERROR", input, errors, defaultValues);
-            return defaultValues;
-          },
+          (_errors) => defaultValues,
           (value) => value
         )
       )
