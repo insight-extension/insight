@@ -1,4 +1,4 @@
-import { APP_SEARCH_PARAMS } from "@/constants";
+import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
 
 export const constructURLWithParams = <
   T extends keyof typeof APP_SEARCH_PARAMS
