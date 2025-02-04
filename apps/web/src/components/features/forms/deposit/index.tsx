@@ -7,17 +7,18 @@ import {
   useRef,
   useState
 } from "react";
-import { useSearchParams } from "react-router";
 
 import * as Sentry from "@sentry/react";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useForm } from "@tanstack/react-form";
+import { useNavigate } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useAtomValue } from "jotai";
 import { z } from "zod";
 
 import {
+  APP_SEARCH_PARAMS,
   SPLToken,
   SubscriptionType,
   TOKEN_CURRENCIES
@@ -48,7 +49,7 @@ interface DepositFormProps {
 
 export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   const { toast } = useToast();
-  const [searchParams, _] = useSearchParams();
+  const navigate = useNavigate();
 
   const [isAirdroppedSOL, setIsAirdroppedSOL] = useState<boolean>(false);
   const [balance, setBalance] = useState<number>(0);
@@ -67,7 +68,10 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
       variant: "success"
     });
 
-    searchParams.delete("action");
+    navigate({
+      to: "/",
+      search: { action: APP_SEARCH_PARAMS.action.default }
+    });
 
     onSuccessSubmit();
   }, []);
@@ -203,7 +207,9 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
               name={name}
               defaultValue={state.value}
               onValueChange={(value) => handleChange(value as SubscriptionType)}
-              className="flex gap-8">
+              className="flex gap-8"
+              disabled
+            >
               {Object.values(SubscriptionType).map((type) => (
                 <div key={type} className="flex gap-2">
                   <RadioGroupItem
@@ -230,7 +236,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                 .number()
                 .min(1, TRANSLATIONS.depositForm.validation.amount.minimum),
               onChangeAsyncDebounceMs: 500
-            }}>
+            }}
+          >
             {({ name, state, handleChange, handleBlur }) => {
               const {
                 meta: { errors, isTouched, isValidating }
@@ -286,7 +293,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                 disabled
                 name={name}
                 defaultValue={state.value}
-                onValueChange={(value) => handleChange(value as SPLToken)}>
+                onValueChange={(value) => handleChange(value as SPLToken)}
+              >
                 <SelectTrigger className="w-2/6">
                   <SelectValue
                     placeholder={TRANSLATIONS.depositForm.fields.token.select}
@@ -302,7 +310,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                       <SelectItem
                         disabled={isDisabled}
                         key={token.toString()}
-                        value={tokenValue}>
+                        value={tokenValue}
+                      >
                         {tokenValue}
                       </SelectItem>
                     );
@@ -318,12 +327,14 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
             canSubmit,
             isSubmitting,
             isPristine
-          ]}>
+          ]}
+        >
           {([canSubmit, isSubmitting, isPristine]) => (
             <button
               className="text-dark h-10 cursor-pointer rounded bg-green-300 font-bold"
               type="submit"
-              disabled={!canSubmit || isPristine}>
+              disabled={!canSubmit || isPristine}
+            >
               {isSubmitting
                 ? TRANSLATIONS.depositForm.states.submitting
                 : TRANSLATIONS.depositForm.states.submit}

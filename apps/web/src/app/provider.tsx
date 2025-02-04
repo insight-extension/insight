@@ -1,8 +1,6 @@
 import { FC, PropsWithChildren } from "react";
 import { CookiesProvider } from "react-cookie";
-import { BrowserRouter } from "react-router";
 
-// styles for wallet adapter
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 import { Toaster } from "@/components";
@@ -13,14 +11,12 @@ interface AppProviderProps extends PropsWithChildren {}
 
 export const AppProvider: FC<AppProviderProps> = ({ children }) => {
   return (
-    <BrowserRouter>
-      <WalletAdapterProvider>
-        <Toaster />
+    <WalletAdapterProvider>
+      <Toaster />
 
-        <LocalizationProvider>
-          <CookiesProvider>{children} </CookiesProvider>
-        </LocalizationProvider>
-      </WalletAdapterProvider>
-    </BrowserRouter>
+      <LocalizationProvider>
+        <CookiesProvider>{children} </CookiesProvider>
+      </LocalizationProvider>
+    </WalletAdapterProvider>
   );
 };

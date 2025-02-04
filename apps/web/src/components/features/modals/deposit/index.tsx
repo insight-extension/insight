@@ -1,44 +1,45 @@
-import { memo, ReactNode, useCallback, useState } from "react";
+import { ReactNode, memo, useCallback, useState } from "react";
+
+import { getRouteApi } from "@tanstack/react-router";
+
+import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
 
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DepositForm,
+  DepositForm,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
 } from "@/components";
 import { TRANSLATIONS } from "@/i18n";
-import { useSearchParamValue } from "@/hooks";
-import { SEARCH_PARAMS } from "@repo/shared/constants";
 
 interface DepositModalProps {
-    isDefaultOpen?: boolean;
-    trigger: ReactNode;
+  isDefaultOpen?: boolean;
+  trigger: ReactNode;
 }
 
 export const DepositModal: React.FC<DepositModalProps> = memo(({ trigger }) => {
-    const action = useSearchParamValue("action");
-    const [isOpen, setIsOpen] = useState<boolean>(
-        action === SEARCH_PARAMS.action.deposit
-    );
+  const { action } = getRouteApi("/").useSearch();
 
-    const handleCloseModal = useCallback(() => {
-        setIsOpen(false);
-    }, []);
+  const [isOpen, setIsOpen] = useState<boolean>(
+    action === APP_SEARCH_PARAMS.action.deposit
+  );
 
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            {trigger}
+  const handleCloseModal = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>
-                        {TRANSLATIONS.depositModal.trigger}
-                    </DialogTitle>
-                </DialogHeader>
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {trigger}
 
-                <DepositForm onSuccessSubmit={handleCloseModal} />
-            </DialogContent>
-        </Dialog>
-    );
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{TRANSLATIONS.depositModal.trigger}</DialogTitle>
+        </DialogHeader>
+
+        <DepositForm onSuccessSubmit={handleCloseModal} />
+      </DialogContent>
+    </Dialog>
+  );
 });

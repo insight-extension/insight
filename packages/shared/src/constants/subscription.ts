@@ -1,4 +1,3 @@
 export enum SubscriptionType {
-  PER_USAGE = "perUsage",
-  PER_MONTH = "perMonth"
+  PER_USAGE = "perUsage"
 }

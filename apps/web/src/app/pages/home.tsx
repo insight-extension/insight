@@ -3,9 +3,11 @@ import { useCookies } from "react-cookie";
 import { useIntl } from "react-intl";
 
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useNavigate } from "@tanstack/react-router";
+import { getRouteApi } from "@tanstack/react-router";
 import { useAtom } from "jotai";
 
-import { SessionToken } from "@repo/shared/constants";
+import { APP_SEARCH_PARAMS, SessionToken } from "@repo/shared/constants";
 
 import {
   Comments,
@@ -70,10 +72,32 @@ export const Home = () => {
     }
   }, [cookies, tokenRefresh]);
 
+  const navigate = useNavigate();
+
+  // todo: complete search params
+  // read search params
+  const route = getRouteApi("/");
+
+  const search = route.useSearch();
+
+  console.log("PARAMS", search);
+
   return (
     <>
       <Header className="hidden lg:flex" />
       <MobileHeader className="block lg:hidden" />
+
+      <button
+        onClick={() =>
+          // remove search params
+          navigate({
+            to: "/",
+            search: { action: APP_SEARCH_PARAMS.action.default }
+          })
+        }
+      >
+        Search
+      </button>
 
       {authenticationErrorMessage && (
         <ErrorAlert

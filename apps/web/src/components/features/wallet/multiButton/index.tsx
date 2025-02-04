@@ -8,23 +8,18 @@ import {
   useState
 } from "react";
 import { useIntl } from "react-intl";
-import { useSearchParams } from "react-router";
 
 import { PublicKey } from "@solana/web3.js";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import debounce from "debounce";
 import { useAtom } from "jotai";
 import { P, match } from "ts-pattern";
 
-import { SEARCH_PARAMS } from "@repo/shared/constants";
+import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
 import { formatPublicKey } from "@repo/shared/utils";
 
 import { DepositModal, DialogTrigger, WalletModal } from "@/components";
-import {
-  WalletButtonState,
-  useLogout,
-  useSearchParamValue,
-  useWalletMultiButton
-} from "@/hooks";
+import { WalletButtonState, useLogout, useWalletMultiButton } from "@/hooks";
 import { walletsModalVisibilityAtom } from "@/store";
 
 import { BaseWalletConnectionButton } from "./base";
@@ -38,11 +33,12 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
   ({ namespace = "features.wallet.multiButton", ...props }) => {
     const intl = useIntl();
 
-    const action = useSearchParamValue("action");
-    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const { action } = getRouteApi("/").useSearch();
 
     const [autoconnect] = useState<boolean>(
-      action === SEARCH_PARAMS.action.deposit
+      action === APP_SEARCH_PARAMS.action["connect-wallet"]
     );
 
     const [isModalVisible, setIsModalVisible] = useAtom(
@@ -111,18 +107,15 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
 
     useEffect(() => {
       if (walletState === WalletButtonState.CONNECTED) {
-        // todo: complete this
-        if (searchParams.get("action")) {
-          searchParams.delete("action");
-        }
+        navigate({
+          to: "/",
+          search: { action: APP_SEARCH_PARAMS.action.default }
+        });
       }
     }, [walletState]);
 
     useEffect(() => {
-      if (
-        (autoconnect && walletState === WalletButtonState.NO_WALLET) ||
-        WalletButtonState.HAS_WALLET
-      ) {
+      if (autoconnect && walletState !== WalletButtonState.CONNECTED) {
         setIsModalVisible(true);
       }
     }, [autoconnect, walletState]);
@@ -142,9 +135,10 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
 
       setIsMenuOpen(false);
 
-      if (searchParams.get("action")) {
-        searchParams.delete("action");
-      }
+      navigate({
+        to: "/",
+        search: { action: APP_SEARCH_PARAMS.action.default }
+      });
     }, [logout]);
 
     const handleCopy = useCallback(async () => {
