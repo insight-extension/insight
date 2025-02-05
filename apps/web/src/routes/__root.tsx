@@ -1,7 +1,7 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 import { AppErrorBoundary } from "@/app/boundary";
+import { Devtools } from "@/app/devtools";
 import { AppLoading } from "@/app/loading";
 import { AppProvider } from "@/app/provider";
 
@@ -16,7 +16,7 @@ export const Route = createRootRoute({
         </AppLoading>
       </AppProvider>
 
-      <TanStackRouterDevtools />
+      <Devtools />
     </>
   )
 });
