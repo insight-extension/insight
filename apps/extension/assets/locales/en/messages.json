@@ -12,7 +12,7 @@
     "description": "Button to connect wallet."
   },
   "depositFunds": {
-    "message": "Deposit Funds",
+    "message": "Deposit",
     "description": "Button to deposit funds."
   },
   "balance": {
@@ -36,7 +36,7 @@
     "description": "Button to stop."
   },
   "error": {
-    "message": "Error occured",
+    "message": "Error occured while running the extension.",
     "description": "Label for error."
   },
   "retry": {
