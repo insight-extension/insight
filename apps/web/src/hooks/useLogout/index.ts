@@ -6,9 +6,9 @@ import { fold } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
 import { SessionToken } from "@repo/shared/constants";
+import { sessionManager } from "@repo/shared/services";
 
 import { WalletDisconnectionError } from "@/errors";
-import { sessionManager } from "@/services/session";
 
 export const useLogout = ({ withReload = true }: { withReload?: boolean }) => {
   const { disconnect } = useWallet();

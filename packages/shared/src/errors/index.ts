@@ -21,6 +21,14 @@ export class SessionExpiredError extends Error {
   }
 }
 
+export class AuthenticationError extends Error {
+  constructor() {
+    super();
+
+    this.name = "AuthenticationError";
+  }
+}
+
 export class CreateSignatureError extends ExtendedError {
   constructor(
     public message: string,

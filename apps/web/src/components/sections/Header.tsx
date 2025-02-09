@@ -23,7 +23,8 @@ export const NAV_LINKS = [
 export const Header: FC<HeaderProps> = ({ className }) => {
   return (
     <nav
-      className={cn("container mt-6 items-center justify-between", className)}>
+      className={cn("container mt-6 items-center justify-between", className)}
+    >
       <div className="flex items-center">
         <Logo />
 
@@ -44,7 +45,8 @@ export const Header: FC<HeaderProps> = ({ className }) => {
             <Button
               disabled
               variant="button-white"
-              className="h-10 cursor-progress py-2 text-[1rem]">
+              className="h-10 cursor-progress py-2 text-[1rem]"
+            >
               Download Now
             </Button>
           </div>
