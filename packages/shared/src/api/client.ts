@@ -14,7 +14,6 @@ import {
 } from "@repo/shared/api";
 
 import { API_URL } from "./config";
-import { authorizationInterceptor } from "./interceptors";
 
 class APIClient {
   public api: KyInstance;
@@ -32,7 +31,8 @@ class APIClient {
     this.api = ky.create({
       ...options,
       hooks: {
-        beforeRequest: [authorizationInterceptor]
+        // todo: complete it
+        // beforeRequest: [authorizationInterceptor]
       }
     });
   }
@@ -51,11 +51,16 @@ class APIClient {
     );
   }
 
-  public get<R>({ url, traceId }: FetchParams): TaskEither<APIError, R> {
+  public get<R>({
+    url,
+    traceId,
+    options
+  }: FetchParams): TaskEither<APIError, R> {
     return this.request<R>({
       url,
       options: {
-        method: "GET"
+        method: "GET",
+        ...options
       },
       traceId
     });
@@ -64,13 +69,15 @@ class APIClient {
   public post<B, R>({
     url,
     body,
-    traceId
+    traceId,
+    options
   }: MutationParams<B>): TaskEither<APIError, R> {
     return this.request<R>({
       url,
       options: {
         method: "POST",
-        json: body
+        json: body,
+        ...options
       },
       traceId
     });

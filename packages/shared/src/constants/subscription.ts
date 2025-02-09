@@ -3,8 +3,8 @@ export enum SubscriptionType {
 }
 
 export enum UsageType {
-  PER_MINUTE = "perHour",
-  PER_HOUR = "perMinute",
+  PER_MINUTE = "perMinute",
+  PER_HOUR = "perHour",
   FREE_TRIAL = "freeTrial"
 }
 

@@ -56,7 +56,6 @@ export const useAudioRecord = ({
       audioRecordManagerRef.current.on(
         "error",
         (error: UseAudioRecord["error"]) => {
-          console.log("Ui-ERROR", error);
           setError(error);
         }
       );

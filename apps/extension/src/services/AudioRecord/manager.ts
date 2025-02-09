@@ -125,8 +125,6 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   private handleException = (error: any): void => {
     this.emit("error", error);
 
-    console.error({ error });
-
     // todo: review logic
     this.stop();
     // this.reset();
@@ -263,7 +261,6 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   }
 
   public start(usageType: UsageType): void {
-    console.log("START");
     this.emit("status", ConnectionStatus.CONNECTING);
 
     this.initWebSocketConnection(usageType);
@@ -278,8 +275,6 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   // }
 
   public resume(usageType: UsageType): void {
-    console.log("RESUME");
-
     this.emit("error", null);
     this.emit("status", ConnectionStatus.CONNECTING);
 

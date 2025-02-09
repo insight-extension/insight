@@ -20,6 +20,7 @@ const requestQueue: any[] = [];
 let isRefreshing = false;
 
 // todo: review it
+// should work with web & extension
 export const authorizationInterceptor = async <Config extends APIRequestConfig>(
   requestConfig: Config
 ): Promise<Config> => {
@@ -29,7 +30,8 @@ export const authorizationInterceptor = async <Config extends APIRequestConfig>(
     return requestConfig;
   }
 
-  sessionManager.validateSession();
+  // todo: implement validateSession for web & extension
+  // sessionManager.validateSession();
 
   const accessToken = sessionManager.getToken({ key: SessionToken.ACCESS });
 

@@ -45,3 +45,9 @@ export const formatPublicKey = (key: PublicKey | string, visibleNumber = 4) => {
     publicKey.toBase58().slice(-visibleNumber)
   );
 };
+
+export const roundToDecimal = (value: number, decimals: number = 0): number => {
+  const factor = Math.pow(10, decimals);
+
+  return Math.floor(value * factor) / factor;
+};

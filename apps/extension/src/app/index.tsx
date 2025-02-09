@@ -1,15 +1,20 @@
-import { type FC, useCallback, useState } from "react";
+import { type FC, useCallback, useEffect, useState } from "react";
 import ReactCountryFlag from "react-country-flag";
 
-import { P, match } from "ts-pattern";
+import { match } from "ts-pattern";
 
 import {
+  PRICING,
   SPLToken,
   TOKEN_CURRENCIES,
   USAGE_TYPE_MAP,
   UsageType
 } from "@repo/shared/constants";
-import { formatPublicKey, roundToDecimals } from "@repo/shared/utils";
+import {
+  formatPublicKey,
+  roundToDecimal,
+  roundToDecimals
+} from "@repo/shared/utils";
 import { Icon } from "@repo/ui/components";
 
 import {
@@ -54,12 +59,19 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   const [currentLanguage, setCurrentLanguage] = useState<Language>(
     SUPPORTED_LANGUAGES[0]
   );
-  const [usageType, setUsageType] = useState<UsageType>(UsageType.PER_HOUR);
+  const [shouldUpdateBalance, setShouldUpdateBalance] = useState(false);
 
   // todo: use refresh token
   const { accessToken } = useAccessToken();
 
-  const { balance, publicKey } = useTokenBalance({ accessToken });
+  const { balance, publicKey, freeHoursLeft } = useTokenBalance({
+    accessToken,
+    shouldUpdate: shouldUpdateBalance
+  });
+
+  const [usageType, setUsageType] = useState<UsageType>(
+    balance ? UsageType.PER_HOUR : UsageType.FREE_TRIAL
+  );
 
   const {
     start,
@@ -83,6 +95,16 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
     chrome.storage.sync.set({ language: language });
   }, []);
+
+  useEffect(() => {
+    setUsageType(
+      balance
+        ? usageType !== UsageType.FREE_TRIAL
+          ? usageType
+          : UsageType.PER_HOUR
+        : UsageType.FREE_TRIAL
+    );
+  }, [balance]);
 
   return (
     <div className="w-84">
@@ -186,22 +208,20 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
         <div className="flex flex-row justify-between items-center mb-2">
           <div className="flex flex-row items-center h-8 w-38   bg-white rounded">
-            <p className="px-3 text-primary font-medium text-sm">
+            <p className="px-1 text-primary font-medium text-sm">
               {/* <p className="text-xs">{`${getMessage("balance")}`}:</p> */}
 
-              {`${balance ? `${roundToDecimals(balance)} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol.toUpperCase()}` : "..."} `}
+              {`${typeof balance === "number" ? `${roundToDecimals(balance)} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol.toUpperCase()}` : "..."} `}
             </p>
           </div>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-3 bg-white rounded">
+            <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-1 bg-white rounded">
               <div className="flex flex-row items-center gap-2">
                 <Icon name="Languages" size={16} />
 
                 <span className="text-sm">{currentLanguage.name}</span>
               </div>
-
-              <Icon name="ChevronsUpDown" size={12} />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300">
@@ -239,7 +259,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                   .with(ConnectionStatus.CONNECTING, () => "text-yellow-500")
                   .with(ConnectionStatus.DISCONNECTED, () => "text-red-500")
                   .exhaustive(),
-                "px-3  font-medium text-sm"
+                "px-1  font-medium text-sm"
               )}
             >
               {status.toUpperCase()}
@@ -247,14 +267,35 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           </div>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary bg-white px-3 rounded">
+            <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-1 text-primary bg-white px-1 rounded">
               <div className="flex flex-row items-center gap-2">
-                <Icon name="Clock" size={16} />
+                {/* <Icon name="Clock" size={16} /> */}
 
-                <span className="text-sm">{USAGE_TYPE_MAP[usageType]}</span>
+                <span className="text-sm">
+                  {typeof balance === "number"
+                    ? USAGE_TYPE_MAP[usageType]
+                    : "..."}
+                  <b>
+                    {match(usageType)
+                      .with(UsageType.FREE_TRIAL, () =>
+                        typeof freeHoursLeft === "number"
+                          ? ` ${roundToDecimal(freeHoursLeft, 1)}h`
+                          : null
+                      )
+                      .with(UsageType.PER_HOUR, () =>
+                        typeof balance === "number"
+                          ? ` ${roundToDecimal(balance / PRICING.perHour, 1)}h`
+                          : null
+                      )
+                      .with(UsageType.PER_MINUTE, () =>
+                        typeof balance === "number"
+                          ? ` ${roundToDecimal(balance / PRICING.perMinute)}m`
+                          : null
+                      )
+                      .exhaustive()}
+                  </b>
+                </span>
               </div>
-
-              <Icon name="ChevronsUpDown" size={12} />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300">
@@ -264,16 +305,39 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                     ? [UsageType.PER_MINUTE, UsageType.PER_HOUR].includes(value)
                     : value === UsageType.FREE_TRIAL
                 )
-                .map((value) => (
-                  <DropdownMenuItem
-                    disabled={isRecording || isReady}
-                    key={value}
-                    className="cursor-pointer w-36"
-                    onClick={() => setUsageType(value)}
-                  >
-                    {USAGE_TYPE_MAP[value]}
-                  </DropdownMenuItem>
-                ))}
+                .map((value) => {
+                  return (
+                    <DropdownMenuItem
+                      disabled={isRecording || isReady}
+                      key={value}
+                      className="cursor-pointer w-36"
+                      onClick={() => setUsageType(value)}
+                    >
+                      <span>
+                        {USAGE_TYPE_MAP[value]}
+                        <b>
+                          {match(value)
+                            .with(UsageType.FREE_TRIAL, () =>
+                              typeof freeHoursLeft === "number"
+                                ? ` ${roundToDecimal(freeHoursLeft, 1)}h`
+                                : null
+                            )
+                            .with(UsageType.PER_HOUR, () =>
+                              typeof balance === "number"
+                                ? ` ${roundToDecimal(balance / PRICING.perHour, 1)}h`
+                                : null
+                            )
+                            .with(UsageType.PER_MINUTE, () =>
+                              typeof balance === "number"
+                                ? ` ${roundToDecimal(balance / PRICING.perMinute)}m`
+                                : null
+                            )
+                            .exhaustive()}
+                        </b>
+                      </span>
+                    </DropdownMenuItem>
+                  );
+                })}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -292,7 +356,11 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
           <Button
             disabled={isRecording || !accessToken}
             size="lg"
-            onClick={isReady ? start : start}
+            onClick={() => {
+              setShouldUpdateBalance(false);
+
+              isReady ? resume() : start();
+            }}
           >
             <Icon name="Play" className="mr-2" />
 
@@ -303,7 +371,11 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
             disabled={!isRecording || !accessToken}
             size="lg"
             variant={"destructive"}
-            onClick={stop}
+            onClick={() => {
+              stop();
+
+              setShouldUpdateBalance(true);
+            }}
           >
             <Icon name="Square" className="mr-2" />
 

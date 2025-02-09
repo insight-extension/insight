@@ -1,9 +1,8 @@
 import { TaskEither } from "fp-ts/lib/TaskEither";
 
-import { APIError, apiClient } from "@repo/shared/api";
+import { APIError, apiClient, generateBearerToken } from "@repo/shared/api";
 import { TraceId } from "@repo/shared/errors";
 
-import "./types";
 import { FreeTrialInfo } from "./types";
 
 class AccountService {
@@ -13,10 +12,18 @@ class AccountService {
     return this.baseURL + url;
   }
 
-  public getFreeTrialInfo(): TaskEither<APIError, FreeTrialInfo> {
+  public getFreeTrialInfo(
+    // todo: move to interceptor
+    accessToken: string
+  ): TaskEither<APIError, FreeTrialInfo> {
     return apiClient.get<FreeTrialInfo>({
       url: this.getURL("/free-hours-info"),
-      traceId: TraceId.FREE_TRIAL_INFO
+      traceId: TraceId.FREE_TRIAL_INFO,
+      options: {
+        headers: {
+          Authorization: generateBearerToken(accessToken)
+        }
+      }
     });
   }
 }
