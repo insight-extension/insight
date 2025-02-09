@@ -3,4 +3,5 @@ export enum TraceId {
   VERIFY_ACCOUNT = "verifyAccount",
   CREATE_SIGNATURE = "createSignature",
   REFRESH_TOKEN = "refreshToken",
+  FAUCE_CLAIM = "faucetClaim"
 }

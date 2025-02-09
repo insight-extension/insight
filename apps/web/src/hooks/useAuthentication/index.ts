@@ -10,10 +10,10 @@ import { match } from "ts-pattern";
 
 import { SessionToken } from "@repo/shared/constants";
 import { SessionExpiredError, TraceId } from "@repo/shared/errors";
+import { sessionManager } from "@repo/shared/services";
 import { authService } from "@repo/shared/services";
 
 import { isTokenExpired } from "@/lib";
-import { sessionManager } from "@/services";
 import { authenticationErrorMessageAtom } from "@/store";
 
 import { UseAuthentication } from "./types";
@@ -30,7 +30,7 @@ export const useAuthentication = (): UseAuthentication => {
   }, []);
 
   const authenticate = useCallback(
-    async ({
+    ({
       publicKey,
       signMessage
     }: {

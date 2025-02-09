@@ -3,7 +3,9 @@ import { pipe } from "fp-ts/function";
 import Cookies from "js-cookie";
 
 import { SessionToken } from "@repo/shared/constants";
+import { AuthenticationError, SessionExpiredError } from "@repo/shared/errors";
 import { authService } from "@repo/shared/services";
+import { isTokenExpired } from "@repo/shared/utils";
 
 class SessionManager {
   public setToken({ key, value }: { key: SessionToken; value: string }) {
@@ -35,17 +37,48 @@ class SessionManager {
     });
   }
 
-  public refreshToken(refreshToken: string) {
-    pipe(
+  public shouldRefreshToken(accessToken: string) {
+    return (
+      !accessToken ||
+      isTokenExpired({
+        token: accessToken
+      })
+    );
+  }
+
+  public refreshToken(refreshToken: string, shouldStore = true) {
+    return pipe(
       authService.refreshToken({ refreshToken }),
       fold(
         (error) => {
           throw error;
         },
-        ({ accessToken, refreshToken }) =>
-          right(this.saveTokens({ accessToken, refreshToken }))
+        ({ accessToken }) => {
+          if (shouldStore) {
+            this.setToken({
+              key: SessionToken.ACCESS,
+              value: accessToken
+            });
+          }
+
+          return right({ accessToken });
+        }
       )
     )();
+  }
+
+  public validateSession() {
+    const refreshToken = this.getToken({
+      key: SessionToken.REFRESH
+    });
+
+    if (!refreshToken) {
+      throw new AuthenticationError();
+    }
+
+    if (isTokenExpired({ token: refreshToken })) {
+      throw new SessionExpiredError();
+    }
   }
 }
 

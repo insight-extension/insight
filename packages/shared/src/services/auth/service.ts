@@ -17,7 +17,7 @@ import {
 
 // todo: use validation
 class AuthService {
-  private baseURL = "/auth";
+  private baseURL = "auth";
 
   private getURL(url: string) {
     return this.baseURL + url;
