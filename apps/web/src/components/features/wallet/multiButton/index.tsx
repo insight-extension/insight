@@ -205,7 +205,7 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
               <DepositModal
                 isDefaultOpen
                 trigger={
-                  <DialogTrigger className="wallet-adapter-dropdown-list-item text-dark bg-green-300 hover:text-white">
+                  <DialogTrigger className="wallet-adapter-dropdown-list-item text-dark bg-purple-300 hover:text-white">
                     Deposit
                   </DialogTrigger>
                 }
