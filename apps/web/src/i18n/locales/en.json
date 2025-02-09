@@ -3,6 +3,8 @@
   "error.createSignature": "Please sign a message to continue.",
   "error.authentication": "Authentication error occurred.",
   "error.failedFaucetAirdrop": "Failed to claim faucet airdrop.",
+  "error.failedFaucetAirdrop.description": "You have already claimed your free tokens during the last 24 hours.",
+
   "error.failedSOLAirdrop": "Failed to claim SOL airdrop.",
 
   "success.faucetAirdrop": "Faucet airdrop claimed successfully.",

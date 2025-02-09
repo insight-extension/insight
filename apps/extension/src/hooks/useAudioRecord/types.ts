@@ -1,10 +1,10 @@
-import { SubscriptionType } from "@repo/shared/constants";
+import { SubscriptionType, UsageType } from "@repo/shared/constants";
 
 import { ConnectionStatus } from "@/constants";
 
 export interface UseAudioRecordProps {
   accessToken: string | null;
-  subscriptionType: SubscriptionType | null;
+  usageType: UsageType;
 }
 
 export interface UseAudioRecord {

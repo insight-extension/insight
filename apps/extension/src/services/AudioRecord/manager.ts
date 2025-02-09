@@ -3,7 +3,7 @@ import { pipe } from "fp-ts/lib/function";
 import { Socket, io } from "socket.io-client";
 import { P, match } from "ts-pattern";
 
-import { SubscriptionType } from "@repo/shared/constants";
+import { UsageType } from "@repo/shared/constants";
 import {
   Observable,
   createAuthorizationHeader,
@@ -37,10 +37,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   private paused: boolean = false;
 
-  constructor(
-    private accessToken: string,
-    private subscriptionType: SubscriptionType
-  ) {
+  constructor(private accessToken: string) {
     super();
   }
 
@@ -168,7 +165,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     });
   };
 
-  private initWebSocketConnection(): void {
+  private initWebSocketConnection(usageType: UsageType): void {
     if (
       this.accessToken &&
       isTokenExpired({
@@ -185,7 +182,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
       transports: ["websocket"],
       extraHeaders: {
         Authorization: createAuthorizationHeader(this.accessToken),
-        Subscription: this.subscriptionType,
+        Subscription: usageType,
         "Accept-Language": "en-US" // todo: dynamic language
       }
     });
@@ -263,37 +260,37 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     this.capturedStream = null;
   }
 
-  public start(): void {
+  public start(usageType: UsageType): void {
     this.emit("status", ConnectionStatus.CONNECTING);
 
-    this.initWebSocketConnection();
+    this.initWebSocketConnection(usageType);
   }
 
   // todo: use for restart after error handling
-  public restart(): void {
-    this.emit("status", ConnectionStatus.CONNECTING);
+  // public restart(): void {
+  //   this.emit("status", ConnectionStatus.CONNECTING);
+  //   this.emit("error", null);
+
+  //   this.initWebSocketConnection();
+  // }
+
+  public resume(usageType: UsageType): void {
     this.emit("error", null);
-
-    this.initWebSocketConnection();
-  }
-
-  public resume(): void {
-    this.emit("error", null);
     this.emit("status", ConnectionStatus.CONNECTING);
 
-    this.initWebSocketConnection();
+    this.initWebSocketConnection(usageType);
 
-    match(this.isReady)
-      .with(true, () => {
-        this.streamSourceNode!.connect(this.pcmProcessor!);
+    // match(this.isReady)
+    //   .with(true, () => {
+    //     this.streamSourceNode!.connect(this.pcmProcessor!);
 
-        this.pcmProcessor!.connect(this.audioContext!.destination);
+    //     this.pcmProcessor!.connect(this.audioContext!.destination);
 
-        this.emit("recording", true);
-        this.emit("status", ConnectionStatus.CONNECTED);
+    //     this.emit("recording", true);
+    //     this.emit("status", ConnectionStatus.CONNECTED);
 
-        this.isPaused = false;
-      })
-      .otherwise(() => this.handleException(new ResumeAudioProcessingError()));
+    //     this.isPaused = false;
+    //   })
+    //   .otherwise(() => this.handleException(new ResumeAudioProcessingError()));
   }
 }

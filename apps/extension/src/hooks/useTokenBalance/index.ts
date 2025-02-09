@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Connection, PublicKey } from "@solana/web3.js";
+import { match } from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/function";
 
 import { AnchorProvider } from "@repo/shared/anchor";
 import {
@@ -9,7 +11,7 @@ import {
   StorageKey,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
-import { AnchorClient } from "@repo/shared/services";
+import { AnchorClient, accountService } from "@repo/shared/services";
 
 import { storage } from "@/background";
 import { sessionManager } from "@/session/manager";
@@ -17,17 +19,20 @@ import { sessionManager } from "@/session/manager";
 interface UseTokenBalanceProps {
   accessToken: string | null;
   token?: SPLToken;
+  shouldUpdate: boolean;
 }
 
 export const useTokenBalance = ({
   accessToken,
   // todo: make it dynamic from current user token
-  token = TOKEN_CURRENCIES[SPLToken.USDC].symbol
+  token = TOKEN_CURRENCIES[SPLToken.USDC].symbol,
+  shouldUpdate
 }: UseTokenBalanceProps) => {
   const [balance, setBalance] = useState<number | null>(null);
   const [publicKey, setPublicKey] = useState<string | null>(null);
 
   const [hasBalanceChanged, setHasBalanceChanged] = useState(false);
+  const [freeHoursLeft, setFreeHoursLeft] = useState<number | null>(null);
 
   const anchorClientRef = useRef<AnchorClient | null>(null);
 
@@ -44,6 +49,22 @@ export const useTokenBalance = ({
   }, []);
 
   useEffect(() => {
+    if (balance === 0 && accessToken) {
+      pipe(
+        accountService.getFreeTrialInfo(accessToken),
+        match(
+          () => {
+            setFreeHoursLeft(null);
+          },
+          (freeHoursLeft) => {
+            setFreeHoursLeft(freeHoursLeft.freeHoursLeft);
+          }
+        )
+      )();
+    }
+  }, [balance, accessToken]);
+
+  useEffect(() => {
     if (!hasBalanceChanged) return;
 
     (async () => {
@@ -52,6 +73,16 @@ export const useTokenBalance = ({
       setHasBalanceChanged(false);
     })();
   }, [hasBalanceChanged, updateBalance]);
+
+  useEffect(() => {
+    if (!shouldUpdate) return;
+
+    (async () => {
+      await updateBalance();
+
+      setHasBalanceChanged(false);
+    })();
+  }, [shouldUpdate, updateBalance]);
 
   useEffect(() => {
     const callbackMap = {
@@ -98,6 +129,7 @@ export const useTokenBalance = ({
 
   return {
     balance,
+    freeHoursLeft,
     publicKey
   };
 };

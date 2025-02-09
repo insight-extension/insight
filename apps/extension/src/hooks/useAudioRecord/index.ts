@@ -7,7 +7,7 @@ import { sessionManager } from "@/session/manager";
 import { UseAudioRecord, UseAudioRecordProps } from "./types";
 
 export const useAudioRecord = ({
-  subscriptionType,
+  usageType,
   accessToken
 }: UseAudioRecordProps): UseAudioRecord => {
   const [status, setStatus] = useState<UseAudioRecord["status"]>(
@@ -26,11 +26,8 @@ export const useAudioRecord = ({
 
   // todo: add immer
   useEffect(() => {
-    if (accessToken && subscriptionType) {
-      audioRecordManagerRef.current = new AudioRecordManager(
-        accessToken,
-        subscriptionType
-      );
+    if (accessToken && usageType) {
+      audioRecordManagerRef.current = new AudioRecordManager(accessToken);
 
       audioRecordManagerRef.current.on(
         "transcription",
@@ -67,13 +64,13 @@ export const useAudioRecord = ({
         setShouldRefreshToken(true);
       });
     }
-  }, [accessToken, subscriptionType]);
+  }, [accessToken, usageType]);
 
   useEffect(() => {
     if (accessToken && shouldRefreshToken) {
       sessionManager.refreshToken(accessToken);
 
-      audioRecordManagerRef.current?.resume();
+      audioRecordManagerRef.current?.resume(usageType);
     }
   }, [shouldRefreshToken]);
 
@@ -90,10 +87,19 @@ export const useAudioRecord = ({
     transcription,
     translation,
     error,
-    start: () => audioRecordManagerRef.current?.start(),
-    resume: () => audioRecordManagerRef.current?.resume(),
+    start: () => audioRecordManagerRef.current?.start(usageType),
+    resume: () => {
+      setError(null);
+
+      audioRecordManagerRef.current?.resume(usageType);
+    },
     stop: () => audioRecordManagerRef.current?.stop(),
-    restart: () => audioRecordManagerRef.current?.restart(),
+    restart: () => {
+      setError(null);
+
+      // todo: complete
+      // audioRecordManagerRef.current?.restart();
+    },
     isReady: Boolean(audioRecordManagerRef.current?.isReady)
   };
 };

@@ -16,6 +16,7 @@ import {
   Languages,
   Play,
   Square,
+  Clock
 } from "lucide-react";
 
 const IconsList = {
@@ -32,6 +33,7 @@ const IconsList = {
   Languages,
   Play,
   Square,
+  Clock
 };
 
 export type IconName = keyof typeof IconsList;
