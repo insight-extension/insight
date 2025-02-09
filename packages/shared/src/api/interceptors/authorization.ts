@@ -25,7 +25,6 @@ export const authorizationInterceptor = async <Config extends APIRequestConfig>(
 ): Promise<Config> => {
   const url = requestConfig.url as string;
 
-  console.log("url", { url, is: isPrivateApiRoute(url) });
   if (!isPrivateApiRoute(url)) {
     return requestConfig;
   }

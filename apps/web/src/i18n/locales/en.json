@@ -2,7 +2,7 @@
   "error.unexpected": "Unexpected error occurred.",
   "error.createSignature": "Please sign a message to continue.",
   "error.authentication": "Authentication error occurred.",
-  "error.failedFaucetAidrop": "Failed to claim faucet airdrop.",
+  "error.failedFaucetAirdrop": "Failed to claim faucet airdrop.",
   "error.failedSOLAirdrop": "Failed to claim SOL airdrop.",
 
   "success.faucetAirdrop": "Faucet airdrop claimed successfully.",

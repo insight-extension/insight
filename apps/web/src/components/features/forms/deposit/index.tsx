@@ -60,11 +60,11 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
   const { publicKey } = useWallet();
 
-  const handleSuccessSubmit = useCallback(() => {
+  const handleSuccessSubmit = useCallback((signature: string) => {
+    // todo: use pipe here
     toast({
       title: TRANSLATIONS.depositForm.toast.successfulTransactionTitle,
-      description:
-        TRANSLATIONS.depositForm.toast.successfulTransactionDescription,
+      description: signature,
       variant: "success"
     });
 
@@ -116,7 +116,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
           token
         });
 
-        handleSuccessSubmit();
+        handleSuccessSubmit(transactionSignature);
       } catch (error: any) {
         Sentry.captureException(error);
 
@@ -133,14 +133,6 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
       onChange: depositFormSchema
     }
   });
-
-  const handleAirdropSOL = useCallback(() => {
-    toast({
-      title: TRANSLATIONS.depositForm.toast.successfulAirDropTitle,
-      description: TRANSLATIONS.depositForm.toast.successfulAirDropDescription,
-      variant: "success"
-    });
-  }, []);
 
   const handleFormSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -192,7 +184,12 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
   useEffect(() => {
     if (isAirdroppedSOL) {
-      handleAirdropSOL();
+      toast({
+        title: TRANSLATIONS.depositForm.toast.successfulAirDropTitle,
+        description:
+          TRANSLATIONS.depositForm.toast.successfulAirDropDescription,
+        variant: "success"
+      });
 
       setIsAirdroppedSOL(false);
     }

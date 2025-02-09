@@ -44,7 +44,6 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
         faucetService.claim(),
         match(
           (error) => {
-            console.error({ error });
             toast({
               title: intl.formatMessage({ id: "error.failedFaucetAirdrop" }),
               description: error.message,
