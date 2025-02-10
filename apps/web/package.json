@@ -50,7 +50,6 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "ts-pattern": "^5.5.0",
-    "vite-plugin-node-polyfills": "^0.22.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

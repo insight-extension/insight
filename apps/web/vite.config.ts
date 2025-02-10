@@ -4,7 +4,6 @@ import viteReact from "@vitejs/plugin-react-swc";
 import dotenv from "dotenv";
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 dotenv.config();
 
@@ -15,9 +14,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       TanStackRouterVite(),
-
       viteReact(),
-      nodePolyfills(),
       sentryVitePlugin({
         org: "insight-wr",
         project: "web",

@@ -21,7 +21,7 @@ interface ErrorAlertProps {
 }
 
 export const ErrorAlert: FC<ErrorAlertProps> = memo(
-  ({ message, title, actionMessage, onAction, className }) => {
+  ({  title, actionMessage, onAction, className }) => {
     return (
       <Alert
         variant="destructive"
