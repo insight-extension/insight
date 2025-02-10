@@ -24,7 +24,7 @@ export const getTimeLeft = ({
         type: SubscriptionType.FREE_TRIAL,
         freeHoursLeft: P.intersection(P.number, P.select())
       },
-      (seconds) => `${toHours(seconds)}${HOURS_LABEL}`
+      (seconds) => `${roundToDecimal(toHours(seconds), 1)}${HOURS_LABEL}`
     )
 
     .with(
