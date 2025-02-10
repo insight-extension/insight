@@ -1,7 +1,7 @@
-import { UsageType } from "./subscription";
+import { SubscriptionType } from "./subscription";
 
 // todo: move to backend
 export const PRICING = {
-  [UsageType.PER_HOUR]: 1.2,
-  [UsageType.PER_MINUTE]: 0.03
+  [SubscriptionType.PER_HOUR]: 1.2,
+  [SubscriptionType.PER_MINUTE]: 0.03
 };

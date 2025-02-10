@@ -16,4 +16,5 @@ export type WebSocketEventCallbackMap = {
   disconnect: () => void;
   audioData: (data: any) => void;
   stop: (payload: any) => void;
+  error: (error: any) => void;
 };

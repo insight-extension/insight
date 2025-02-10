@@ -9,7 +9,6 @@ import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
 import { faucetService } from "@repo/shared/services";
 
 import {
-  Button,
   DepositForm,
   Dialog,
   DialogContent,
@@ -72,11 +71,18 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
             <DialogTitle>{TRANSLATIONS.depositModal.trigger}</DialogTitle>
           </DialogHeader>
 
-          <Button variant="button-white" onClick={faucetClaim}>
-            {intl.formatMessage({ id: `${namespace}.faucetAirdrop` })}
-          </Button>
-
           <DepositForm onSuccessSubmit={handleCloseModal} />
+
+          <button
+            className="text-dark mt-4 h-10 cursor-pointer rounded bg-white font-bold"
+            onClick={faucetClaim}
+          >
+            {intl.formatMessage({ id: `${namespace}.faucetAirdrop` })}
+          </button>
+
+          <p className="text-xs text-white">
+            {intl.formatMessage({ id: `${namespace}.testUsage` })}
+          </p>
         </DialogContent>
       </Dialog>
     );

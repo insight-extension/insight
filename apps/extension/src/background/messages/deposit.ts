@@ -13,7 +13,6 @@ const handler: PlasmoMessaging.MessageHandler<DepositMessage, any> = async (
   if (!body) return;
 
   storage.set(StorageKey.DEPOSIT, {
-    subscriptionType: body.subscriptionType,
     amount: body.amount,
     transactionSignature: body.transactionSignature
   });

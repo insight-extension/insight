@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Connection, PublicKey } from "@solana/web3.js";
+import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 import { match } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
@@ -40,8 +41,9 @@ export const useTokenBalance = ({
     const anchorClient = anchorClientRef.current;
 
     if (!anchorClient) return;
+
     // todo: doesnt get actual balance event with timeout
-    setBalance(await anchorClient.getTokenBalance({ token }));
+    setBalance(await anchorClient.getUserBalance(token));
   }, [token]);
 
   const handleBalanceChange = useCallback(async () => {

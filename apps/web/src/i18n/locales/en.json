@@ -22,5 +22,6 @@
   "features.wallet.multiButton.noWallet": "Connect Wallet",
   "features.wallet.multiButton.authenticationRequired": "Sign in",
 
-  "features.modals.depositModal.faucetAirdrop": "Airdrop USDC"
+  "features.modals.depositModal.faucetAirdrop": "Airdrop USDC*",
+  "features.modals.depositModal.testUsage": "* These are assets on the Solana Devnet and have no value except for use in test mode."
 }

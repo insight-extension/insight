@@ -14,10 +14,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      process.env.VITE_MODE === "development" && nodePolyfills(),
       TanStackRouterVite(),
-
       viteReact(),
-      nodePolyfills(),
       sentryVitePlugin({
         org: "insight-wr",
         project: "web",
