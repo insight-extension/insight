@@ -15,14 +15,18 @@ export const getTimeLeft = ({
   const HOURS_LABEL = "h";
   const MINUTES_LABEL = "min";
 
+  // TODO: move to utils
+  const toHours = (seconds: number) => seconds / 60 / 60;
+
   return match({ type, freeHoursLeft, balance })
     .with(
       {
         type: SubscriptionType.FREE_TRIAL,
         freeHoursLeft: P.intersection(P.number, P.select())
       },
-      (hours) => `${hours}${HOURS_LABEL}`
+      (seconds) => `${roundToDecimal(toHours(seconds), 1)}${HOURS_LABEL}`
     )
+
     .with(
       {
         type: SubscriptionType.PER_HOUR

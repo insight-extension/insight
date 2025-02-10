@@ -43,10 +43,11 @@ import { constructURLWithParams } from "@/utils";
 // add senty
 
 interface AppProps {
+  width: "sidebar" | "popup";
   isSidebar: boolean;
 }
 
-export const App: FC<AppProps> = ({ isSidebar }) => {
+export const App: FC<AppProps> = ({ isSidebar, width }) => {
   const { getMessage } = chrome.i18n;
 
   const [currentLanguage, setCurrentLanguage] = useState<Language>(
@@ -94,7 +95,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   }, [balance]);
 
   return (
-    <div className="w-84">
+    <div className={cn(width === "sidebar" ? "w-90" : "w-84")}>
       <div className="p-3 mb-2 bg-accent rounded-b-2xl">
         <div className="flex flex-row items-center justify-between mb-3 p-0 text-primary-foreground">
           <Logo />
