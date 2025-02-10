@@ -3,7 +3,6 @@ import { memo, type FC } from "react";
 import {
   Alert,
   AlertTitle,
-  AlertDescription,
   Button,
 } from "@/components";
 
@@ -34,7 +33,8 @@ export const ErrorAlert: FC<ErrorAlertProps> = memo(
           <AlertTitle className="m-0 text-lg">{title}</AlertTitle>
         </div>
 
-        <AlertDescription>{message}</AlertDescription>
+              {/* todo: should correctl parse errors at first */}
+        {/* <AlertDescription>{message}</AlertDescription> */}
 
         <Button
           variant="button-white"

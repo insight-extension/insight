@@ -19,7 +19,6 @@ import { Icon } from "@repo/ui/components";
 
 import {
   Alert,
-  AlertDescription,
   AlertTitle,
   Button,
   DropdownMenu,
@@ -151,9 +150,10 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
             <div className="flex flex-col items-center mb-8">
               <AlertTitle className="text-lg">{getMessage("error")}</AlertTitle>
 
-              <AlertDescription className="text-md">
+              {/* todo: should correctl parse errors at first */}
+              {/* <AlertDescription className="text-md">
                 {error.message}
-              </AlertDescription>
+              </AlertDescription> */}
             </div>
 
             <div className="flex flex-col items-center gap-2 mb-4">
