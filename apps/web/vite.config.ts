@@ -14,7 +14,12 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      process.env.VITE_MODE === "development" && nodePolyfills(),
+      nodePolyfills({
+        globals: {
+          process: false,
+          Buffer: true
+        }
+      }),
       TanStackRouterVite(),
       viteReact(),
       sentryVitePlugin({
