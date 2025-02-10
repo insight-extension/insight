@@ -261,6 +261,9 @@ importers:
       ts-pattern:
         specifier: ^5.5.0
         version: 5.6.0
+      vite-plugin-node-polyfills:
+        specifier: 0.17.0
+        version: 0.17.0(rollup@4.29.1)(vite@5.4.11(@types/node@22.7.4)(less@4.2.1)(lightningcss@1.28.2)(sass@1.83.1)(terser@5.37.0))
       zod:
         specifier: ^3.23.8
         version: 3.24.1
@@ -340,9 +343,6 @@ importers:
       vite:
         specifier: ^5.4.10
         version: 5.4.11(@types/node@22.7.4)(less@4.2.1)(lightningcss@1.28.2)(sass@1.83.1)(terser@5.37.0)
-      vite-plugin-node-polyfills:
-        specifier: ^0.23.0
-        version: 0.23.0(rollup@4.29.1)(vite@5.4.11(@types/node@22.7.4)(less@4.2.1)(lightningcss@1.28.2)(sass@1.83.1)(terser@5.37.0))
 
   packages/eslint-config:
     devDependencies:
@@ -10413,10 +10413,10 @@ packages:
   varuint-bitcoin@2.0.0:
     resolution: {integrity: sha512-6QZbU/rHO2ZQYpWFDALCDSRsXbAs1VOEmXAxtbtjLtKuMJ/FQ8YbhfxlaiKv5nklci0M6lZtlZyxo9Q+qNnyog==}
 
-  vite-plugin-node-polyfills@0.23.0:
-    resolution: {integrity: sha512-4n+Ys+2bKHQohPBKigFlndwWQ5fFKwaGY6muNDMTb0fSQLyBzS+jjUNRZG9sKF0S/Go4ApG6LFnUGopjkILg3w==}
+  vite-plugin-node-polyfills@0.17.0:
+    resolution: {integrity: sha512-iPmPn7376e5u6QvoTSJa16hf5Q0DFwHFXJk2uYpsNlmI3JdPms7hWyh55o+OysJ5jo9J5XPhLC9sMOYifwFd1w==}
     peerDependencies:
-      vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
+      vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
 
   vite@5.4.11:
     resolution: {integrity: sha512-c7jFQRklXua0mTzneGW9QVyxFjUgwcihC4bXEtujIo2ouWCe1Ajt/amn2PCxYnhYfd5k09JX3SB7OYWFKYqj8Q==}
@@ -22920,10 +22920,12 @@ snapshots:
     dependencies:
       uint8array-tools: 0.0.8
 
-  vite-plugin-node-polyfills@0.23.0(rollup@4.29.1)(vite@5.4.11(@types/node@22.7.4)(less@4.2.1)(lightningcss@1.28.2)(sass@1.83.1)(terser@5.37.0)):
+  vite-plugin-node-polyfills@0.17.0(rollup@4.29.1)(vite@5.4.11(@types/node@22.7.4)(less@4.2.1)(lightningcss@1.28.2)(sass@1.83.1)(terser@5.37.0)):
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@4.29.1)
+      buffer-polyfill: buffer@6.0.3
       node-stdlib-browser: 1.3.1
+      process: 0.11.10
       vite: 5.4.11(@types/node@22.7.4)(less@4.2.1)(lightningcss@1.28.2)(sass@1.83.1)(terser@5.37.0)
     transitivePeerDependencies:
       - rollup
