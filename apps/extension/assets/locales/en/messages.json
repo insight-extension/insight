@@ -49,12 +49,12 @@
   },
 
   "perMinute": {
-    "message": "per minute",
+    "message": "Per minute",
     "description": "Label for per minute."
   },
 
   "perHour": {
-    "message": "per hour",
+    "message": "Per hour",
     "description": "Label for per hour."
   },
 

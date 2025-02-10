@@ -17,7 +17,8 @@ import {
   InvalidAudioDataError,
   MessageError,
   ResumeAudioProcessingError,
-  UnexpectedMessageTypeError
+  UnexpectedMessageTypeError,
+  WebSocketError
 } from "./errors";
 import type {
   ObservableEventCallbackMap,
@@ -79,6 +80,15 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
             },
             (translation: string): void => {
               this.emit("translation", translation);
+            }
+          )
+          .with(
+            {
+              type: MessageType.STATUS,
+              status: P.intersection(P.nonNullable, P.select())
+            },
+            (status: ConnectionStatus): void => {
+              this.emit("status", status);
             }
           )
           .with(
@@ -162,7 +172,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     });
   };
 
-  private initWebSocketConnection(SubscriptionType: SubscriptionType): void {
+  private initWebSocketConnection(subscriptionType: SubscriptionType): void {
     if (
       this.accessToken &&
       isTokenExpired({
@@ -181,7 +191,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
         polling: {
           extraHeaders: {
             Authorization: generateBearerToken(this.accessToken),
-            Subscription: SubscriptionType,
+            Subscription: subscriptionType,
             "Accept-Language": "en-US" // todo: dynamic language
           }
         }
@@ -194,6 +204,9 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     );
     this.webSocket.on("message", this.handleWebSocketMessage);
     this.webSocket.on("disconnect", this.handleDisconnect);
+    this.webSocket.on("error", (error) => {
+      this.handleException(new WebSocketError(error.message));
+    });
   }
 
   private initProcessing(stream: MediaStream): void {
@@ -262,10 +275,10 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     this.capturedStream = null;
   }
 
-  public start(SubscriptionType: SubscriptionType): void {
+  public start(subscriptionType: SubscriptionType): void {
     this.emit("status", ConnectionStatus.CONNECTING);
 
-    this.initWebSocketConnection(SubscriptionType);
+    this.initWebSocketConnection(subscriptionType);
   }
 
   // todo: use for restart after error handling
@@ -276,11 +289,11 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   //   this.initWebSocketConnection();
   // }
 
-  public resume(SubscriptionType: SubscriptionType): void {
+  public resume(subscriptionType: SubscriptionType): void {
     this.emit("error", null);
     this.emit("status", ConnectionStatus.CONNECTING);
 
-    this.initWebSocketConnection(SubscriptionType);
+    this.initWebSocketConnection(subscriptionType);
 
     match(this.isReady)
       .with(true, () => {

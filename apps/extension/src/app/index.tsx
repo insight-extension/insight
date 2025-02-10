@@ -10,7 +10,14 @@ import {
 import { formatPublicKey, roundToDecimals } from "@repo/shared/utils";
 import { Icon } from "@repo/ui/components";
 
-import { Alert, AlertTitle, Button, Logo, TextBlock } from "@/components";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  Logo,
+  TextBlock
+} from "@/components";
 import {
   LanguageSelector,
   SubscriptionTypeSelector
@@ -131,10 +138,9 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
             <div className="flex flex-col items-center mb-8">
               <AlertTitle className="text-lg">{getMessage("error")}</AlertTitle>
 
-              {/* todo: should correctl parse errors at first */}
-              {/* <AlertDescription className="text-md">
+              <AlertDescription className="text-md">
                 {error.message}
-              </AlertDescription> */}
+              </AlertDescription>
             </div>
 
             <div className="flex flex-col items-center gap-2 mb-4">
@@ -189,7 +195,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
         <div className="flex flex-row justify-between items-center mb-2">
           <div className="flex flex-row items-center h-8 w-38 bg-white rounded">
-            <p className="px-3 text-primary font-medium text-sm">
+            <p className="px-2 text-primary font-medium text-sm">
               {/* <p className="text-xs">{`${getMessage("balance")}`}:</p> */}
 
               {`${typeof balance === "number" ? `${roundToDecimals(balance)} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol.toUpperCase()}` : "..."} `}
@@ -215,7 +221,7 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                   .with(ConnectionStatus.CONNECTING, () => "text-yellow-500")
                   .with(ConnectionStatus.DISCONNECTED, () => "text-red-500")
                   .exhaustive(),
-                "px-3 font-medium text-sm"
+                "px-2 font-medium text-sm"
               )}
             >
               {status.toUpperCase()}
@@ -245,7 +251,9 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
 
         <div className="flex flex-col gap-2">
           <Button
-            disabled={isRecording || !accessToken}
+            disabled={
+              isRecording || !accessToken || typeof balance !== "number"
+            }
             size="lg"
             onClick={() => {
               setShouldUpdateBalance(false);

@@ -39,7 +39,7 @@ export class AudioProcessingError extends Error {
 }
 
 export class UnexpectedMessageTypeError extends Error {
-  constructor(type: string) {
+  constructor(public type: string) {
     super(type);
 
     this.name = "UnexpectedMessageTypeError";
@@ -47,7 +47,7 @@ export class UnexpectedMessageTypeError extends Error {
 }
 
 export class InvalidAudioDataError extends Error {
-  constructor(data: string) {
+  constructor(public data: string) {
     super(data);
 
     this.name = "InvalidAudioDataError";
@@ -59,5 +59,13 @@ export class ResumeAudioProcessingError extends Error {
     super();
 
     this.name = "ResumeAudioProcessingError";
+  }
+}
+
+export class WebSocketError extends Error {
+  constructor(public message: string) {
+    super(message);
+
+    this.name = "WebSocketError";
   }
 }

@@ -37,12 +37,12 @@ export const SubscriptionTypeSelector: React.FC<
     <DropdownMenu>
       <DropdownMenuTrigger
         disabled={current === SubscriptionType.FREE_TRIAL}
-        className="flex justify-start items-center h-8 w-38 text-sm text-primary bg-white px-3 rounded"
+        className="flex justify-start items-center h-8 w-38 text-sm text-primary bg-white px-2 rounded"
       >
         {typeof balance === "number" ? (
           <>
             {SUBSCRIPTION_TYPE_MAP[current]}
-            {" - "}
+            {": "}
 
             {getTimeLeft({
               type: current,

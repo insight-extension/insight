@@ -69,7 +69,7 @@ export class AnchorClient extends Observable<EventCallbackMap> {
       );
 
       const transactionSignature = await this.program.methods
-        .depositToTimedVault(normalizedAmount)
+        .deposit(normalizedAmount)
         .accounts({ ...payload })
         .rpc();
 
@@ -186,10 +186,6 @@ export class AnchorClient extends Observable<EventCallbackMap> {
         true,
         this.TOKEN_PROGRAM
       );
-
-      // todo: complete that
-      // const tokenBalance =
-      //   await this.connection.getTokenAccountBalance(userATA);
 
       const { amount } = await getAccount(
         this.connection,
