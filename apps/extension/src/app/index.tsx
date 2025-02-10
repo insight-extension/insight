@@ -1,33 +1,13 @@
 import { type FC, useCallback, useEffect, useState } from "react";
-import ReactCountryFlag from "react-country-flag";
 
 import { match } from "ts-pattern";
 
-import {
-  PRICING,
-  SPLToken,
-  TOKEN_CURRENCIES,
-  USAGE_TYPE_MAP,
-  UsageType
-} from "@repo/shared/constants";
-import {
-  formatPublicKey,
-  roundToDecimal,
-  roundToDecimals
-} from "@repo/shared/utils";
+import { SPLToken, TOKEN_CURRENCIES, UsageType } from "@repo/shared/constants";
+import { formatPublicKey, roundToDecimals } from "@repo/shared/utils";
 import { Icon } from "@repo/ui/components";
 
-import {
-  Alert,
-  AlertTitle,
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  Logo,
-  TextBlock
-} from "@/components";
+import { Alert, AlertTitle, Button, Logo, TextBlock } from "@/components";
+import { LanguageSelector, UsageTypeSelector } from "@/components/features";
 import "@/components/ui/textBlock";
 import { ConnectionStatus, SUPPORTED_LANGUAGES, UI_URL } from "@/constants";
 import "@/global.css";
@@ -88,12 +68,6 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
   });
 
   const { openSidePanel, close } = useExtensionControls();
-
-  const handleLanguageChange = useCallback((language: Language) => {
-    setCurrentLanguage(language);
-
-    chrome.storage.sync.set({ language: language });
-  }, []);
 
   useEffect(() => {
     setUsageType(
@@ -215,39 +189,14 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
             </p>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-1 bg-white rounded">
-              <div className="flex flex-row items-center gap-2">
-                <Icon name="Languages" size={16} />
+          <LanguageSelector
+            current={currentLanguage}
+            onChange={useCallback((language: Language) => {
+              setCurrentLanguage(language);
 
-                <span className="text-sm">{currentLanguage.name}</span>
-              </div>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300">
-              {SUPPORTED_LANGUAGES.map(({ flagCode, name: language }) => (
-                <DropdownMenuItem
-                  disabled
-                  key={flagCode}
-                  className="cursor-pointer w-36"
-                  onClick={() =>
-                    handleLanguageChange({ flagCode, name: language })
-                  }
-                >
-                  <ReactCountryFlag
-                    countryCode={flagCode}
-                    svg
-                    cdnUrl="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/"
-                    cdnSuffix="svg"
-                    title={language}
-                    style={{ cursor: "pointer" }}
-                    className="mr-2"
-                  />
-                  {language}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              chrome.storage.sync.set({ language: language });
+            }, [])}
+          />
         </div>
 
         <div className="flex flex-row justify-between items-center mb-2">
@@ -266,80 +215,15 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
             </span>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-1 text-primary bg-white px-1 rounded">
-              <div className="flex flex-row items-center gap-2">
-                {/* <Icon name="Clock" size={16} /> */}
-
-                <span className="text-sm">
-                  {typeof balance === "number"
-                    ? USAGE_TYPE_MAP[usageType]
-                    : "..."}
-                  <b>
-                    {match(usageType)
-                      .with(UsageType.FREE_TRIAL, () =>
-                        typeof freeHoursLeft === "number"
-                          ? ` ${roundToDecimal(freeHoursLeft, 1)}h`
-                          : null
-                      )
-                      .with(UsageType.PER_HOUR, () =>
-                        typeof balance === "number"
-                          ? ` ${roundToDecimal(balance / PRICING.perHour, 1)}h`
-                          : null
-                      )
-                      .with(UsageType.PER_MINUTE, () =>
-                        typeof balance === "number"
-                          ? ` ${roundToDecimal(balance / PRICING.perMinute)}m`
-                          : null
-                      )
-                      .exhaustive()}
-                  </b>
-                </span>
-              </div>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300">
-              {Object.values(UsageType)
-                .filter((value) =>
-                  balance
-                    ? [UsageType.PER_MINUTE, UsageType.PER_HOUR].includes(value)
-                    : value === UsageType.FREE_TRIAL
-                )
-                .map((value) => {
-                  return (
-                    <DropdownMenuItem
-                      disabled={isRecording || isReady}
-                      key={value}
-                      className="cursor-pointer w-36"
-                      onClick={() => setUsageType(value)}
-                    >
-                      <span>
-                        {USAGE_TYPE_MAP[value]}
-                        <b>
-                          {match(value)
-                            .with(UsageType.FREE_TRIAL, () =>
-                              typeof freeHoursLeft === "number"
-                                ? ` ${roundToDecimal(freeHoursLeft, 1)}h`
-                                : null
-                            )
-                            .with(UsageType.PER_HOUR, () =>
-                              typeof balance === "number"
-                                ? ` ${roundToDecimal(balance / PRICING.perHour, 1)}h`
-                                : null
-                            )
-                            .with(UsageType.PER_MINUTE, () =>
-                              typeof balance === "number"
-                                ? ` ${roundToDecimal(balance / PRICING.perMinute)}m`
-                                : null
-                            )
-                            .exhaustive()}
-                        </b>
-                      </span>
-                    </DropdownMenuItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <UsageTypeSelector
+            balance={balance}
+            freeHoursLeft={freeHoursLeft}
+            current={usageType}
+            onChange={useCallback((value: UsageType) => {
+              setUsageType(value);
+            }, [])}
+            isDisabled={isRecording || isReady}
+          />
         </div>
       </div>
 
