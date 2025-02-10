@@ -79,6 +79,10 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
           >
             {intl.formatMessage({ id: `${namespace}.faucetAirdrop` })}
           </button>
+
+          <p className="text-xs text-white">
+            {intl.formatMessage({ id: `${namespace}.testUsage` })}
+          </p>
         </DialogContent>
       </Dialog>
     );
