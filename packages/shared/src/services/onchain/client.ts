@@ -186,13 +186,11 @@ export class AnchorClient extends Observable<EventCallbackMap> {
         true,
         this.TOKEN_PROGRAM
       );
-      console.log({ userATA: userATA.toBase58() });
 
-      const tokenBalance =
-        await this.connection.getTokenAccountBalance(userATA);
-      console.log({ tokenBalance });
+      // todo: complete that
+      // const tokenBalance =
+      //   await this.connection.getTokenAccountBalance(userATA);
 
-      return;
       const { amount } = await getAccount(
         this.connection,
         userATA,
@@ -205,7 +203,6 @@ export class AnchorClient extends Observable<EventCallbackMap> {
         TOKEN_CURRENCIES[token].decimals
       );
     } catch (error) {
-      console.log("error", error);
       return 0;
     }
   }
@@ -216,8 +213,6 @@ export class AnchorClient extends Observable<EventCallbackMap> {
         [Buffer.from("user_info"), this.user.toBuffer()],
         this.program.programId
       );
-
-      console.log({ userInfoAddress: userInfoAddress.toBase58() });
 
       return await this.getTokenBalance({ token, user: userInfoAddress });
     } catch (error) {
