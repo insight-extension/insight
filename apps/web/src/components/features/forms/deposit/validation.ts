@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { SubscriptionType } from "@repo/shared/constants";
 import { SPLToken } from "@repo/shared/constants";
 
 import { TRANSLATIONS } from "@/i18n";
@@ -16,12 +15,12 @@ export const depositFormSchema = z.object({
     errorMap: () => ({
       message: TRANSLATIONS.depositForm.validation.token.required
     })
-  }),
-  subscriptionType: z.nativeEnum(SubscriptionType, {
-    errorMap: () => ({
-      message: TRANSLATIONS.depositForm.validation.subscriptionType.required
-    })
   })
+  // subscriptionType: z.nativeEnum(SubscriptionType, {
+  //   errorMap: () => ({
+  //     message: TRANSLATIONS.depositForm.validation.subscriptionType.required
+  //   })
+  // })
 });
 
 export type DepositFormFields = z.infer<typeof depositFormSchema>;

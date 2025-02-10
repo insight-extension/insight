@@ -8,7 +8,6 @@ class RelayMessenger {
   public async deposit({
     token,
     amount,
-    subscriptionType,
     transactionSignature
   }: DepositMessage) {
     try {
@@ -16,7 +15,6 @@ class RelayMessenger {
         name: RelayRoute.DEPOSIT as never,
         body: {
           token,
-          subscriptionType,
           amount,
           transactionSignature
         }

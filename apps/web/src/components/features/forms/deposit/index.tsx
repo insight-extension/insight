@@ -20,7 +20,6 @@ import { z } from "zod";
 import {
   APP_SEARCH_PARAMS,
   SPLToken,
-  SubscriptionType,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
 import { AnchorClient, relayMessenger } from "@repo/shared/services";
@@ -28,8 +27,6 @@ import { roundToDecimals } from "@repo/shared/utils";
 
 import {
   Label,
-  RadioGroup,
-  RadioGroupItem,
   Select,
   SelectContent,
   SelectItem,
@@ -85,10 +82,10 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   } = useForm({
     defaultValues: {
       amount: 0,
-      token: SPLToken.USDC,
-      subscriptionType: SubscriptionType.PER_USAGE
+      token: SPLToken.USDC
+      // subscriptionType: SubscriptionType.PER_USAGE
     } as DepositFormFields,
-    onSubmit: async ({ value: { amount, token, subscriptionType } }) => {
+    onSubmit: async ({ value: { amount, token } }) => {
       const anchorClient = anchorClientRef.current;
 
       if (!anchorClient) {
@@ -105,13 +102,11 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
         const transactionSignature = await anchorClient.depositToVault({
           amount,
-          token,
-          subscriptionType
+          token
         });
 
         await relayMessenger.deposit({
           amount,
-          subscriptionType,
           transactionSignature,
           token
         });
@@ -149,11 +144,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
     if (!anchorClient) return;
 
-    setBalance(
-      await anchorClient.getTokenBalance({
-        token: getFieldValue("token")
-      })
-    );
+    setBalance(await anchorClient.getUserBalance(getFieldValue("token")));
   }, []);
 
   useEffect(() => {
@@ -198,7 +189,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   return (
     <form onSubmit={handleFormSubmit}>
       <div className="flex flex-col gap-5">
-        <Field name="subscriptionType">
+        {/* not used for now */}
+        {/* <Field name="subscriptionType">
           {({ state, name, handleChange }) => (
             <RadioGroup
               name={name}
@@ -223,7 +215,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
               ))}
             </RadioGroup>
           )}
-        </Field>
+        </Field> */}
 
         <div className="flex gap-4">
           <Field

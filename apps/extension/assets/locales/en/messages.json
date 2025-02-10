@@ -46,5 +46,20 @@
   "close": {
     "message": "Close",
     "description": "Button to close."
+  },
+
+  "perMinute": {
+    "message": "per minute",
+    "description": "Label for per minute."
+  },
+
+  "perHour": {
+    "message": "per hour",
+    "description": "Label for per hour."
+  },
+
+  "freeTrial": {
+    "message": "Free Trial",
+    "description": "Label for free trial."
   }
 }

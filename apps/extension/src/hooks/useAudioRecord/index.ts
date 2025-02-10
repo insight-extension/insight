@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
+import { SessionToken } from "@repo/shared/constants";
+
+import { storage } from "@/background";
 import { ConnectionStatus } from "@/constants";
 import { AudioRecordManager } from "@/services";
 import { sessionManager } from "@/session/manager";
@@ -7,7 +10,7 @@ import { sessionManager } from "@/session/manager";
 import { UseAudioRecord, UseAudioRecordProps } from "./types";
 
 export const useAudioRecord = ({
-  usageType,
+  subscriptionType,
   accessToken
 }: UseAudioRecordProps): UseAudioRecord => {
   const [status, setStatus] = useState<UseAudioRecord["status"]>(
@@ -26,7 +29,7 @@ export const useAudioRecord = ({
 
   // todo: add immer
   useEffect(() => {
-    if (accessToken && usageType) {
+    if (accessToken && subscriptionType) {
       audioRecordManagerRef.current = new AudioRecordManager(accessToken);
 
       audioRecordManagerRef.current.on(
@@ -64,13 +67,19 @@ export const useAudioRecord = ({
         setShouldRefreshToken(true);
       });
     }
-  }, [accessToken, usageType]);
+  }, [accessToken, subscriptionType]);
 
   useEffect(() => {
     if (accessToken && shouldRefreshToken) {
-      sessionManager.refreshToken(accessToken);
+      (async () => {
+        const refreshToken = await storage.get(SessionToken.REFRESH);
 
-      audioRecordManagerRef.current?.resume(usageType);
+        if (refreshToken) {
+          sessionManager.refreshToken(refreshToken);
+
+          audioRecordManagerRef.current?.resume(subscriptionType);
+        }
+      })();
     }
   }, [shouldRefreshToken]);
 
@@ -87,11 +96,11 @@ export const useAudioRecord = ({
     transcription,
     translation,
     error,
-    start: () => audioRecordManagerRef.current?.start(usageType),
+    start: () => audioRecordManagerRef.current?.start(subscriptionType),
     resume: () => {
       setError(null);
 
-      audioRecordManagerRef.current?.resume(usageType);
+      audioRecordManagerRef.current?.resume(subscriptionType);
     },
     stop: () => audioRecordManagerRef.current?.stop(),
     restart: () => {

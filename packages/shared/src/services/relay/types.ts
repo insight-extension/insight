@@ -1,4 +1,4 @@
-import { type SPLToken, type SubscriptionType } from "@repo/shared/constants";
+import { SPLToken } from "@/constants/tokens";
 
 export enum RelayRoute {
   DEPOSIT = "deposit",
@@ -19,6 +19,6 @@ export interface RelayResponse {
 export interface DepositMessage {
   amount: number;
   token: SPLToken;
-  subscriptionType: SubscriptionType;
+  // subscriptionType: SubscriptionType;
   transactionSignature: string;
 }

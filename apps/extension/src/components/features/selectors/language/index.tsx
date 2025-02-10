@@ -23,7 +23,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-1 bg-white rounded">
+      <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-3 bg-white rounded">
         <div className="flex flex-row items-center gap-2">
           <Icon name="Languages" size={16} />
 

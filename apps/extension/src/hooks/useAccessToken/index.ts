@@ -23,7 +23,13 @@ export const useAccessToken = () => {
         token: accessToken
       })
     ) {
-      sessionManager.refreshToken(accessToken);
+      (async () => {
+        const refreshToken = await storage.get(SessionToken.REFRESH);
+
+        if (refreshToken) {
+          sessionManager.refreshToken(refreshToken);
+        }
+      })();
     }
   }, [accessToken]);
 

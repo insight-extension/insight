@@ -12,7 +12,6 @@ import { P, match } from "ts-pattern";
 
 import {
   SPLToken,
-  SubscriptionType,
   TOKEN_ADDRESSES,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
@@ -34,10 +33,12 @@ import { EventCallbackMap } from "./types";
 export class AnchorClient extends Observable<EventCallbackMap> {
   private TOKEN_PROGRAM = TOKEN_PROGRAM_ID;
 
+  private program: Program<DepositProgram>;
+
   constructor(private provider: AnchorProvider) {
     super();
 
-    this.provider = provider;
+    this.program = new Program(IDL as DepositProgram, provider);
   }
 
   private get user() {
@@ -50,16 +51,12 @@ export class AnchorClient extends Observable<EventCallbackMap> {
 
   public async depositToVault({
     token,
-    amount,
-    subscriptionType
+    amount
   }: {
     amount: BN;
     token: SPLToken;
-    subscriptionType: SubscriptionType;
   }): Promise<string> {
     try {
-      const program = new Program(IDL as DepositProgram, this.provider);
-
       const payload = {
         user: this.user,
         token: TOKEN_ADDRESSES[token],
@@ -71,26 +68,10 @@ export class AnchorClient extends Observable<EventCallbackMap> {
         TOKEN_CURRENCIES[token].decimals
       );
 
-      const transactionSignature = await match(subscriptionType)
-        .returnType<Promise<string>>()
-        // not used for now
-        // .with(
-        //   SubscriptionType.PER_MONTH,
-        //   async () =>
-        //     await program.methods
-        //       .depositToSubscriptionVault(normalizedAmount)
-        //       .accounts({ ...payload })
-        //       .rpc()
-        // )
-        .with(
-          SubscriptionType.PER_USAGE,
-          async () =>
-            await program.methods
-              .depositToTimedVault(normalizedAmount)
-              .accounts({ ...payload })
-              .rpc()
-        )
-        .exhaustive();
+      const transactionSignature = await this.program.methods
+        .depositToTimedVault(normalizedAmount)
+        .accounts({ ...payload })
+        .rpc();
 
       return transactionSignature;
     } catch (error: any) {
@@ -187,7 +168,13 @@ export class AnchorClient extends Observable<EventCallbackMap> {
     }
   }
 
-  public async getTokenBalance({ token }: { token: SPLToken }) {
+  public async getTokenBalance({
+    token,
+    user = this.user
+  }: {
+    token: SPLToken;
+    user?: PublicKey;
+  }) {
     try {
       const tokenMint = await this.getTokenMint(
         new PublicKey(TOKEN_ADDRESSES[token])
@@ -195,11 +182,17 @@ export class AnchorClient extends Observable<EventCallbackMap> {
 
       const userATA = await getAssociatedTokenAddress(
         tokenMint.address,
-        this.user,
-        false,
+        user,
+        true,
         this.TOKEN_PROGRAM
       );
+      console.log({ userATA: userATA.toBase58() });
 
+      const tokenBalance =
+        await this.connection.getTokenAccountBalance(userATA);
+      console.log({ tokenBalance });
+
+      return;
       const { amount } = await getAccount(
         this.connection,
         userATA,
@@ -211,7 +204,23 @@ export class AnchorClient extends Observable<EventCallbackMap> {
         amount,
         TOKEN_CURRENCIES[token].decimals
       );
-    } catch {
+    } catch (error) {
+      console.log("error", error);
+      return 0;
+    }
+  }
+
+  public async getUserBalance(token: SPLToken) {
+    try {
+      const [userInfoAddress] = PublicKey.findProgramAddressSync(
+        [Buffer.from("user_info"), this.user.toBuffer()],
+        this.program.programId
+      );
+
+      console.log({ userInfoAddress: userInfoAddress.toBase58() });
+
+      return await this.getTokenBalance({ token, user: userInfoAddress });
+    } catch (error) {
       return 0;
     }
   }

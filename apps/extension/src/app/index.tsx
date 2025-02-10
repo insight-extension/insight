@@ -2,12 +2,19 @@ import { type FC, useCallback, useEffect, useState } from "react";
 
 import { match } from "ts-pattern";
 
-import { SPLToken, TOKEN_CURRENCIES, UsageType } from "@repo/shared/constants";
+import {
+  SPLToken,
+  SubscriptionType,
+  TOKEN_CURRENCIES
+} from "@repo/shared/constants";
 import { formatPublicKey, roundToDecimals } from "@repo/shared/utils";
 import { Icon } from "@repo/ui/components";
 
 import { Alert, AlertTitle, Button, Logo, TextBlock } from "@/components";
-import { LanguageSelector, UsageTypeSelector } from "@/components/features";
+import {
+  LanguageSelector,
+  SubscriptionTypeSelector
+} from "@/components/features";
 import "@/components/ui/textBlock";
 import { ConnectionStatus, SUPPORTED_LANGUAGES, UI_URL } from "@/constants";
 import "@/global.css";
@@ -48,8 +55,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     shouldUpdate: shouldUpdateBalance
   });
 
-  const [usageType, setUsageType] = useState<UsageType>(
-    balance ? UsageType.PER_HOUR : UsageType.FREE_TRIAL
+  const [subscriptionType, setSubscriptionType] = useState<SubscriptionType>(
+    balance ? SubscriptionType.PER_HOUR : SubscriptionType.FREE_TRIAL
   );
 
   const {
@@ -64,18 +71,18 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
     error
   } = useAudioRecord({
     accessToken,
-    usageType
+    subscriptionType
   });
 
   const { openSidePanel, close } = useExtensionControls();
 
   useEffect(() => {
-    setUsageType(
+    setSubscriptionType(
       balance
-        ? usageType !== UsageType.FREE_TRIAL
-          ? usageType
-          : UsageType.PER_HOUR
-        : UsageType.FREE_TRIAL
+        ? subscriptionType !== SubscriptionType.FREE_TRIAL
+          ? subscriptionType
+          : SubscriptionType.PER_HOUR
+        : SubscriptionType.FREE_TRIAL
     );
   }, [balance]);
 
@@ -181,8 +188,8 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
         </div>
 
         <div className="flex flex-row justify-between items-center mb-2">
-          <div className="flex flex-row items-center h-8 w-38   bg-white rounded">
-            <p className="px-1 text-primary font-medium text-sm">
+          <div className="flex flex-row items-center h-8 w-38 bg-white rounded">
+            <p className="px-3 text-primary font-medium text-sm">
               {/* <p className="text-xs">{`${getMessage("balance")}`}:</p> */}
 
               {`${typeof balance === "number" ? `${roundToDecimals(balance)} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol.toUpperCase()}` : "..."} `}
@@ -208,19 +215,19 @@ export const App: FC<AppProps> = ({ isSidebar }) => {
                   .with(ConnectionStatus.CONNECTING, () => "text-yellow-500")
                   .with(ConnectionStatus.DISCONNECTED, () => "text-red-500")
                   .exhaustive(),
-                "px-1  font-medium text-sm"
+                "px-3 font-medium text-sm"
               )}
             >
               {status.toUpperCase()}
             </span>
           </div>
 
-          <UsageTypeSelector
+          <SubscriptionTypeSelector
             balance={balance}
             freeHoursLeft={freeHoursLeft}
-            current={usageType}
-            onChange={useCallback((value: UsageType) => {
-              setUsageType(value);
+            current={subscriptionType}
+            onChange={useCallback((value: SubscriptionType) => {
+              setSubscriptionType(value);
             }, [])}
             isDisabled={isRecording || isReady}
           />

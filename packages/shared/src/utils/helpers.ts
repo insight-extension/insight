@@ -18,9 +18,6 @@ export const extractDomainFromURL = (url: string): string | null => {
 export const extractRootDomainFromURL = (url: string): string | null =>
   extractDomainFromURL(url)?.match(ROOT_DOMAIN_PATTERN)?.[0] ?? null;
 
-export const createAuthorizationHeader = (accessToken: string): string =>
-  `Bearer ${accessToken}`;
-
 export const getDecimalMultiplier = (decimals: number) => 10 ** decimals;
 
 export const convertNumberToBNWithDecimals = (

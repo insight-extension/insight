@@ -41,7 +41,7 @@ export const useTokenBalance = ({
 
     if (!anchorClient) return;
     // todo: doesnt get actual balance event with timeout
-    setBalance(await anchorClient.getTokenBalance({ token }));
+    setBalance(await anchorClient.getUserBalance(token));
   }, [token]);
 
   const handleBalanceChange = useCallback(async () => {
