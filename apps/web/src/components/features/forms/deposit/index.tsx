@@ -23,7 +23,10 @@ import {
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
 import { AnchorClient, relayMessenger } from "@repo/shared/services";
-import { roundToDecimals } from "@repo/shared/utils";
+import {
+  getSOlExplorerTransactionURL,
+  roundToDecimals
+} from "@repo/shared/utils";
 
 import {
   Label,
@@ -59,9 +62,10 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
   const handleSuccessSubmit = useCallback((signature: string) => {
     // todo: use pipe here
+
     toast({
       title: TRANSLATIONS.depositForm.toast.successfulTransactionTitle,
-      description: signature,
+      description: getSOlExplorerTransactionURL(signature),
       variant: "success"
     });
 

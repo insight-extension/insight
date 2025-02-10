@@ -1,7 +1,11 @@
 import { BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 
-import { ROOT_DOMAIN_PATTERN } from "@repo/shared/constants";
+import {
+  ROOT_DOMAIN_PATTERN,
+  SOLANA_EXPLORER_URL,
+  SOLANA_NETWORK
+} from "@repo/shared/constants";
 
 export const isServerSide = typeof window === "undefined";
 
@@ -47,4 +51,8 @@ export const roundToDecimal = (value: number, decimals: number = 0): number => {
   const factor = Math.pow(10, decimals);
 
   return Math.floor(value * factor) / factor;
+};
+
+export const getSOlExplorerTransactionURL = (address: string) => {
+  return `${SOLANA_EXPLORER_URL}/tx/${address}?cluster=${SOLANA_NETWORK}`;
 };

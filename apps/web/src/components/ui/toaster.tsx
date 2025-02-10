@@ -20,7 +20,22 @@ export function Toaster() {
               {title && <ToastTitle>{title}</ToastTitle>}
 
               {description && (
-                <ToastDescription>{description}</ToastDescription>
+                <ToastDescription>
+                  {/* todo: replace hardcoded with dynamic usage */}
+                  {typeof description === "string" &&
+                  description.includes("https") ? (
+                    <a
+                      href={description}
+                      className="font-bold underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      See transaction on Solana Explorer
+                    </a>
+                  ) : (
+                    description
+                  )}
+                </ToastDescription>
               )}
             </div>
 
