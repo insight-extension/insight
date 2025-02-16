@@ -28,11 +28,9 @@
             "@/*": [
                 "./src/*"
             ]
-        }
+        },
     },
     "include": [
         "src",
-        "src/_unused/tests",
-        "../../packages/shared/src/errors/trace.ts"
     ]
 }
