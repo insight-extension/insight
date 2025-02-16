@@ -30,7 +30,7 @@ export const useAudioRecord = ({
   // todo: add immer
   useEffect(() => {
     if (accessToken && subscriptionType) {
-      audioRecordManagerRef.current = new AudioRecordManager(accessToken);
+      audioRecordManagerRef.current = new AudioRecordManager();
 
       audioRecordManagerRef.current.on(
         "transcription",
@@ -77,7 +77,7 @@ export const useAudioRecord = ({
         if (refreshToken) {
           sessionManager.refreshToken(refreshToken);
 
-          audioRecordManagerRef.current?.resume(subscriptionType);
+          audioRecordManagerRef.current?.resume(accessToken, subscriptionType);
         }
       })();
     }
@@ -96,11 +96,12 @@ export const useAudioRecord = ({
     transcription,
     translation,
     error,
-    start: () => audioRecordManagerRef.current?.start(subscriptionType),
+    start: () =>
+      audioRecordManagerRef.current?.start(accessToken, subscriptionType),
     resume: () => {
       setError(null);
 
-      audioRecordManagerRef.current?.resume(subscriptionType);
+      audioRecordManagerRef.current?.resume(accessToken, subscriptionType);
     },
     stop: () => audioRecordManagerRef.current?.stop(),
     restart: () => {

@@ -26,11 +26,6 @@ export const useAccessToken = () => {
       (async () => {
         const refreshToken = await storage.get(SessionToken.REFRESH);
 
-        console.log("REFRESHING TOKEN", {
-          accessToken,
-          refreshToken
-        });
-
         if (refreshToken) {
           sessionManager.refreshToken(refreshToken);
         }
