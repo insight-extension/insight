@@ -1,8 +1,14 @@
 // import * as React from "react";
 import { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
 
-const TextBlock = ({ className, children, ...props }) => {
+import { cn } from "@repo/ui/lib";
+
+interface TextBlockProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const TextBlock = ({ className, children, ...props }: TextBlockProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Effect for automatic scrolling down

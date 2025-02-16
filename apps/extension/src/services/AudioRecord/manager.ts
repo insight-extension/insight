@@ -11,6 +11,7 @@ import { ConnectionStatus, WEBSOCKET_URL } from "@/constants";
 
 import { MessageType, PCM_PROCESSOR_MODULE, SAMPLE_RATE } from "./constants";
 import {
+  AccessTokenRequiredError,
   AudioProcessingError,
   CaptureAudioStreamError,
   ConnectionError,
@@ -35,7 +36,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   private paused: boolean = false;
 
-  constructor(private accessToken: string) {
+  constructor() {
     super();
   }
 
@@ -172,11 +173,14 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     });
   };
 
-  private initWebSocketConnection(subscriptionType: SubscriptionType): void {
+  private initWebSocketConnection(
+    accessToken: string,
+    subscriptionType: SubscriptionType
+  ): void {
     if (
-      this.accessToken &&
+      accessToken &&
       isTokenExpired({
-        token: this.accessToken
+        token: accessToken
       })
     ) {
       //todo: review logic
@@ -190,7 +194,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
       transportOptions: {
         polling: {
           extraHeaders: {
-            Authorization: generateBearerToken(this.accessToken),
+            Authorization: generateBearerToken(accessToken),
             Subscription: subscriptionType,
             "Accept-Language": "en-US" // todo: dynamic language
           }
@@ -275,10 +279,19 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     this.capturedStream = null;
   }
 
-  public start(subscriptionType: SubscriptionType): void {
+  public start(
+    accessToken: string | null,
+    subscriptionType: SubscriptionType
+  ): void {
+    if (!accessToken) {
+      this.emit("error", new AccessTokenRequiredError());
+
+      return;
+    }
+
     this.emit("status", ConnectionStatus.CONNECTING);
 
-    this.initWebSocketConnection(subscriptionType);
+    this.initWebSocketConnection(accessToken, subscriptionType);
   }
 
   // todo: use for restart after error handling
@@ -289,11 +302,20 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   //   this.initWebSocketConnection();
   // }
 
-  public resume(subscriptionType: SubscriptionType): void {
+  public resume(
+    accessToken: string | null,
+    subscriptionType: SubscriptionType
+  ): void {
+    if (!accessToken) {
+      this.emit("error", new AccessTokenRequiredError());
+
+      return;
+    }
+
     this.emit("error", null);
     this.emit("status", ConnectionStatus.CONNECTING);
 
-    this.initWebSocketConnection(subscriptionType);
+    this.initWebSocketConnection(accessToken, subscriptionType);
 
     match(this.isReady)
       .with(true, () => {

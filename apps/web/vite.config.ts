@@ -38,6 +38,15 @@ export default defineConfig(({ mode }) => {
 
     build: {
       sourcemap: true
+    },
+
+    test: {
+      // see: https://vitest.dev/guide/browser/
+      // browser: {
+      //   provider: "playwright",
+      //   enabled: true,
+      //   instances: [{ browser: "chromium" }]
+      // }
     }
   };
 });
