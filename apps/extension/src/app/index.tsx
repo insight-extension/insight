@@ -39,8 +39,6 @@ import { constructURLWithParams } from "@/utils";
 //    "content_security_policy": {
 //       "extension_pages": "script-src 'self'; connect-src 'self' wss://$ENV_VAR:*;"
 //     }
-// todo: add gobal error handler
-// add senty
 
 interface AppProps {
   width: "sidebar" | "popup";
@@ -55,7 +53,6 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
   );
   const [shouldUpdateBalance, setShouldUpdateBalance] = useState(false);
 
-  // todo: use refresh token
   const { accessToken } = useAccessToken();
 
   const { balance, publicKey, freeHoursLeft } = useTokenBalance({

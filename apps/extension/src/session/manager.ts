@@ -19,6 +19,10 @@ export class SessionManager {
     try {
       const payload = jwtDecode<SessionTokenPayload>(token);
 
+      console.log("DECODING TOKEN", {
+        payload
+      });
+
       const validationResult = SessionTokenPayloadCodec.decode(payload);
 
       return match(validationResult)
