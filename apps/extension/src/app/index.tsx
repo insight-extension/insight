@@ -23,7 +23,6 @@ import {
   LanguageSelector,
   SubscriptionTypeSelector
 } from "@/components/features";
-import "@/components/ui/textBlock";
 import { ConnectionStatus, SUPPORTED_LANGUAGES, UI_URL } from "@/constants";
 import "@/global.css";
 import {
@@ -48,8 +47,9 @@ interface AppProps {
 export const App: FC<AppProps> = ({ isSidebar, width }) => {
   const { getMessage } = chrome.i18n;
 
+  // TODO: USE DYNAMIC LANGUAGES
   const [currentLanguage, setCurrentLanguage] = useState<Language>(
-    SUPPORTED_LANGUAGES[0]
+    SUPPORTED_LANGUAGES.en
   );
   const [shouldUpdateBalance, setShouldUpdateBalance] = useState(false);
 
@@ -199,9 +199,26 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
               {`${typeof balance === "number" ? `${roundToDecimals(balance)} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol.toUpperCase()}` : "..."} `}
             </p>
           </div>
-
+          From:
           <LanguageSelector
-            current={currentLanguage}
+            current={SUPPORTED_LANGUAGES.en}
+            onChange={useCallback((language: Language) => {
+              setCurrentLanguage(language);
+
+              chrome.storage.sync.set({ language: language });
+            }, [])}
+          />
+        </div>
+
+        <div className="flex flex-row justify-between items-center mb-2">
+          <div className="flex flex-row items-center h-8 w-38 bg-white rounded">
+            <p className="px-2 text-primary font-medium text-sm">
+              ADD FIELD HERE
+            </p>
+          </div>
+          To:
+          <LanguageSelector
+            current={SUPPORTED_LANGUAGES.ua}
             onChange={useCallback((language: Language) => {
               setCurrentLanguage(language);
 

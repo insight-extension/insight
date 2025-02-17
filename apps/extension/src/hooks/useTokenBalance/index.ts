@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Connection, PublicKey } from "@solana/web3.js";
-import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
-import { match } from "fp-ts/lib/TaskEither";
+import { match, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
 import { AnchorProvider } from "@repo/shared/anchor";
@@ -34,6 +33,7 @@ export const useTokenBalance = ({
 
   const [hasBalanceChanged, setHasBalanceChanged] = useState(false);
   const [freeHoursLeft, setFreeHoursLeft] = useState<number | null>(null);
+  const [paidHoursLeft, setPaidHoursLeft] = useState<number | null>(null);
 
   const anchorClientRef = useRef<AnchorClient | null>(null);
 
@@ -60,6 +60,25 @@ export const useTokenBalance = ({
           },
           (freeHoursLeft) => {
             setFreeHoursLeft(freeHoursLeft.freeHoursLeft);
+          }
+        )
+      )();
+    }
+
+    const anchorClient = anchorClientRef.current;
+
+    if (anchorClient && balance && balance > 0 && accessToken) {
+      pipe(
+        tryCatch(
+          async () => await anchorClient.getUserPaidTimeLeft(),
+          () => null
+        ),
+        match(
+          () => {
+            setPaidHoursLeft(null);
+          },
+          (paidHoursLeft) => {
+            setPaidHoursLeft(paidHoursLeft);
           }
         )
       )();
@@ -132,6 +151,7 @@ export const useTokenBalance = ({
   return {
     balance,
     freeHoursLeft,
+    paidHoursLeft,
     publicKey
   };
 };

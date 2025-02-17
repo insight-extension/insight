@@ -1,7 +1,7 @@
 import { Language } from "@/types";
 
-export const SUPPORTED_LANGUAGES: Language[] = [
-  { name: "English", flagCode: "US" }
-  // { name: "Українська", flagCode: "UA" },
+export const SUPPORTED_LANGUAGES = {
+  en: { name: "English", flagCode: "US" },
+  ua: { name: "Українська", flagCode: "UA" }
   // { name: "Français", flagCode: "FR" }
-] as const;
+} as const;
