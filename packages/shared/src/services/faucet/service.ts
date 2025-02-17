@@ -1,10 +1,8 @@
 import { TaskEither } from "fp-ts/lib/TaskEither";
 
 import { APIError, apiClient, generateBearerToken } from "@repo/shared/api";
-import { SessionToken } from "@repo/shared/constants";
 import { TraceId } from "@repo/shared/errors";
 
-import { sessionManager } from "../session";
 import { FaucetClaimSignature } from "./types";
 
 class FaucetService {
@@ -14,17 +12,15 @@ class FaucetService {
     return this.baseURL + url;
   }
 
-  public claim(): TaskEither<APIError, FaucetClaimSignature> {
-    // todo: move to interceptor
-    const accessToken = sessionManager.getToken({
-      key: SessionToken.ACCESS
-    });
-
+  public claim(
+    accessToken: string
+  ): TaskEither<APIError, FaucetClaimSignature> {
     return apiClient.post<{}, FaucetClaimSignature>({
       url: this.getURL("/claim"),
       body: {},
       traceId: TraceId.FAUCE_CLAIM,
       options: {
+        // todo: move to interceptor
         headers: {
           Authorization: generateBearerToken(accessToken)
         }

@@ -19,13 +19,9 @@ interface SubscriptionTypeSelectorProps {
   isDisabled: boolean;
 }
 
-export const SubscriptionTypeSelector: React.FC<SubscriptionTypeSelectorProps> = ({
-  balance,
-  current,
-  onChange,
-  freeHoursLeft,
-  isDisabled
-}) => {
+export const SubscriptionTypeSelector: React.FC<
+  SubscriptionTypeSelectorProps
+> = ({ balance, current, onChange, freeHoursLeft, isDisabled }) => {
   const { getMessage } = chrome.i18n;
 
   const SUBSCRIPTION_TYPE_MAP = useMemo(
@@ -47,7 +43,7 @@ export const SubscriptionTypeSelector: React.FC<SubscriptionTypeSelectorProps> =
     <DropdownMenu>
       <DropdownMenuTrigger
         disabled={current === SubscriptionType.FREE_TRIAL}
-        className="flex justify-between items-center h-8 w-40 text-sm bg-white px-3 py-1 rounded border border-gray-300"
+        className="flex justify-between items-center h-8 w-38 text-sm bg-white px-3 py-1 rounded border border-gray-300"
       >
         <span className="text-gray-700">{SUBSCRIPTION_TYPE_MAP[current]}:</span>
         <span className="ml-2">{balanceInfo}</span>
@@ -57,19 +53,26 @@ export const SubscriptionTypeSelector: React.FC<SubscriptionTypeSelectorProps> =
         {Object.values(SubscriptionType)
           .filter((value) =>
             balance
-              ? [SubscriptionType.PER_MINUTE, SubscriptionType.PER_HOUR].includes(value)
+              ? [
+                  SubscriptionType.PER_MINUTE,
+                  SubscriptionType.PER_HOUR
+                ].includes(value)
               : value === SubscriptionType.FREE_TRIAL
           )
           .map((value) => {
             const price = PRICING[value];
-            const isNotEnoughBalance = typeof balance === "number" && balance < price;
+            const isNotEnoughBalance =
+              typeof balance === "number" && balance < price;
 
             return (
               <DropdownMenuItem
                 disabled={isDisabled || isNotEnoughBalance}
                 key={value}
-                className={`cursor-pointer px-3 py-2 w-40 ${isNotEnoughBalance ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100"
-                  }`}
+                className={`cursor-pointer px-3 py-2 w-40 ${
+                  isNotEnoughBalance
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "hover:bg-gray-100"
+                }`}
                 onClick={() => !isNotEnoughBalance && onChange(value)}
               >
                 {SUBSCRIPTION_TYPE_MAP[value]}

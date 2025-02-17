@@ -13,9 +13,10 @@ export const getTimeLeft = ({
   freeHoursLeft?: number | null;
 }) => {
   const HOURS_LABEL = "h";
-  const MINUTES_LABEL = "min";
+  const MINUTES_LABEL = "m";
 
   // TODO: move to utils
+  // todo: display paid hours and minutes
   const toHours = (seconds: number) => seconds / 60 / 60;
 
   return match({ type, freeHoursLeft, balance })
@@ -26,7 +27,6 @@ export const getTimeLeft = ({
       },
       (seconds) => `${roundToDecimal(toHours(seconds), 1)}${HOURS_LABEL}`
     )
-
     .with(
       {
         type: SubscriptionType.PER_HOUR

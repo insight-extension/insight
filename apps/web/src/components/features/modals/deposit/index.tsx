@@ -5,8 +5,8 @@ import { getRouteApi } from "@tanstack/react-router";
 import { match } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
-import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
-import { faucetService } from "@repo/shared/services";
+import { APP_SEARCH_PARAMS, SessionToken } from "@repo/shared/constants";
+import { faucetService, sessionManager } from "@repo/shared/services";
 
 import {
   DepositForm,
@@ -29,9 +29,12 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
     const { action } = getRouteApi("/").useSearch();
     const { toast } = useToast();
     const intl = useIntl();
+    const accessToken = sessionManager.getToken({
+      key: SessionToken.ACCESS
+    });
 
     const [isOpen, setIsOpen] = useState<boolean>(
-      action === APP_SEARCH_PARAMS.action.deposit
+      Boolean(accessToken) && action === APP_SEARCH_PARAMS.action.deposit
     );
 
     const handleCloseModal = useCallback(() => {
@@ -40,10 +43,10 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
 
     const faucetClaim = useCallback(() => {
       pipe(
-        faucetService.claim(),
+        // todo: move to interceptor
+        faucetService.claim(accessToken),
         match(
           (_error) => {
-            // todo: complete error message getting
             toast({
               title: intl.formatMessage({ id: "error.failedFaucetAirdrop" }),
               description: intl.formatMessage({
@@ -60,7 +63,7 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
             })
         )
       )();
-    }, []);
+    }, [accessToken]);
 
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

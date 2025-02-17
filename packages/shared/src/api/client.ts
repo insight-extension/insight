@@ -42,6 +42,7 @@ class APIClient {
     options,
     traceId
   }: RequestParams): TaskEither<APIError, R> {
+    console.log("request", url, options);
     return tryCatch(
       async () =>
         await this.api(url, {
