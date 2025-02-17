@@ -61,7 +61,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
   });
 
   const [subscriptionType, setSubscriptionType] = useState<SubscriptionType>(
-    balance ? SubscriptionType.PER_HOUR : SubscriptionType.FREE_TRIAL
+    balance ? SubscriptionType.PER_MINUTE : SubscriptionType.FREE_TRIAL
   );
 
   const {
@@ -86,7 +86,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
       balance
         ? subscriptionType !== SubscriptionType.FREE_TRIAL
           ? subscriptionType
-          : SubscriptionType.PER_HOUR
+          : SubscriptionType.PER_MINUTE
         : SubscriptionType.FREE_TRIAL
     );
   }, [balance]);
