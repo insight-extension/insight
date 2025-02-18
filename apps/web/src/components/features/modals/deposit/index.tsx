@@ -2,11 +2,11 @@ import { ReactNode, memo, useCallback, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { getRouteApi } from "@tanstack/react-router";
-import { match } from "fp-ts/lib/TaskEither";
+import { fold, left, right } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
-import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
-import { faucetService } from "@repo/shared/services";
+import { APP_SEARCH_PARAMS, SessionToken } from "@repo/shared/constants";
+import { faucetService, sessionManager } from "@repo/shared/services";
 
 import {
   DepositForm,
@@ -29,9 +29,12 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
     const { action } = getRouteApi("/").useSearch();
     const { toast } = useToast();
     const intl = useIntl();
+    const accessToken = sessionManager.getToken({
+      key: SessionToken.ACCESS
+    });
 
     const [isOpen, setIsOpen] = useState<boolean>(
-      action === APP_SEARCH_PARAMS.action.deposit
+      Boolean(accessToken) && action === APP_SEARCH_PARAMS.action.deposit
     );
 
     const handleCloseModal = useCallback(() => {
@@ -40,27 +43,30 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
 
     const faucetClaim = useCallback(() => {
       pipe(
-        faucetService.claim(),
-        match(
-          (_error) => {
-            // todo: complete error message getting
-            toast({
-              title: intl.formatMessage({ id: "error.failedFaucetAirdrop" }),
-              description: intl.formatMessage({
-                id: "error.failedFaucetAirdrop.description"
-              }),
-              variant: "error"
-            });
-          },
+        // todo: move to interceptor
+        faucetService.claim(accessToken),
+        fold(
+          (_error) =>
+            left(
+              toast({
+                title: intl.formatMessage({ id: "error.failedFaucetAirdrop" }),
+                description: intl.formatMessage({
+                  id: "error.failedFaucetAirdrop.description"
+                }),
+                variant: "error"
+              })
+            ),
           (signature) =>
-            toast({
-              title: intl.formatMessage({ id: "success.faucetAidrop" }),
-              description: signature,
-              variant: "success"
-            })
+            right(
+              toast({
+                title: intl.formatMessage({ id: "success.faucetAidrop" }),
+                description: signature,
+                variant: "success"
+              })
+            )
         )
       )();
-    }, []);
+    }, [accessToken]);
 
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

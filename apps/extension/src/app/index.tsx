@@ -1,5 +1,6 @@
 import { type FC, useCallback, useEffect, useState } from "react";
 
+import debounce from "debounce";
 import { match } from "ts-pattern";
 
 import {
@@ -21,9 +22,9 @@ import {
 } from "@/components";
 import {
   LanguageSelector,
+  SubscriptionInfoSelector,
   SubscriptionTypeSelector
 } from "@/components/features";
-import "@/components/ui/textBlock";
 import { ConnectionStatus, SUPPORTED_LANGUAGES, UI_URL } from "@/constants";
 import "@/global.css";
 import {
@@ -48,20 +49,22 @@ interface AppProps {
 export const App: FC<AppProps> = ({ isSidebar, width }) => {
   const { getMessage } = chrome.i18n;
 
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(
-    SUPPORTED_LANGUAGES[0]
+  // TODO: USE DYNAMIC LANGUAGES
+  const [_currentLanguage, setCurrentLanguage] = useState<Language>(
+    SUPPORTED_LANGUAGES.en
   );
   const [shouldUpdateBalance, setShouldUpdateBalance] = useState(false);
 
   const { accessToken } = useAccessToken();
 
-  const { balance, publicKey, freeHoursLeft } = useTokenBalance({
-    accessToken,
-    shouldUpdate: shouldUpdateBalance
-  });
+  const { balance, publicKey, freeHoursLeft, paidHoursLeft, nextFreeTime } =
+    useTokenBalance({
+      accessToken,
+      shouldUpdate: shouldUpdateBalance
+    });
 
   const [subscriptionType, setSubscriptionType] = useState<SubscriptionType>(
-    balance ? SubscriptionType.PER_HOUR : SubscriptionType.FREE_TRIAL
+    balance ? SubscriptionType.PER_MINUTE : SubscriptionType.FREE_TRIAL
   );
 
   const {
@@ -86,10 +89,12 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
       balance
         ? subscriptionType !== SubscriptionType.FREE_TRIAL
           ? subscriptionType
-          : SubscriptionType.PER_HOUR
+          : SubscriptionType.PER_MINUTE
         : SubscriptionType.FREE_TRIAL
     );
   }, [balance]);
+
+  const [isCopied, setIsCopied] = useState(false);
 
   return (
     <div className={cn(width === "sidebar" ? "w-90" : "w-84")}>
@@ -151,10 +156,23 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           </Alert>
         )}
 
-        <div className="flex flex-row justify-between items-center mb-3">
-          <Button variant="default" className="w-38 bg-secondary text-start">
+        <div className="flex flex-row justify-between items-center mb-3 gap-2">
+          <Button
+            variant="default"
+            className="w-38 bg-secondary text-start"
+            onClick={async () => {
+              if (!publicKey) return;
+
+              await navigator.clipboard.writeText(publicKey);
+
+              setIsCopied(true);
+
+              debounce(() => setIsCopied(false), 400)();
+            }}
+          >
             {publicKey ? (
-              formatPublicKey(publicKey)
+              formatPublicKey(publicKey) +
+              (isCopied ? ` ${getMessage("copied")}` : "")
             ) : (
               <a
                 href={constructURLWithParams({
@@ -191,17 +209,19 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           </Button>
         </div>
 
-        <div className="flex flex-row justify-between items-center mb-2">
-          <div className="flex flex-row items-center h-8 w-38 bg-white rounded">
-            <p className="px-2 text-primary font-medium text-sm">
-              {/* <p className="text-xs">{`${getMessage("balance")}`}:</p> */}
-
-              {`${typeof balance === "number" ? `${roundToDecimals(balance)} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol.toUpperCase()}` : "..."} `}
-            </p>
-          </div>
+        <div className="flex flex-row justify-between items-center mb-2 gap-2">
+          <SubscriptionTypeSelector
+            balance={balance}
+            current={subscriptionType}
+            onChange={useCallback((value: SubscriptionType) => {
+              setSubscriptionType(value);
+            }, [])}
+            isDisabled={isRecording || isReady}
+          />
 
           <LanguageSelector
-            current={currentLanguage}
+            label={getMessage("from")}
+            current={SUPPORTED_LANGUAGES.en}
             onChange={useCallback((language: Language) => {
               setCurrentLanguage(language);
 
@@ -210,31 +230,39 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           />
         </div>
 
-        <div className="flex flex-row justify-between items-center mb-2">
-          <div className="flex flex-row items-center h-8 w-38 bg-white rounded">
-            <span
-              className={cn(
-                match(status)
-                  .with(ConnectionStatus.CONNECTED, () => "text-green-500")
-                  .with(ConnectionStatus.CONNECTING, () => "text-yellow-500")
-                  .with(ConnectionStatus.DISCONNECTED, () => "text-red-500")
-                  .exhaustive(),
-                "px-2 font-medium text-sm"
-              )}
-            >
-              {status.toUpperCase()}
-            </span>
-          </div>
-
-          <SubscriptionTypeSelector
+        <div className="flex flex-row justify-between items-center mb-2 gap-2">
+          <SubscriptionInfoSelector
             balance={balance}
             freeHoursLeft={freeHoursLeft}
             current={subscriptionType}
-            onChange={useCallback((value: SubscriptionType) => {
-              setSubscriptionType(value);
-            }, [])}
-            isDisabled={isRecording || isReady}
+            paidHoursLeft={paidHoursLeft}
+            nextFreeTime={nextFreeTime}
           />
+
+          <LanguageSelector
+            label={getMessage("to")}
+            current={SUPPORTED_LANGUAGES.ua}
+            onChange={useCallback((language: Language) => {
+              setCurrentLanguage(language);
+
+              chrome.storage.sync.set({ language: language });
+            }, [])}
+          />
+        </div>
+
+        <div className="flex flex-row justify-center text-center items-center mb-2 w-full h-8  bg-white rounded">
+          <span
+            className={cn(
+              match(status)
+                .with(ConnectionStatus.CONNECTED, () => "text-green-500")
+                .with(ConnectionStatus.CONNECTING, () => "text-yellow-500")
+                .with(ConnectionStatus.DISCONNECTED, () => "text-red-500")
+                .exhaustive(),
+              "px-2 font-medium text-sm"
+            )}
+          >
+            {status.toUpperCase()}
+          </span>
         </div>
       </div>
 

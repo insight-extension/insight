@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Connection, PublicKey } from "@solana/web3.js";
-import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
-import { match } from "fp-ts/lib/TaskEither";
+import { match, tryCatch } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
 import { AnchorProvider } from "@repo/shared/anchor";
 import {
+  HOURS_IN_DAY,
+  SECOND,
   SOLANA_CLUSTER_URL,
   SPLToken,
   StorageKey,
@@ -34,6 +35,8 @@ export const useTokenBalance = ({
 
   const [hasBalanceChanged, setHasBalanceChanged] = useState(false);
   const [freeHoursLeft, setFreeHoursLeft] = useState<number | null>(null);
+  const [paidHoursLeft, setPaidHoursLeft] = useState<number | null>(null);
+  const [nextFreeTime, setNextFreeTime] = useState<string | null>(null);
 
   const anchorClientRef = useRef<AnchorClient | null>(null);
 
@@ -58,8 +61,39 @@ export const useTokenBalance = ({
           () => {
             setFreeHoursLeft(null);
           },
-          (freeHoursLeft) => {
-            setFreeHoursLeft(freeHoursLeft.freeHoursLeft);
+          (freeTimeInfo) => {
+            setFreeHoursLeft(freeTimeInfo.freeHoursLeft);
+
+            const nextFreeTime = freeTimeInfo.freeHoursStartDate
+              ? new Date(freeTimeInfo.freeHoursStartDate * SECOND)
+              : null;
+
+            if (nextFreeTime) {
+              nextFreeTime.setHours(nextFreeTime.getHours() + HOURS_IN_DAY);
+
+              setNextFreeTime(nextFreeTime.toLocaleString());
+            } else {
+              setNextFreeTime(null);
+            }
+          }
+        )
+      )();
+    }
+
+    const anchorClient = anchorClientRef.current;
+
+    if (anchorClient && balance && balance > 0 && accessToken) {
+      pipe(
+        tryCatch(
+          async () => await anchorClient.getUserPaidTimeLeft(),
+          () => null
+        ),
+        match(
+          () => {
+            setPaidHoursLeft(null);
+          },
+          (paidHoursLeft) => {
+            setPaidHoursLeft(paidHoursLeft);
           }
         )
       )();
@@ -132,6 +166,8 @@ export const useTokenBalance = ({
   return {
     balance,
     freeHoursLeft,
-    publicKey
+    paidHoursLeft,
+    publicKey,
+    nextFreeTime
   };
 };

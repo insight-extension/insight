@@ -7,9 +7,14 @@ import { TRANSLATIONS } from "@/i18n";
 export const depositFormSchema = z.object({
   amount: z
     .number()
-    .min(1, { message: TRANSLATIONS.depositForm.validation.amount.minimum })
+    .min(0.1, {
+      message: TRANSLATIONS.depositForm.validation.amount.minimum
+    })
     .max(10, {
       message: TRANSLATIONS.depositForm.validation.amount.maximum
+    })
+    .multipleOf(0.1, {
+      message: TRANSLATIONS.depositForm.validation.amount.decimals
     }),
   token: z.nativeEnum(SPLToken, {
     errorMap: () => ({

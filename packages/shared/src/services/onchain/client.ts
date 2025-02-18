@@ -216,6 +216,22 @@ export class AnchorClient extends Observable<EventCallbackMap> {
     }
   }
 
+  public async getUserPaidTimeLeft() {
+    try {
+      const [userInfoAddress] = PublicKey.findProgramAddressSync(
+        [Buffer.from("user_info"), this.user.toBuffer()],
+        this.program.programId
+      );
+
+      const userInfo =
+        await this.program.account.userInfo.fetch(userInfoAddress);
+
+      return Number(userInfo.perHourLeft); // in seconds
+    } catch (error) {
+      return 0;
+    }
+  }
+
   public async airdropSOLIfRequired() {
     try {
       const balance = await this.getSOLBalance();
