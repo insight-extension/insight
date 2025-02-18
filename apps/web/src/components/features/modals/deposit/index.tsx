@@ -2,7 +2,7 @@ import { ReactNode, memo, useCallback, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { getRouteApi } from "@tanstack/react-router";
-import { match } from "fp-ts/lib/TaskEither";
+import { fold, left, right } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
 import { APP_SEARCH_PARAMS, SessionToken } from "@repo/shared/constants";
@@ -45,22 +45,25 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
       pipe(
         // todo: move to interceptor
         faucetService.claim(accessToken),
-        match(
-          (_error) => {
-            toast({
-              title: intl.formatMessage({ id: "error.failedFaucetAirdrop" }),
-              description: intl.formatMessage({
-                id: "error.failedFaucetAirdrop.description"
-              }),
-              variant: "error"
-            });
-          },
+        fold(
+          (_error) =>
+            left(
+              toast({
+                title: intl.formatMessage({ id: "error.failedFaucetAirdrop" }),
+                description: intl.formatMessage({
+                  id: "error.failedFaucetAirdrop.description"
+                }),
+                variant: "error"
+              })
+            ),
           (signature) =>
-            toast({
-              title: intl.formatMessage({ id: "success.faucetAidrop" }),
-              description: signature,
-              variant: "success"
-            })
+            right(
+              toast({
+                title: intl.formatMessage({ id: "success.faucetAidrop" }),
+                description: signature,
+                variant: "success"
+              })
+            )
         )
       )();
     }, [accessToken]);

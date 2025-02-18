@@ -13,9 +13,7 @@ import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useAtomValue } from "jotai";
-import { z } from "zod";
 
 import {
   APP_SEARCH_PARAMS,
@@ -41,7 +39,7 @@ import { TRANSLATIONS } from "@/i18n";
 import { cn } from "@/lib/cn";
 import { anchorProviderAtom } from "@/store";
 
-import { DepositFormFields, depositFormSchema } from "./validation";
+import { DepositFormFields } from "./validation";
 
 interface DepositFormProps {
   onSuccessSubmit: () => void;
@@ -61,8 +59,6 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   const { publicKey } = useWallet();
 
   const handleSuccessSubmit = useCallback((signature: string) => {
-    // todo: use pipe here
-
     toast({
       title: TRANSLATIONS.depositForm.toast.successfulTransactionTitle,
       description: getSOlExplorerTransactionURL(signature),
@@ -77,6 +73,8 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
     onSuccessSubmit();
   }, []);
 
+  const [validationError, setValidationError] = useState<string | null>(null);
+
   const {
     Field,
     Subscribe,
@@ -90,6 +88,25 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
       // subscriptionType: SubscriptionType.PER_USAGE
     } as DepositFormFields,
     onSubmit: async ({ value: { amount, token } }) => {
+      setValidationError(null);
+      if (isNaN(amount)) {
+        setValidationError(TRANSLATIONS.depositForm.validation.amount.invalid);
+
+        return;
+      }
+
+      if (amount < 0.1) {
+        setValidationError(TRANSLATIONS.depositForm.validation.amount.minimum);
+
+        return;
+      }
+
+      if (amount > 10) {
+        setValidationError(TRANSLATIONS.depositForm.validation.amount.maximum);
+
+        return;
+      }
+
       const anchorClient = anchorClientRef.current;
 
       if (!anchorClient) {
@@ -126,11 +143,11 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
           variant: "error"
         });
       }
-    },
-    validatorAdapter: zodValidator(),
-    validators: {
-      onChange: depositFormSchema
     }
+    // validatorAdapter: zodValidator()
+    // validators: {
+    //    onChange: depositFormSchema
+    // }
   });
 
   const handleFormSubmit = useCallback(
@@ -224,12 +241,12 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         <div className="flex gap-4">
           <Field
             name="amount"
-            validators={{
-              onChange: z
-                .number()
-                .min(1, TRANSLATIONS.depositForm.validation.amount.minimum),
-              onChangeAsyncDebounceMs: 500
-            }}
+            // validators={{
+            //   onChange: z
+            //     .number()
+            //     .min(0.1, TRANSLATIONS.depositForm.validation.amount.minimum),
+            //   onChangeAsyncDebounceMs: 500
+            // }}
           >
             {({ name, state, handleChange, handleBlur }) => {
               const {
@@ -244,16 +261,11 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                       name={name}
                       value={state.value}
                       onBlur={handleBlur}
+                      type="number"
+                      pattern="^\d*(\.\d{0,1})?$"
                       onChange={({ target }) => {
-                        const sanitizedValue = target.value.replace(
-                          /[^0-9]/g,
-                          ""
-                        );
-                        const value = Number(sanitizedValue);
-
-                        handleChange(isNaN(value) ? 0 : value);
+                        handleChange(target.value as unknown as number);
                       }}
-                      type="text"
                       className={cn(
                         "relative z-10",
                         "cursor-pointer",
@@ -265,6 +277,12 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                   </div>
 
                   <span>
+                    {validationError && (
+                      <span className="text-xs text-red-500">
+                        {validationError}
+                      </span>
+                    )}
+
                     {isTouched && errors.length ? (
                       <span className="text-xs text-red-500">
                         {errors.join(",")}

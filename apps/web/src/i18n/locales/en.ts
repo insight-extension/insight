@@ -12,8 +12,10 @@ export const TRANSLATIONS = {
   depositForm: {
     validation: {
       amount: {
-        minimum: "Amount must be positive",
-        maximum: "Sorry, we can't proceed that amount yet"
+        minimum: "Amount must be greater than 0.1",
+        maximum: "Sorry, we can't proceed that amount yet",
+        decimals: "Amount must be a multiple of 0.1",
+        invalid: "Amount must be a number"
       },
       token: {
         required: "Please select a currency token"
