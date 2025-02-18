@@ -88,6 +88,9 @@ module.exports = {
       width: {
         "38": "9.5rem",
         '84': '21rem',
+      },
+      fontSize: {
+        'md': '1rem',
       }
     },
   },

@@ -61,5 +61,49 @@
   "freeTrial": {
     "message": "Free Trial",
     "description": "Label for free trial."
+  },
+  "from": {
+    "message": "From",
+    "description": "Label for from."
+  },
+  "to": {
+    "message": "To",
+    "description": "Label for to."
+  },
+  "copied": {
+    "message": "(copied)",
+    "description": "Label for copied."
+  },
+  "subscriptionInfo": {
+    "message": "Usage info",
+    "description": "Label for subscription info."
+  },
+  "yourSubscriptionInfo": {
+    "message": "Your subscription",
+    "description": "Label for your subscription."
+  },
+  "paidTimeLeft": {
+    "message": "Paid time left",
+    "description": "Label for paid hours left."
+  },
+  "freeTimeLeft": {
+    "message": "Free time left",
+    "description": "Label for free time left."
+  },
+  "nextFreeTime": {
+    "message": "Next free time in",
+    "description": "Label for next free time."
+  },
+  "possibleTime": {
+    "message": "Available with balance",
+    "description": "Label for possible time."
+  },
+  "insufficientBalance": {
+    "message": "Insufficient balance",
+    "description": "Label for insufficient balance."
+  },
+  "selectUsageType": {
+    "message": "Select usage type",
+    "description": "Label for select usage type."
   }
 }

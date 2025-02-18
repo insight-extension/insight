@@ -6,6 +6,8 @@ import { pipe } from "fp-ts/lib/function";
 
 import { AnchorProvider } from "@repo/shared/anchor";
 import {
+  HOURS_IN_DAY,
+  SECOND,
   SOLANA_CLUSTER_URL,
   SPLToken,
   StorageKey,
@@ -34,6 +36,7 @@ export const useTokenBalance = ({
   const [hasBalanceChanged, setHasBalanceChanged] = useState(false);
   const [freeHoursLeft, setFreeHoursLeft] = useState<number | null>(null);
   const [paidHoursLeft, setPaidHoursLeft] = useState<number | null>(null);
+  const [nextFreeTime, setNextFreeTime] = useState<string | null>(null);
 
   const anchorClientRef = useRef<AnchorClient | null>(null);
 
@@ -58,8 +61,20 @@ export const useTokenBalance = ({
           () => {
             setFreeHoursLeft(null);
           },
-          (freeHoursLeft) => {
-            setFreeHoursLeft(freeHoursLeft.freeHoursLeft);
+          (freeTimeInfo) => {
+            setFreeHoursLeft(freeTimeInfo.freeHoursLeft);
+
+            const nextFreeTime = freeTimeInfo.freeHoursStartDate
+              ? new Date(freeTimeInfo.freeHoursStartDate * SECOND)
+              : null;
+
+            if (nextFreeTime) {
+              nextFreeTime.setHours(nextFreeTime.getHours() + HOURS_IN_DAY);
+
+              setNextFreeTime(nextFreeTime.toLocaleString());
+            } else {
+              setNextFreeTime(null);
+            }
           }
         )
       )();
@@ -152,6 +167,7 @@ export const useTokenBalance = ({
     balance,
     freeHoursLeft,
     paidHoursLeft,
-    publicKey
+    publicKey,
+    nextFreeTime
   };
 };

@@ -9,11 +9,8 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui";
 
-import { getTimeLeft } from "./utils";
-
 interface SubscriptionTypeSelectorProps {
   balance: number | null;
-  freeHoursLeft: number | null;
   current: SubscriptionType;
   onChange: (SubscriptionType: SubscriptionType) => void;
   isDisabled: boolean;
@@ -21,7 +18,7 @@ interface SubscriptionTypeSelectorProps {
 
 export const SubscriptionTypeSelector: React.FC<
   SubscriptionTypeSelectorProps
-> = ({ balance, current, onChange, freeHoursLeft, isDisabled }) => {
+> = ({ balance, current, onChange, isDisabled }) => {
   const { getMessage } = chrome.i18n;
 
   const SUBSCRIPTION_TYPE_MAP = useMemo(
@@ -33,23 +30,25 @@ export const SubscriptionTypeSelector: React.FC<
     []
   );
 
-  let balanceInfo = "...";
-
-  if (typeof balance === "number") {
-    balanceInfo = getTimeLeft({ type: current, balance, freeHoursLeft });
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         disabled={current === SubscriptionType.FREE_TRIAL}
         className="flex justify-between items-center h-8 w-38 text-sm bg-white px-3 py-1 rounded border border-gray-300"
       >
-        <span className="text-gray-700">{SUBSCRIPTION_TYPE_MAP[current]}:</span>
-        <span className="ml-2">{balanceInfo}</span>
+        <span className="uppercase">{SUBSCRIPTION_TYPE_MAP[current]}</span>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="max-h-40 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg">
+        <DropdownMenuItem
+          disabled={true}
+          className="flex flex-col  cursor-pointer px-3 py-2 w-40"
+        >
+          <span className="text-sm text-gray-700">
+            {getMessage("selectUsageType")}
+          </span>
+        </DropdownMenuItem>
+
         {Object.values(SubscriptionType)
           .filter((value) =>
             balance
@@ -68,7 +67,7 @@ export const SubscriptionTypeSelector: React.FC<
               <DropdownMenuItem
                 disabled={isDisabled || isNotEnoughBalance}
                 key={value}
-                className={`cursor-pointer px-3 py-2 w-40 ${
+                className={`flex flex-col text-md cursor-pointer px-3 py-2 w-40 ${
                   isNotEnoughBalance
                     ? "text-gray-400 cursor-not-allowed"
                     : "hover:bg-gray-100"
@@ -76,7 +75,11 @@ export const SubscriptionTypeSelector: React.FC<
                 onClick={() => !isNotEnoughBalance && onChange(value)}
               >
                 {SUBSCRIPTION_TYPE_MAP[value]}
-                {isNotEnoughBalance && ` (Insufficient balance)`}
+                <span className="text-xs text-red-500">
+                  {" "}
+                  {isNotEnoughBalance &&
+                    ` (${getMessage("insufficientBalance")})`}
+                </span>
               </DropdownMenuItem>
             );
           })}
