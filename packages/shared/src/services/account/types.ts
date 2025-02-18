@@ -1,4 +1,4 @@
 export interface FreeTrialInfo {
   freeHoursLeft: number;
-  freeHoursStartDate: string;
+  freeHoursStartDate: number; // in seconds
 }

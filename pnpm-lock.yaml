@@ -74,6 +74,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      debounce:
+        specifier: ^2.2.0
+        version: 2.2.0
       fp-ts:
         specifier: ^2.16.9
         version: 2.16.9
