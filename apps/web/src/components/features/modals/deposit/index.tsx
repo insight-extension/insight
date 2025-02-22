@@ -59,7 +59,7 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
               })
             );
           },
-          (signature) =>
+          ({ signature }) =>
             right(
               toast({
                 title: intl.formatMessage({ id: "success.faucetAirdrop" }),
