@@ -15,9 +15,9 @@ class FaucetService {
   public claim(
     accessToken: string
   ): TaskEither<APIError, FaucetClaimSignature> {
-    return apiClient.post<{}, FaucetClaimSignature>({
+    return apiClient.post<null, FaucetClaimSignature>({
       url: this.getURL("/claim"),
-      body: {},
+      body: null,
       traceId: TraceId.FAUCE_CLAIM,
       options: {
         // todo: move to interceptor
