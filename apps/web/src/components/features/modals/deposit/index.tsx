@@ -45,9 +45,11 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
       pipe(
         // todo: move to interceptor
         faucetService.claim(accessToken),
+        // todo: use match instead of fold?
         fold(
-          (_error) =>
-            left(
+          (_error) => {
+            console.log({ faucetClaim: _error });
+            return left(
               toast({
                 title: intl.formatMessage({ id: "error.failedFaucetAirdrop" }),
                 description: intl.formatMessage({
@@ -55,11 +57,12 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
                 }),
                 variant: "error"
               })
-            ),
+            );
+          },
           (signature) =>
             right(
               toast({
-                title: intl.formatMessage({ id: "success.faucetAidrop" }),
+                title: intl.formatMessage({ id: "success.faucetAirdrop" }),
                 description: signature,
                 variant: "success"
               })

@@ -43,10 +43,21 @@ class APIClient {
     traceId
   }: RequestParams): TaskEither<APIError, R> {
     return tryCatch(
-      async () =>
-        await this.api(url, {
+      async () => {
+        const response = await this.api(url, {
           ...options
-        }).json<R>(),
+        });
+
+        const contentType = response.headers.get("content-type");
+
+        if (contentType?.startsWith("text/")) {
+          return (await response.text()) as R;
+        } else if (contentType?.startsWith("application/json")) {
+          return await response.json<R>();
+        } else {
+          throw new Error("Invalid content type");
+        }
+      },
       (error: unknown) => parseAPIError(error as HTTPError, traceId)
     );
   }
@@ -76,7 +87,7 @@ class APIClient {
       url,
       options: {
         method: "POST",
-        json: body,
+        ...(body && { json: body }),
         ...options
       },
       traceId
