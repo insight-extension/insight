@@ -1,1 +1,3 @@
-export type FaucetClaimSignature = string;
+export interface FaucetClaimSignature {
+  signature: string;
+}
