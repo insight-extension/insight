@@ -222,6 +222,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           <LanguageSelector
             label={getMessage("from")}
             current={sourceLanguage}
+            exclude={targetLanguage}
             onChange={useCallback((language: Language) => {
               setSourceLanguage(language);
 
@@ -243,6 +244,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           <LanguageSelector
             label={getMessage("to")}
             current={targetLanguage}
+            exclude={sourceLanguage}
             onChange={useCallback((language: Language) => {
               setTargetLanguage(language);
             }, [])}
