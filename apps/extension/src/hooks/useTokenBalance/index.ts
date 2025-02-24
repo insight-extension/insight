@@ -65,7 +65,7 @@ export const useTokenBalance = ({
             setFreeHoursLeft(freeTimeInfo.freeHoursLeft);
 
             const nextFreeTime = freeTimeInfo.freeHoursStartDate
-              ? new Date(freeTimeInfo.freeHoursStartDate * SECOND)
+              ? new Date(freeTimeInfo.freeHoursStartDate)
               : null;
 
             if (nextFreeTime) {
