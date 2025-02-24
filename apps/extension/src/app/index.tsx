@@ -3,12 +3,8 @@ import { type FC, useCallback, useEffect, useState } from "react";
 import debounce from "debounce";
 import { match } from "ts-pattern";
 
-import {
-  SPLToken,
-  SubscriptionType,
-  TOKEN_CURRENCIES
-} from "@repo/shared/constants";
-import { formatPublicKey, roundToDecimals } from "@repo/shared/utils";
+import { SubscriptionType } from "@repo/shared/constants";
+import { formatPublicKey } from "@repo/shared/utils";
 import { Icon } from "@repo/ui/components";
 import { cn } from "@repo/ui/lib";
 
@@ -25,7 +21,7 @@ import {
   SubscriptionInfoSelector,
   SubscriptionTypeSelector
 } from "@/components/features";
-import { ConnectionStatus, SUPPORTED_LANGUAGES, UI_URL } from "@/constants";
+import { ConnectionStatus, TRANSLATION_LANGUAGES, UI_URL } from "@/constants";
 import "@/global.css";
 import {
   useAccessToken,
@@ -49,9 +45,13 @@ interface AppProps {
 export const App: FC<AppProps> = ({ isSidebar, width }) => {
   const { getMessage } = chrome.i18n;
 
-  // TODO: USE DYNAMIC LANGUAGES
-  const [_currentLanguage, setCurrentLanguage] = useState<Language>(
-    SUPPORTED_LANGUAGES.en
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+
+  const [sourceLanguage, setSourceLanguage] = useState<Language>(
+    TRANSLATION_LANGUAGES.find((language) => language.countryCode === "US")!
+  );
+  const [targetLanguage, setTargetLanguage] = useState<Language>(
+    TRANSLATION_LANGUAGES.find((language) => language.countryCode === "UA")!
   );
   const [shouldUpdateBalance, setShouldUpdateBalance] = useState(false);
 
@@ -79,7 +79,9 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
     error
   } = useAudioRecord({
     accessToken,
-    subscriptionType
+    subscriptionType,
+    sourceLanguageAlpha2Code: sourceLanguage?.alpha2,
+    targetLanguageAlpha2Code: targetLanguage?.alpha2
   });
 
   const { openSidePanel, close } = useExtensionControls();
@@ -93,8 +95,6 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
         : SubscriptionType.FREE_TRIAL
     );
   }, [balance]);
-
-  const [isCopied, setIsCopied] = useState(false);
 
   return (
     <div className={cn(width === "sidebar" ? "w-90" : "w-84")}>
@@ -221,11 +221,12 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
 
           <LanguageSelector
             label={getMessage("from")}
-            current={SUPPORTED_LANGUAGES.en}
+            current={sourceLanguage}
             onChange={useCallback((language: Language) => {
-              setCurrentLanguage(language);
+              setSourceLanguage(language);
 
-              chrome.storage.sync.set({ language: language });
+              // todo: review usage
+              // chrome.storage.sync.set({ language: language });
             }, [])}
           />
         </div>
@@ -241,11 +242,9 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
 
           <LanguageSelector
             label={getMessage("to")}
-            current={SUPPORTED_LANGUAGES.ua}
+            current={targetLanguage}
             onChange={useCallback((language: Language) => {
-              setCurrentLanguage(language);
-
-              chrome.storage.sync.set({ language: language });
+              setTargetLanguage(language);
             }, [])}
           />
         </div>

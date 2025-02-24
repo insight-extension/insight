@@ -5,6 +5,8 @@ import { ConnectionStatus } from "@/constants";
 export interface UseAudioRecordProps {
   accessToken: string | null;
   subscriptionType: SubscriptionType;
+  sourceLanguageAlpha2Code: string;
+  targetLanguageAlpha2Code: string;
 }
 
 export interface UseAudioRecord {

@@ -174,8 +174,11 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   };
 
   private initWebSocketConnection(
+    // todo: review usage and duplication
     accessToken: string,
-    subscriptionType: SubscriptionType
+    subscriptionType: SubscriptionType,
+    sourceLanguageAlpha2Code: string,
+    targetLanguageAlpha2Code: string
   ): void {
     if (
       accessToken &&
@@ -196,7 +199,9 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
           extraHeaders: {
             Authorization: generateBearerToken(accessToken),
             Subscription: subscriptionType,
-            "Accept-Language": "en-US" // todo: dynamic language
+            "Accept-Language": "en-US", // todo: dynamic language
+            "Source-Language": sourceLanguageAlpha2Code,
+            "Target-Language": targetLanguageAlpha2Code
           }
         }
       }
@@ -281,7 +286,9 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   public start(
     accessToken: string | null,
-    subscriptionType: SubscriptionType
+    subscriptionType: SubscriptionType,
+    sourceLanguageAlpha2Code: string,
+    targetLanguageAlpha2Code: string
   ): void {
     if (!accessToken) {
       this.emit("error", new AccessTokenRequiredError());
@@ -291,7 +298,12 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
     this.emit("status", ConnectionStatus.CONNECTING);
 
-    this.initWebSocketConnection(accessToken, subscriptionType);
+    this.initWebSocketConnection(
+      accessToken,
+      subscriptionType,
+      sourceLanguageAlpha2Code,
+      targetLanguageAlpha2Code
+    );
   }
 
   // todo: use for restart after error handling
@@ -304,7 +316,9 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   public resume(
     accessToken: string | null,
-    subscriptionType: SubscriptionType
+    subscriptionType: SubscriptionType,
+    sourceLanguageAlpha2Code: string,
+    targetLanguageAlpha2Code: string
   ): void {
     if (!accessToken) {
       this.emit("error", new AccessTokenRequiredError());
@@ -315,7 +329,12 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     this.emit("error", null);
     this.emit("status", ConnectionStatus.CONNECTING);
 
-    this.initWebSocketConnection(accessToken, subscriptionType);
+    this.initWebSocketConnection(
+      accessToken,
+      subscriptionType,
+      sourceLanguageAlpha2Code,
+      targetLanguageAlpha2Code
+    );
 
     match(this.isReady)
       .with(true, () => {

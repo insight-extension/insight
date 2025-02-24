@@ -105,5 +105,9 @@
   "selectUsageType": {
     "message": "Select usage type",
     "description": "Label for select usage type."
+  },
+  "selectLanguage": {
+    "message": "Select language",
+    "description": "Label for select language."
   }
 }
