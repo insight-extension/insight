@@ -7,11 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui";
-import { SUPPORTED_LANGUAGES } from "@/constants";
+import { TRANSLATION_LANGUAGES } from "@/constants";
 import { Language } from "@/types";
 
 interface LanguageSelectorProps {
-  current: Language;
+  current: Language | null;
   onChange: (language: Language) => void;
   label: string;
 }
@@ -21,38 +21,45 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   onChange,
   label
 }) => {
+  const { getMessage } = chrome.i18n;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-2 bg-white rounded">
         <div className="flex flex-row items-end gap-1">
-          <span className="text-sm">{label}:</span>
+          {current ? (
+            <>
+              <span className="text-sm">{label}:</span>
 
-          <div className="flex flex-row items-center gap-1">
-            <ReactCountryFlag
-              countryCode={current.flagCode}
-              svg
-              cdnUrl="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/"
-              cdnSuffix="svg"
-              title={current.name}
-              style={{ cursor: "pointer" }}
-            />
+              <div className="flex flex-row items-center gap-1">
+                <ReactCountryFlag
+                  countryCode={current.countryCode}
+                  svg
+                  cdnUrl="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/"
+                  cdnSuffix="svg"
+                  title={current.name}
+                  style={{ cursor: "pointer" }}
+                />
 
-            <span className="text-sm">{current.name}</span>
-          </div>
+                <span className="text-sm">{current.name}</span>
+              </div>
+            </>
+          ) : (
+            <span className="text-sm">{getMessage("selectLanguage")}</span>
+          )}
         </div>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300">
-        {Object.values(SUPPORTED_LANGUAGES).map(
-          ({ flagCode, name: language }) => (
+        {TRANSLATION_LANGUAGES.map(
+          ({ alpha2, name: language, countryCode }) => (
             <DropdownMenuItem
-              disabled
-              key={flagCode}
+              key={countryCode}
               className="cursor-pointer w-36"
-              onClick={() => onChange({ flagCode, name: language })}
+              onClick={() => onChange({ alpha2, name: language, countryCode })}
             >
               <ReactCountryFlag
-                countryCode={flagCode}
+                countryCode={countryCode}
                 svg
                 cdnUrl="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/"
                 cdnSuffix="svg"

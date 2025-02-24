@@ -6,5 +6,6 @@ export enum Connection {
 
 export interface Language {
   name: string;
-  flagCode: string;
+  alpha2: string;
+  countryCode: string;
 }

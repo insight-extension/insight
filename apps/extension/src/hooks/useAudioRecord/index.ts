@@ -11,7 +11,9 @@ import { UseAudioRecord, UseAudioRecordProps } from "./types";
 
 export const useAudioRecord = ({
   subscriptionType,
-  accessToken
+  accessToken,
+  sourceLanguageAlpha2Code,
+  targetLanguageAlpha2Code
 }: UseAudioRecordProps): UseAudioRecord => {
   const [status, setStatus] = useState<UseAudioRecord["status"]>(
     ConnectionStatus.DISCONNECTED
@@ -77,7 +79,12 @@ export const useAudioRecord = ({
         if (refreshToken) {
           sessionManager.refreshToken(refreshToken);
 
-          audioRecordManagerRef.current?.resume(accessToken, subscriptionType);
+          audioRecordManagerRef.current?.resume(
+            accessToken,
+            subscriptionType,
+            sourceLanguageAlpha2Code,
+            targetLanguageAlpha2Code
+          );
         }
       })();
     }
@@ -97,11 +104,21 @@ export const useAudioRecord = ({
     translation,
     error,
     start: () =>
-      audioRecordManagerRef.current?.start(accessToken, subscriptionType),
+      audioRecordManagerRef.current?.start(
+        accessToken,
+        subscriptionType,
+        sourceLanguageAlpha2Code,
+        targetLanguageAlpha2Code
+      ),
     resume: () => {
       setError(null);
 
-      audioRecordManagerRef.current?.resume(accessToken, subscriptionType);
+      audioRecordManagerRef.current?.resume(
+        accessToken,
+        subscriptionType,
+        sourceLanguageAlpha2Code,
+        targetLanguageAlpha2Code
+      );
     },
     stop: () => audioRecordManagerRef.current?.stop(),
     restart: () => {
