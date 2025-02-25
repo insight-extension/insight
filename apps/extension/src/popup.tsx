@@ -1,9 +1,8 @@
 import { App } from "@/app/";
-
-import { useGTM } from "./hooks";
+import { useGTM } from "@/hooks";
 
 const IndexPopup = () => {
-  useGTM();
+  useGTM("/popup");
 
   return <App isSidebar={false} width="popup" />;
 };

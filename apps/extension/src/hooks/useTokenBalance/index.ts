@@ -69,7 +69,7 @@ export const useTokenBalance = ({
               : null;
 
             if (nextFreeTime) {
-              nextFreeTime.setHours(nextFreeTime.getHours() + HOURS_IN_DAY);
+              nextFreeTime.setHours(nextFreeTime.getHours() + HOURS_IN_DAY * 7); // every 7 days
 
               setNextFreeTime(nextFreeTime.toLocaleString());
             } else {

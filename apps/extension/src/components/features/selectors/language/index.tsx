@@ -15,19 +15,24 @@ interface LanguageSelectorProps {
   onChange: (language: Language) => void;
   label: string;
   exclude: Language;
+  disabled: boolean;
 }
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   current,
   onChange,
   label,
-  exclude
+  exclude,
+  disabled
 }) => {
   const { getMessage } = chrome.i18n;
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-2 bg-white rounded">
+      <DropdownMenuTrigger
+        disabled={disabled}
+        className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-2 bg-white rounded disabled:cursor-not-allowed"
+      >
         <div className="flex flex-row items-end gap-1">
           {current ? (
             <>
@@ -53,26 +58,27 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-gray-300">
-        {TRANSLATION_LANGUAGES.filter(
-          ({ alpha2 }) => alpha2 !== exclude.alpha2
-        ).map(({ alpha2, name: language, countryCode }) => (
-          <DropdownMenuItem
-            key={countryCode}
-            className="cursor-pointer w-36"
-            onClick={() => onChange({ alpha2, name: language, countryCode })}
-          >
-            <ReactCountryFlag
-              countryCode={countryCode}
-              svg
-              cdnUrl="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/"
-              cdnSuffix="svg"
-              title={language}
-              style={{ cursor: "pointer" }}
-              className="mr-2"
-            />
-            {language}
-          </DropdownMenuItem>
-        ))}
+        {TRANSLATION_LANGUAGES.map(
+          ({ alpha2, name: language, countryCode }) => (
+            <DropdownMenuItem
+              disabled={alpha2 === current?.alpha2 || alpha2 === exclude.alpha2}
+              key={countryCode}
+              className="cursor-pointer w-36"
+              onClick={() => onChange({ alpha2, name: language, countryCode })}
+            >
+              <ReactCountryFlag
+                countryCode={countryCode}
+                svg
+                cdnUrl="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/"
+                cdnSuffix="svg"
+                title={language}
+                style={{ cursor: "pointer" }}
+                className="mr-2"
+              />
+              {language}
+            </DropdownMenuItem>
+          )
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

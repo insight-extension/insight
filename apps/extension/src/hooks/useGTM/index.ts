@@ -1,8 +1,15 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import "https://www.googletagmanager.com/gtag/js?id=$PLASMO_PUBLIC_GTAG_ID";
 
-export const useGTM = () => {
+import { GTMEvent } from "./events";
+
+export const useGTM = (pagePath: "/popup" | "/sidepanel") => {
+  const [gtagEvent, setGtagEvent] = useState<{
+    event: GTMEvent;
+    data: any;
+  } | null>(null);
+
   useEffect(() => {
     window.dataLayer = window.dataLayer || [];
     window.gtag = function gtag() {
@@ -10,13 +17,8 @@ export const useGTM = () => {
     };
     window.gtag("js", new Date());
     window.gtag("config", process.env.PLASMO_PUBLIC_GTAG_ID, {
-      page_path: "/popup",
+      page_path: pagePath,
       debug_mode: true
     });
-
-    // todo: use required event
-    // window.gtag("event", "login", {
-    //   method: "TEST"
-    // });
   }, []);
 };
