@@ -14,18 +14,25 @@ interface LanguageSelectorProps {
   current: Language | null;
   onChange: (language: Language) => void;
   label: string;
+  exclude: Language;
+  disabled: boolean;
 }
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   current,
   onChange,
-  label
+  label,
+  exclude,
+  disabled
 }) => {
   const { getMessage } = chrome.i18n;
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-2 bg-white rounded">
+      <DropdownMenuTrigger
+        disabled={disabled}
+        className="flex flex-row justify-between items-center h-8 w-38 gap-2 text-primary px-2 bg-white rounded disabled:cursor-not-allowed"
+      >
         <div className="flex flex-row items-end gap-1">
           {current ? (
             <>
@@ -54,6 +61,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         {TRANSLATION_LANGUAGES.map(
           ({ alpha2, name: language, countryCode }) => (
             <DropdownMenuItem
+              disabled={alpha2 === current?.alpha2 || alpha2 === exclude.alpha2}
               key={countryCode}
               className="cursor-pointer w-36"
               onClick={() => onChange({ alpha2, name: language, countryCode })}

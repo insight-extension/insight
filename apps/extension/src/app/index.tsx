@@ -147,7 +147,12 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
             </div>
 
             <div className="flex flex-col items-center gap-2 mb-4">
-              <Button size="lg" onClick={resume}>
+              <Button
+                size="lg"
+                onClick={() => {
+                  resume();
+                }}
+              >
                 <Icon name="Play" className="mr-2" />
 
                 {getMessage("retry")}
@@ -220,8 +225,10 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           />
 
           <LanguageSelector
+            disabled={isRecording}
             label={getMessage("from")}
             current={sourceLanguage}
+            exclude={targetLanguage}
             onChange={useCallback((language: Language) => {
               setSourceLanguage(language);
 
@@ -241,8 +248,10 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           />
 
           <LanguageSelector
+            disabled={isRecording}
             label={getMessage("to")}
             current={targetLanguage}
+            exclude={sourceLanguage}
             onChange={useCallback((language: Language) => {
               setTargetLanguage(language);
             }, [])}

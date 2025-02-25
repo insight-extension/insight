@@ -60,7 +60,7 @@ export const SubscriptionInfoSelector: React.FC<
 
       <DropdownMenuContent className="p-4 max-h-40 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg">
         <div className="flex flex-col gap-4">
-          <p className="text-md">
+          <p className="text-sm">
             {getMessage("balance")}:{" "}
             <span className="font-bold">
               {`${typeof balance === "number" ? `${roundToDecimals(balance)} ${TOKEN_CURRENCIES[SPLToken.USDC].symbol.toUpperCase()}` : "..."} `}
@@ -69,12 +69,12 @@ export const SubscriptionInfoSelector: React.FC<
 
           {typeof paidHoursLeft === "number" && (
             <>
-              <p className="text-md">
+              <p className="text-sm">
                 <span>{getMessage("paidTimeLeft")}:</span>{" "}
                 <span className="font-bold">{balanceInfo}</span>
               </p>
 
-              <p className="text-md">
+              <p className="text-sm">
                 <span>{getMessage("possibleTime")}:</span>{" "}
                 {isInsufficientBalance ? (
                   <p className="text-sm text-red-500">
@@ -94,15 +94,15 @@ export const SubscriptionInfoSelector: React.FC<
 
           {typeof freeHoursLeft === "number" && (
             <>
-              <p className="text-md">
+              <p className="text-sm">
                 <span>{getMessage("freeTimeLeft")}:</span>{" "}
                 <span className="font-bold">{balanceInfo}</span>
               </p>
 
               {nextFreeTime && (
-                <p className="text-md">
-                  <span>{getMessage("nextFreeTime")}:</span>
-                  <span className="font-bold">{nextFreeTime}</span>
+                <p className="text-sm">
+                  <span>{getMessage("nextFreeTime")}:</span>{" "}
+                  <span className="font-bold text-sm">{nextFreeTime}</span>
                 </p>
               )}
             </>

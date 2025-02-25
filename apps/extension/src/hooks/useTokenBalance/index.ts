@@ -65,11 +65,11 @@ export const useTokenBalance = ({
             setFreeHoursLeft(freeTimeInfo.freeHoursLeft);
 
             const nextFreeTime = freeTimeInfo.freeHoursStartDate
-              ? new Date(freeTimeInfo.freeHoursStartDate * SECOND)
+              ? new Date(freeTimeInfo.freeHoursStartDate)
               : null;
 
             if (nextFreeTime) {
-              nextFreeTime.setHours(nextFreeTime.getHours() + HOURS_IN_DAY);
+              nextFreeTime.setHours(nextFreeTime.getHours() + HOURS_IN_DAY * 7); // every 7 days
 
               setNextFreeTime(nextFreeTime.toLocaleString());
             } else {
