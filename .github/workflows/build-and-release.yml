@@ -1,0 +1,66 @@
+name: Build and Release Extension
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        run: npm install -g pnpm@9.4.0
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build Extension
+        run: pnpm build:extension
+
+      - name: Create Artifact Archive
+        run: zip -rj extension.zip apps/extension/build/chrome-mv3-prod/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-extension
+          path: extension.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: browser-extension
+          path: dist
+
+      - name: Get Version from package.json
+        id: get_version
+        run: echo "VERSION=$(jq -r .version apps/extension/package.json)" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          draft: false
+          prerelease: false
+          files: dist/extension.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
