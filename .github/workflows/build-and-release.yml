@@ -27,6 +27,9 @@ jobs:
           echo 'PLASMO_PUBLIC_API_URL="${{ secrets.PLASMO_PUBLIC_API_URL }}"' >> .env.production
           echo 'PLASMO_PUBLIC_WEBSOCKET_URL="${{ secrets.PLASMO_PUBLIC_WEBSOCKET_URL }}"' >> .env.production
           echo 'PLASMO_PUBLIC_UI_URL="${{ secrets.PLASMO_PUBLIC_UI_URL }}"' >> .env.production
+          echo 'PLASMO_PUBLIC_MEASUREMENT_ID="${{ secrets.PLASMO_PUBLIC_MEASUREMENT_ID }}"' >> .env.production
+          echo 'PLASMO_PUBLIC_API_SECRET="${{ secrets.PLASMO_PUBLIC_API_SECRET }}"' >> .env.production
+
 
       - name: Build Extension
         run: pnpm build:extension
