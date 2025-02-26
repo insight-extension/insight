@@ -1,44 +1,48 @@
 import { MINUTE } from "@repo/shared/constants";
 
-import { GTAGEvent } from "./events";
+import { GAEvent } from "./events";
 
 const SESSION_EXPIRATION_IN_MIN = 30; // todo: review that value
 
 const STORAGE_KEY = "sessionData";
 
-class GTAGEmitter {
+class GAEmitter {
   private readonly GA_ENDPOINT: string;
   private readonly DEFAULT_ENGAGEMENT_TIME_IN_MSEC: number;
-  private readonly GTAG_ID: string | undefined;
+  private readonly MEASUREMENT_ID: string | undefined;
   private readonly API_SECRET: string | undefined;
 
   constructor() {
     this.GA_ENDPOINT = "https://www.google-analytics.com/mp/collect";
     this.DEFAULT_ENGAGEMENT_TIME_IN_MSEC = 100;
-    this.GTAG_ID = process.env.PLASMO_PUBLIC_GTAG_ID;
+    this.MEASUREMENT_ID = process.env.PLASMO_PUBLIC_MEASUREMENT_ID;
     this.API_SECRET = process.env.PLASMO_PUBLIC_API_SECRET;
   }
 
-  public async emitEvent(event: GTAGEvent, data: any) {
-    fetch(
-      `${this.GA_ENDPOINT}?measurement_id=${this.GTAG_ID}&api_secret=${this.API_SECRET}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          client_id: await this.getOrCreateClientId(),
-          events: [
-            {
-              name: event,
-              params: {
-                session_id: await this.getOrCreateSessionId(),
-                engagement_time_msec: this.DEFAULT_ENGAGEMENT_TIME_IN_MSEC,
-                ...data
+  public async emitEvent(event: GAEvent, data: any) {
+    try {
+      await fetch(
+        `${this.GA_ENDPOINT}?measurement_id=${this.MEASUREMENT_ID}&api_secret=${this.API_SECRET}`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            client_id: await this.getOrCreateClientId(),
+            events: [
+              {
+                name: event,
+                params: {
+                  session_id: await this.getOrCreateSessionId(),
+                  engagement_time_msec: this.DEFAULT_ENGAGEMENT_TIME_IN_MSEC,
+                  ...data
+                }
               }
-            }
-          ]
-        })
-      }
-    );
+            ]
+          })
+        }
+      );
+    } catch {
+      // dont need to handle error, it's not critical
+    }
   }
 
   private async getOrCreateSessionId() {
@@ -85,4 +89,4 @@ class GTAGEmitter {
   }
 }
 
-export const gtagEmitter = new GTAGEmitter();
+export const gaEmitter = new GAEmitter();

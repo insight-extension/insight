@@ -1,2 +1,2 @@
 export * from "./audioRecord";
-export * from "./GTAGEmitter";
+export * from "./GAEmitter";

@@ -29,6 +29,7 @@ import {
   useExtensionControls,
   useTokenBalance
 } from "@/hooks";
+import { GA_EVENTS, gaEmitter } from "@/services";
 import { type Language } from "@/types";
 import { constructURLWithParams } from "@/utils";
 
@@ -149,7 +150,12 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
             <div className="flex flex-col items-center gap-2 mb-4">
               <Button
                 size="lg"
-                onClick={() => {
+                onClick={async () => {
+                  await gaEmitter.emitEvent(GA_EVENTS.RETRY_TRANSLATION, {
+                    language: sourceLanguage.alpha2,
+                    targetLanguage: targetLanguage.alpha2
+                  });
+
                   resume();
                 }}
               >
@@ -289,7 +295,17 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
               isRecording || !accessToken || typeof balance !== "number"
             }
             size="lg"
-            onClick={() => {
+            onClick={async () => {
+              await gaEmitter.emitEvent(
+                isReady
+                  ? GA_EVENTS.RESUME_TRANSLATION
+                  : GA_EVENTS.START_TRANSLATION,
+                {
+                  language: sourceLanguage.alpha2,
+                  targetLanguage: targetLanguage.alpha2
+                }
+              );
+
               setShouldUpdateBalance(false);
 
               isReady ? resume() : start();
@@ -304,7 +320,12 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
             disabled={!isRecording || !accessToken}
             size="lg"
             variant={"destructive"}
-            onClick={() => {
+            onClick={async () => {
+              await gaEmitter.emitEvent(GA_EVENTS.STOP_TRANSLATION, {
+                language: sourceLanguage.alpha2,
+                targetLanguage: targetLanguage.alpha2
+              });
+
               stop();
 
               setShouldUpdateBalance(true);
