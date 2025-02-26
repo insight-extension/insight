@@ -19,7 +19,7 @@ class GAEmitter {
     this.API_SECRET = process.env.PLASMO_PUBLIC_API_SECRET;
   }
 
-  public async emitEvent(event: GAEvent, data: any) {
+  public async emitEvent(event: GAEvent, data?: any) {
     try {
       await fetch(
         `${this.GA_ENDPOINT}?measurement_id=${this.MEASUREMENT_ID}&api_secret=${this.API_SECRET}`,

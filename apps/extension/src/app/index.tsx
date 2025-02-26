@@ -151,10 +151,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
               <Button
                 size="lg"
                 onClick={async () => {
-                  await gaEmitter.emitEvent(GA_EVENTS.RETRY_TRANSLATION, {
-                    language: sourceLanguage.alpha2,
-                    targetLanguage: targetLanguage.alpha2
-                  });
+                  await gaEmitter.emitEvent(GA_EVENTS.RETRY_TRANSLATION);
 
                   resume();
                 }}
@@ -301,8 +298,9 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
                   ? GA_EVENTS.RESUME_TRANSLATION
                   : GA_EVENTS.START_TRANSLATION,
                 {
-                  language: sourceLanguage.alpha2,
-                  targetLanguage: targetLanguage.alpha2
+                  source_language: sourceLanguage.alpha2,
+                  target_language: targetLanguage.alpha2,
+                  subscription_type: subscriptionType
                 }
               );
 
@@ -321,10 +319,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
             size="lg"
             variant={"destructive"}
             onClick={async () => {
-              await gaEmitter.emitEvent(GA_EVENTS.STOP_TRANSLATION, {
-                language: sourceLanguage.alpha2,
-                targetLanguage: targetLanguage.alpha2
-              });
+              await gaEmitter.emitEvent(GA_EVENTS.STOP_TRANSLATION);
 
               stop();
 
