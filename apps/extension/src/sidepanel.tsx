@@ -1,8 +1,8 @@
 import { App } from "@/app";
-import { useGTM } from "@/hooks";
+import { useInitGTAG } from "@/hooks";
 
 const SidePanel = () => {
-  useGTM("/sidepanel");
+  useInitGTAG("/sidepanel");
 
   return <App isSidebar={true} width="sidebar" />;
 };
