@@ -21,11 +21,20 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Create .env.production
+        run: |
+          cd apps/extension/
+          echo 'PLASMO_PUBLIC_API_URL="${{ secrets.PLASMO_PUBLIC_API_URL }}"' >> .env.production
+          echo 'PLASMO_PUBLIC_WEBSOCKET_URL="${{ secrets.PLASMO_PUBLIC_WEBSOCKET_URL }}"' >> .env.production
+          echo 'PLASMO_PUBLIC_UI_URL="${{ secrets.PLASMO_PUBLIC_UI_URL }}"' >> .env.production
+
       - name: Build Extension
         run: pnpm build:extension
 
       - name: Create Artifact Archive
-        run: zip -rj extension.zip apps/extension/build/chrome-mv3-prod/
+        run: |
+          cd apps/extension/build/chrome-mv3-prod/
+          zip -r ../../../../extension.zip ./*   
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
