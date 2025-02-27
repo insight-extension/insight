@@ -6,6 +6,7 @@ import { pipe } from "fp-ts/lib/function";
 
 import { AnchorProvider } from "@repo/shared/anchor";
 import {
+  DAYS_IN_WEEK,
   HOURS_IN_DAY,
   SECOND,
   SOLANA_CLUSTER_URL,
@@ -69,7 +70,9 @@ export const useTokenBalance = ({
               : null;
 
             if (nextFreeTime) {
-              nextFreeTime.setHours(nextFreeTime.getHours() + HOURS_IN_DAY * 7); // every 7 days
+              nextFreeTime.setHours(
+                nextFreeTime.getHours() + HOURS_IN_DAY * DAYS_IN_WEEK
+              );
 
               setNextFreeTime(nextFreeTime.toLocaleString());
             } else {
