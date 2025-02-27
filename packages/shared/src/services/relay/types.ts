@@ -1,7 +1,5 @@
 export enum RelayRoute {
-  DEPOSIT = "deposit",
-  BALANCE = "balance",
-  AUTH_TOKENS = "authTokens"
+  DEPOSIT = "deposit"
 }
 
 export enum RelayStatus {
@@ -17,6 +15,5 @@ export interface RelayResponse {
 export interface DepositMessage {
   amount: number;
   token: string;
-  // subscriptionType: SubscriptionType;
   transactionSignature: string;
 }

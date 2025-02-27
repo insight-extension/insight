@@ -25,7 +25,7 @@ interface DepositModalProps {
 }
 
 export const DepositModal: React.FC<DepositModalProps> = memo(
-  ({ trigger, namespace = "features.modals.depositModal" }) => {
+  ({ trigger, namespace = "features.modals.deposit" }) => {
     const { action } = getRouteApi("/").useSearch();
     const { toast } = useToast();
     const intl = useIntl();
