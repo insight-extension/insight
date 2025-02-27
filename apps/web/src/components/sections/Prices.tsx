@@ -2,7 +2,7 @@ import { PRICING } from "@repo/shared/constants";
 
 import StarIcon from "@/assets/icons/star.svg";
 import Spring from "@/assets/images/spring.webp";
-import { Button } from "@/components";
+import { Button, DepositModal, DownloadModal } from "@/components";
 import { cn } from "@/lib";
 
 const Plans = [
@@ -62,12 +62,18 @@ export const Prices = () => {
                 />
               </span>
             </h4>
-            <Button
-              variant="button-white"
-              className="font-fixel px-[55px] py-[16px] md:text-[30px]"
-            >
-              Download For Chrome
-            </Button>
+
+            <DownloadModal
+              hideOnInstall
+              trigger={
+                <Button
+                  variant="button-white"
+                  className="font-fixel px-[55px] py-[16px] md:text-[30px]"
+                >
+                  Download For Chrome
+                </Button>
+              }
+            />
           </div>
 
           <p className="mb-[121px] ml-auto max-w-[250px] text-xl font-medium text-slate-700">
@@ -123,12 +129,17 @@ export const Prices = () => {
                 >
                   {item.description}
                 </p>
-                <Button
-                  variant={index === 1 ? "button-dark" : "button-white"}
-                  className="font-poppins py-[13px] text-xl md:px-[50px] md:text-[27px]"
-                >
-                  Get Started
-                </Button>
+
+                <DepositModal
+                  trigger={
+                    <Button
+                      variant={index === 1 ? "button-dark" : "button-white"}
+                      className="font-poppins py-[13px] text-xl md:px-[50px] md:text-[27px]"
+                    >
+                      Get Started
+                    </Button>
+                  }
+                />
               </article>
             ))}
           </div>

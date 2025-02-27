@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import GlobalIcon from "@/assets/icons/Global.svg";
 import {
-  Button,
+  DownloadModal,
   HeaderProps,
   Logo,
   NAV_LINKS,
@@ -135,7 +135,7 @@ export const MobileHeader: FC<MobileHeaderProps> = ({ className }) => {
 
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div className="flex flex-wrap justify-center gap-1">
-                  <Button variant="button-white">Download Now</Button>
+                  <DownloadModal />
 
                   <WalletMultiButton className="button button-dark-border" />
                 </div>
