@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 
+import { MINUTE } from "@repo/shared/constants";
+
 export enum BrowserType {
   Edge = "Edge",
   Chrome = "Chrome",
   Brave = "Brave"
 }
 
-const INTERVAL_TIME = 1000 * 30; // 30 seconds
+const CHECK_INTERVAL_TIME = MINUTE;
 const EXTENSION_ID = import.meta.env.VITE_EXTENSION_ID as string;
 
 interface UseIsInstalledExtensionProps {
@@ -40,7 +42,7 @@ export const useIsInstalledExtension = ({
 
     checkExtension();
 
-    const interval = setInterval(checkExtension, INTERVAL_TIME);
+    const interval = setInterval(checkExtension, CHECK_INTERVAL_TIME);
 
     return () => clearInterval(interval);
   }, []);
