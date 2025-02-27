@@ -10,16 +10,25 @@ import {
   DialogTrigger
 } from "@/components";
 import { useIsInstalledExtension } from "@/hooks";
+import { cn } from "@/lib";
 
 import { DownloadModalView } from "./view";
 
 interface DownloadModalProps {
   isDefaultOpen?: boolean;
   namespace?: string;
+  trigger?: React.ReactNode;
+  hideOnInstall?: boolean;
+  withinSection?: boolean;
 }
 
 export const DownloadModal: React.FC<DownloadModalProps> = memo(
-  ({ namespace = "features.modals.download" }) => {
+  ({
+    namespace = "features.modals.download",
+    trigger,
+    hideOnInstall,
+    withinSection
+  }) => {
     const intl = useIntl();
 
     const [isExtensionInstalled, setIsExtensionInstalled] =
@@ -36,12 +45,14 @@ export const DownloadModal: React.FC<DownloadModalProps> = memo(
         {!isExtensionInstalled ? (
           <Dialog>
             <DialogTrigger asChild>
-              <Button
-                variant="button-white"
-                className="h-10 cursor-pointer py-2 text-[1rem]"
-              >
-                {intl.formatMessage({ id: `${namespace}.trigger` })}
-              </Button>
+              {trigger ?? (
+                <Button
+                  variant="button-white"
+                  className="h-10 cursor-pointer py-2 text-[1rem]"
+                >
+                  {intl.formatMessage({ id: `${namespace}.trigger` })}
+                </Button>
+              )}
             </DialogTrigger>
 
             <DialogContent className="sm:max-w-[425px]">
@@ -54,8 +65,13 @@ export const DownloadModal: React.FC<DownloadModalProps> = memo(
               <DownloadModalView namespace={namespace} />
             </DialogContent>
           </Dialog>
-        ) : (
-          <div className="button text-md flex h-10 items-center justify-center bg-purple-300">
+        ) : hideOnInstall ? null : (
+          <div
+            className={cn(
+              "button text-md flex h-10 items-center justify-center bg-purple-300",
+              withinSection && "mb-5"
+            )}
+          >
             <p className="font-medium text-white">
               {intl.formatMessage({ id: `${namespace}.extensionInstalled` })}
             </p>

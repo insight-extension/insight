@@ -18,7 +18,7 @@ import { P, match } from "ts-pattern";
 import { APP_SEARCH_PARAMS } from "@repo/shared/constants";
 import { formatPublicKey } from "@repo/shared/utils";
 
-import { DepositModal, DialogTrigger, WalletModal } from "@/components";
+import { DepositModal, WalletModal } from "@/components";
 import { WalletButtonState, useLogout, useWalletMultiButton } from "@/hooks";
 import { walletsModalVisibilityAtom } from "@/store";
 
@@ -205,9 +205,9 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
               <DepositModal
                 isDefaultOpen
                 trigger={
-                  <DialogTrigger className="wallet-adapter-dropdown-list-item text-dark bg-purple-300 hover:text-white">
+                  <button className="wallet-adapter-dropdown-list-item text-dark bg-purple-300 hover:text-white">
                     Deposit
-                  </DialogTrigger>
+                  </button>
                 }
               />
 
