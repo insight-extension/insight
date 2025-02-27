@@ -2,7 +2,7 @@ import { FC } from "react";
 
 import GlobalIcon from "@/assets/icons/Global.svg";
 import {
-  Button,
+  DownloadModal,
   Logo,
   UpcomingSoonBadge,
   WalletMultiButton
@@ -38,18 +38,8 @@ export const Header: FC<HeaderProps> = ({ className }) => {
       </div>
 
       <div className="flex items-center">
-        <div className="flex gap-1">
-          <div className="relative">
-            <UpcomingSoonBadge className="-top-2 right-0" />
-
-            <Button
-              disabled
-              variant="button-white"
-              className="h-10 cursor-progress py-2 text-[1rem]"
-            >
-              Download Now
-            </Button>
-          </div>
+        <div className="flex gap-2">
+          <DownloadModal />
 
           <WalletMultiButton
             className={cn("button button-dark-border", "h-10 py-2")}

@@ -13,7 +13,8 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogTrigger
 } from "@/components";
 import { useToast } from "@/hooks";
 import { TRANSLATIONS } from "@/i18n";
@@ -25,7 +26,7 @@ interface DepositModalProps {
 }
 
 export const DepositModal: React.FC<DepositModalProps> = memo(
-  ({ trigger, namespace = "features.modals.depositModal" }) => {
+  ({ trigger, namespace = "features.modals.deposit" }) => {
     const { action } = getRouteApi("/").useSearch();
     const { toast } = useToast();
     const intl = useIntl();
@@ -71,7 +72,7 @@ export const DepositModal: React.FC<DepositModalProps> = memo(
 
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        {trigger}
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
 
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
