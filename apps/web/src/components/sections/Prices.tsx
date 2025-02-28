@@ -73,6 +73,15 @@ export const Prices = () => {
                   Download For Chrome
                 </Button>
               }
+              success={
+                <Button
+                  variant="button-white"
+                  className="font-fixel px-[55px] py-[16px] md:text-[30px]"
+                  disabled
+                >
+                  Extension is Installed!
+                </Button>
+              }
             />
           </div>
 

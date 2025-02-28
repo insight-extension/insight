@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { MINUTE } from "@repo/shared/constants";
+import { MINUTE, SECOND } from "@repo/shared/constants";
 
 export enum BrowserType {
   Edge = "Edge",
@@ -26,12 +26,18 @@ export const useIsInstalledExtension = ({
 
   useEffect(() => {
     const checkExtension = async () => {
+      if (!EXTENSION_ID) {
+        onInstalled(false);
+
+        return;
+      }
+
       try {
         await Promise.race([
           chrome?.runtime?.sendMessage?.(EXTENSION_ID, {
             type: "PING"
           }),
-          new Promise((resolve) => setTimeout(() => resolve(true), 1000))
+          new Promise((resolve) => setTimeout(() => resolve(true), SECOND * 3))
         ]);
 
         onInstalled(true);

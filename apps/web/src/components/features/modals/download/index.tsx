@@ -2,7 +2,6 @@ import { memo, useCallback, useState } from "react";
 import { useIntl } from "react-intl";
 
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -10,16 +9,16 @@ import {
   DialogTrigger
 } from "@/components";
 import { useIsInstalledExtension } from "@/hooks";
-import { cn } from "@/lib";
 
 import { DownloadModalView } from "./view";
 
 interface DownloadModalProps {
   isDefaultOpen?: boolean;
   namespace?: string;
-  trigger?: React.ReactNode;
+  trigger: React.ReactNode;
   hideOnInstall?: boolean;
   withinSection?: boolean;
+  success: React.ReactNode;
 }
 
 export const DownloadModal: React.FC<DownloadModalProps> = memo(
@@ -27,7 +26,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = memo(
     namespace = "features.modals.download",
     trigger,
     hideOnInstall,
-    withinSection
+    success
   }) => {
     const intl = useIntl();
 
@@ -44,16 +43,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = memo(
       <>
         {!isExtensionInstalled ? (
           <Dialog>
-            <DialogTrigger asChild>
-              {trigger ?? (
-                <Button
-                  variant="button-white"
-                  className="h-10 cursor-pointer py-2 text-[1rem]"
-                >
-                  {intl.formatMessage({ id: `${namespace}.trigger` })}
-                </Button>
-              )}
-            </DialogTrigger>
+            <DialogTrigger asChild>{trigger}</DialogTrigger>
 
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
@@ -66,16 +56,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = memo(
             </DialogContent>
           </Dialog>
         ) : hideOnInstall ? null : (
-          <div
-            className={cn(
-              "button text-md flex h-10 items-center justify-center bg-purple-300",
-              withinSection && "mb-5"
-            )}
-          >
-            <p className="font-medium text-white">
-              {intl.formatMessage({ id: `${namespace}.extensionInstalled` })}
-            </p>
-          </div>
+          success
         )}
       </>
     );

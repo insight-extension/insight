@@ -2,6 +2,7 @@ import { FC } from "react";
 
 import GlobalIcon from "@/assets/icons/Global.svg";
 import {
+  Button,
   DownloadModal,
   Logo,
   UpcomingSoonBadge,
@@ -39,7 +40,25 @@ export const Header: FC<HeaderProps> = ({ className }) => {
 
       <div className="flex items-center">
         <div className="flex gap-2">
-          <DownloadModal />
+          <DownloadModal
+            success={
+              <Button
+                variant="button-white"
+                className="h-10 cursor-pointer py-2 text-[1rem]"
+                disabled
+              >
+                Extension is Installed!
+              </Button>
+            }
+            trigger={
+              <Button
+                variant="button-white"
+                className="h-10 cursor-pointer py-2 text-[1rem]"
+              >
+                Download Free
+              </Button>
+            }
+          />
 
           <WalletMultiButton
             className={cn("button button-dark-border", "h-10 py-2")}

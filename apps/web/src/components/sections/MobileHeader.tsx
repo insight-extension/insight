@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import GlobalIcon from "@/assets/icons/Global.svg";
 import {
+  Button,
   DownloadModal,
   HeaderProps,
   Logo,
@@ -135,7 +136,25 @@ export const MobileHeader: FC<MobileHeaderProps> = ({ className }) => {
 
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div className="flex flex-wrap justify-center gap-1">
-                  <DownloadModal />
+                  <DownloadModal
+                    success={
+                      <Button
+                        variant="button-white"
+                        className="h-10 cursor-pointer py-2 text-[1rem]"
+                        disabled
+                      >
+                        Extension is Installed!
+                      </Button>
+                    }
+                    trigger={
+                      <Button
+                        variant="button-white"
+                        className="h-10 cursor-pointer py-2 text-[1rem]"
+                      >
+                        Download Free
+                      </Button>
+                    }
+                  />
 
                   <WalletMultiButton className="button button-dark-border" />
                 </div>

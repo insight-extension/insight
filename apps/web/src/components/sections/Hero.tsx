@@ -75,6 +75,11 @@ export const Hero = () => {
                 Download Free
               </Button>
             }
+            success={
+              <Button variant="button-dark" className="mb-5" disabled>
+                Extension is Installed!
+              </Button>
+            }
             withinSection
           />
 
