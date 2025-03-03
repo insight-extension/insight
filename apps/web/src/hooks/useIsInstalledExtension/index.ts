@@ -33,14 +33,18 @@ export const useIsInstalledExtension = ({
       }
 
       try {
-        await Promise.race([
+        const result = await Promise.race([
           chrome?.runtime?.sendMessage?.(EXTENSION_ID, {
             type: "PING"
           }),
-          new Promise((resolve) => setTimeout(() => resolve(true), SECOND * 3))
+          new Promise((resolve) => setTimeout(() => resolve(true), SECOND))
         ]);
 
-        onInstalled(true);
+        if (result) {
+          onInstalled(true);
+        } else {
+          onInstalled(false);
+        }
       } catch (_error) {
         onInstalled(false);
       }
