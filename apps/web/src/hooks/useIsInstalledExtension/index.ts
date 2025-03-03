@@ -26,10 +26,6 @@ export const useIsInstalledExtension = ({
 
   useEffect(() => {
     const checkExtension = async () => {
-      console.log("checkExtension", {
-        EXTENSION_ID,
-        chrome: chrome?.runtime?.sendMessage
-      });
       if (!EXTENSION_ID) {
         onInstalled(false);
 
