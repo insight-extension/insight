@@ -1,8 +1,8 @@
 import type { KyRequest } from "ky";
 import { match } from "ts-pattern";
 
-import { SessionToken } from "@repo/shared/constants";
-import { sessionManager } from "@repo/shared/services";
+import { SessionToken } from "@/constants";
+import { sessionManager } from "@/services";
 
 import { generateBearerToken, isPrivateApiRoute } from "..";
 

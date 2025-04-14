@@ -1,7 +1,7 @@
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { P, match } from "ts-pattern";
 
-import { SECOND } from "@repo/shared/constants";
+import { SECOND } from "@/constants";
 
 export const isTokenExpired = ({
   token,

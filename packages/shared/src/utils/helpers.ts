@@ -5,7 +5,7 @@ import {
   ROOT_DOMAIN_PATTERN,
   SOLANA_EXPLORER_URL,
   SOLANA_NETWORK
-} from "@repo/shared/constants";
+} from "@/constants";
 
 export const isServerSide = typeof window === "undefined";
 

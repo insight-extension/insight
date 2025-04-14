@@ -10,16 +10,12 @@ import {
 import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
 import { P, match } from "ts-pattern";
 
-import {
-  SPLToken,
-  TOKEN_ADDRESSES,
-  TOKEN_CURRENCIES
-} from "@repo/shared/constants";
+import { SPLToken, TOKEN_ADDRESSES, TOKEN_CURRENCIES } from "@/constants";
 import {
   Observable,
   convertBNToNumberWithDecimals,
   convertNumberToBNWithDecimals
-} from "@repo/shared/utils";
+} from "@/utils";
 
 import {
   AirDropSOLError,

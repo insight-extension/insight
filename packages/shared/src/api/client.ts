@@ -11,7 +11,7 @@ import {
   type MutationParams,
   type RequestParams,
   parseAPIError
-} from "@repo/shared/api";
+} from "@/api";
 
 import { API_URL } from "./config";
 
