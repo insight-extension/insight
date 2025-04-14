@@ -12,6 +12,10 @@ import { Icon } from "@repo/ui/components";
 import { cn } from "@repo/ui/lib";
 
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Alert,
   AlertDescription,
   AlertTitle,
@@ -102,8 +106,8 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
 
   return (
     <div className={cn(width === "sidebar" ? "w-90" : "w-84", "h-full")}>
-      <div className="p-3 mb-2 bg-accent rounded-b-2xl">
-        <div className="flex flex-row items-center justify-between mb-3 p-0 text-primary-foreground">
+      <div className="px-3 py-2 mb-2 bg-accent rounded-b-2xl">
+        <div className="flex flex-row items-center justify-between mb-1 p-0 text-primary-foreground">
           <Button className="p-0 bg-transparent hover:bg-transparent shadow-none">
             <a href={UI_URL} target="_blank" rel="noopener noreferrer">
               <Logo />
@@ -268,7 +272,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           />
         </div>
 
-        <div className="flex flex-row justify-center text-center items-center mb-2 w-full h-8  bg-white rounded">
+        <div className="flex flex-row justify-center text-center items-center w-full h-8  bg-white rounded">
           <span
             className={cn(
               match(status)
@@ -284,14 +288,30 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 p-3">
-        <TextBlock className="bg-muted max-h-40 text-primary rounded-lg text-sm overflow-auto">
-          <p>{transcription}</p>
-        </TextBlock>
-
-        <TextBlock className="bg-secondary-foreground max-h-44 text-primary rounded-lg text-sm overflow-auto">
-          <p>{translation}</p>
-        </TextBlock>
+      <div className="flex flex-col gap-2 px-3 py-1">
+        <Accordion
+          type="multiple"
+          className="w-full flex flex-col gap-2"
+          defaultChecked
+          defaultValue={["item-1", "item-2"]}
+        >
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="p-0">Transcription</AccordionTrigger>
+            <AccordionContent>
+              <TextBlock className="bg-muted max-h-40 text-primary rounded-lg text-sm overflow-auto">
+                <p>{transcription}</p>
+              </TextBlock>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger className="p-0">Translation</AccordionTrigger>
+            <AccordionContent>
+              <TextBlock className="bg-secondary-foreground max-h-44 text-primary rounded-lg text-sm overflow-auto">
+                <p>{translation}</p>
+              </TextBlock>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <div className="flex flex-col gap-2">
           <Button
