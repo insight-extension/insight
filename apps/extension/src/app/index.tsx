@@ -1,5 +1,8 @@
 import { type FC, useCallback, useEffect, useState } from "react";
 
+import instagramLogo from "data-base64:../../assets/instagram.svg";
+import linkedinLogo from "data-base64:../../assets/linkedin.svg";
+import xLogo from "data-base64:../../assets/x.svg";
 import debounce from "debounce";
 import { match } from "ts-pattern";
 
@@ -9,6 +12,10 @@ import { Icon } from "@repo/ui/components";
 import { cn } from "@repo/ui/lib";
 
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Alert,
   AlertDescription,
   AlertTitle,
@@ -98,10 +105,14 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
   }, [balance]);
 
   return (
-    <div className={cn(width === "sidebar" ? "w-90" : "w-84")}>
-      <div className="p-3 mb-2 bg-accent rounded-b-2xl">
-        <div className="flex flex-row items-center justify-between mb-3 p-0 text-primary-foreground">
-          <Logo />
+    <div className={cn(width === "sidebar" ? "w-90" : "w-84", "h-full")}>
+      <div className="px-3 py-2 mb-2 bg-accent rounded-b-2xl">
+        <div className="flex flex-row items-center justify-between mb-1 p-0 text-primary-foreground">
+          <Button className="p-0 bg-transparent hover:bg-transparent shadow-none">
+            <a href={UI_URL} target="_blank" rel="noopener noreferrer">
+              <Logo />
+            </a>
+          </Button>
 
           <div>
             {!isSidebar && (
@@ -261,7 +272,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           />
         </div>
 
-        <div className="flex flex-row justify-center text-center items-center mb-2 w-full h-8  bg-white rounded">
+        <div className="flex flex-row justify-center text-center items-center w-full h-8  bg-white rounded">
           <span
             className={cn(
               match(status)
@@ -277,14 +288,30 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 px-3 py-2">
-        <TextBlock className="bg-muted max-h-40 text-primary rounded-lg text-sm overflow-auto">
-          <p>{transcription}</p>
-        </TextBlock>
-
-        <TextBlock className="bg-secondary-foreground max-h-44 text-primary rounded-lg text-sm overflow-auto">
-          <p>{translation}</p>
-        </TextBlock>
+      <div className="flex flex-col gap-2 px-3 py-1">
+        <Accordion
+          type="multiple"
+          className="w-full flex flex-col gap-2"
+          defaultChecked
+          defaultValue={["item-1", "item-2"]}
+        >
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="p-0">Transcription</AccordionTrigger>
+            <AccordionContent>
+              <TextBlock className="bg-muted max-h-40 text-primary rounded-lg text-sm overflow-auto">
+                <p>{transcription}</p>
+              </TextBlock>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger className="p-0">Translation</AccordionTrigger>
+            <AccordionContent>
+              <TextBlock className="bg-secondary-foreground max-h-44 text-primary rounded-lg text-sm overflow-auto">
+                <p>{translation}</p>
+              </TextBlock>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <div className="flex flex-col gap-2">
           <Button
@@ -331,6 +358,40 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
             {getMessage("stop")}
           </Button>
         </div>
+      </div>
+
+      <div className="flex flex-row justify-start items-center px-3 py-2 gap-3 border-t border-border bg-dark">
+        <p className="text-sm text-white">Follow us</p>
+
+        <Button className="p-0 w-5 h-5 bg-transparent hover:bg-transparent shadow-none">
+          <a
+            href="https://x.com/insight_xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={xLogo} alt="x" width={20} height={20} />
+          </a>
+        </Button>
+
+        <Button className="p-0 w-5 h-5 bg-transparent hover:bg-transparent shadow-none">
+          <a
+            href="https://www.instagram.com/insight.xyz/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={instagramLogo} alt="instagram" width={20} height={20} />
+          </a>
+        </Button>
+
+        <Button className="p-0 w-5 h-5 bg-transparent hover:bg-transparent shadow-none">
+          <a
+            href="https://www.linkedin.com/company/insight-xyz/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={linkedinLogo} alt="linkedin" width={20} height={20} />
+          </a>
+        </Button>
       </div>
     </div>
   );

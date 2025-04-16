@@ -1,8 +1,7 @@
+import { APIError, APIErrorCodec } from "@shared/api";
+import { PRIVATE_API_ROUTES, StatusCode } from "@shared/constants";
 import { fold } from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
-
-import { APIError, APIErrorCodec } from "@repo/shared/api";
-import { PRIVATE_API_ROUTES, StatusCode } from "@repo/shared/constants";
 
 import { API_URL } from "./config";
 
