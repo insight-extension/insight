@@ -1,6 +1,5 @@
+import { ExtendedError } from "@shared/errors";
 import * as t from "io-ts";
-
-import { ExtendedError } from "@/errors";
 
 export const BaseAPIErrorCodec = t.type({
   message: t.union([t.string, t.array(t.string)])

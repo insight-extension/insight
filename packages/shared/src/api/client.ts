@@ -1,17 +1,16 @@
-import { TaskEither, tryCatch } from "fp-ts/lib/TaskEither";
-import ky, {
-  HTTPError,
-  type KyInstance,
-  type Options as KyRequestOptions
-} from "ky";
-
 import {
   type APIError,
   type FetchParams,
   type MutationParams,
   type RequestParams,
   parseAPIError
-} from "@/api";
+} from "@shared/api";
+import { TaskEither, tryCatch } from "fp-ts/lib/TaskEither";
+import ky, {
+  HTTPError,
+  type KyInstance,
+  type Options as KyRequestOptions
+} from "ky";
 
 import { API_URL } from "./config";
 

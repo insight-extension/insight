@@ -1,11 +1,10 @@
 import { BN } from "@coral-xyz/anchor";
-import { PublicKey } from "@solana/web3.js";
-
 import {
   ROOT_DOMAIN_PATTERN,
   SOLANA_EXPLORER_URL,
   SOLANA_NETWORK
-} from "@/constants";
+} from "@shared/constants";
+import { PublicKey } from "@solana/web3.js";
 
 export const isServerSide = typeof window === "undefined";
 

@@ -1,7 +1,6 @@
+import { APIError, apiClient, generateBearerToken } from "@shared/api";
+import { TraceId } from "@shared/errors";
 import { TaskEither } from "fp-ts/lib/TaskEither";
-
-import { APIError, apiClient, generateBearerToken } from "@/api";
-import { TraceId } from "@/errors";
 
 import { FreeTrialInfo } from "./types";
 

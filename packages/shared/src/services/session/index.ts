@@ -1,11 +1,10 @@
+import { SessionToken } from "@shared/constants";
+import { AuthenticationError, SessionExpiredError } from "@shared/errors";
+import { authService } from "@shared/services";
+import { isTokenExpired } from "@shared/utils";
 import { fold, right } from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import Cookies from "js-cookie";
-
-import { SessionToken } from "@/constants";
-import { AuthenticationError, SessionExpiredError } from "@/errors";
-import { authService } from "@/services";
-import { isTokenExpired } from "@/utils";
 
 class SessionManager {
   public setToken({ key, value }: { key: SessionToken; value: string }) {

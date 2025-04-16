@@ -32,7 +32,8 @@ export default defineConfig(({ mode }) => {
     // absolute paths
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src")
+        "@": path.resolve(__dirname, "./src"),
+        "@shared": path.resolve(__dirname, "../../packages/shared/src")
       }
     },
 

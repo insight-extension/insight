@@ -1,4 +1,5 @@
 import { AnchorProvider, BN, Program } from "@coral-xyz/anchor";
+import { SPLToken, TOKEN_ADDRESSES, TOKEN_CURRENCIES } from "@shared/constants";
 import {
   TOKEN_PROGRAM_ID,
   TokenAccountNotFoundError,
@@ -10,13 +11,11 @@ import {
 import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
 import { P, match } from "ts-pattern";
 
-import { SPLToken, TOKEN_ADDRESSES, TOKEN_CURRENCIES } from "@/constants";
 import {
   Observable,
   convertBNToNumberWithDecimals,
   convertNumberToBNWithDecimals
-} from "@/utils";
-
+} from "../../utils";
 import {
   AirDropSOLError,
   AssociatedTokenAddressError,

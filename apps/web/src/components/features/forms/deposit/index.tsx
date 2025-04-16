@@ -58,20 +58,23 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
   const { publicKey } = useWallet();
 
-  const handleSuccessSubmit = useCallback((signature: string) => {
-    toast({
-      title: TRANSLATIONS.depositForm.toast.successfulTransactionTitle,
-      description: getSOlExplorerTransactionURL(signature),
-      variant: "success"
-    });
+  const handleSuccessSubmit = useCallback(
+    (signature: string) => {
+      toast({
+        title: TRANSLATIONS.depositForm.toast.successfulTransactionTitle,
+        description: getSOlExplorerTransactionURL(signature),
+        variant: "success"
+      });
 
-    navigate({
-      to: "/",
-      search: { action: APP_SEARCH_PARAMS.action.default }
-    });
+      navigate({
+        to: "/",
+        search: { action: APP_SEARCH_PARAMS.action.default }
+      });
 
-    onSuccessSubmit();
-  }, []);
+      onSuccessSubmit();
+    },
+    [navigate, onSuccessSubmit, toast]
+  );
 
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -133,7 +136,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         });
 
         handleSuccessSubmit(transactionSignature);
-      } catch (error: any) {
+      } catch (error: unknown) {
         Sentry.captureException(error);
 
         toast({
@@ -166,7 +169,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
     if (!anchorClient) return;
 
     setBalance(await anchorClient.getUserBalance(getFieldValue("token")));
-  }, []);
+  }, [getFieldValue]);
 
   useEffect(() => {
     if (publicKey && anchorProvider) {
@@ -184,7 +187,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
         anchorClientRef.current?.clear();
       };
     }
-  }, [publicKey]);
+  }, [anchorProvider, publicKey, updateBalance]);
 
   useEffect(() => {
     if (!isSubmitted) return;
@@ -192,7 +195,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
     (async () => {
       await updateBalance();
     })();
-  }, [isSubmitted]);
+  }, [isSubmitted, updateBalance]);
 
   useEffect(() => {
     if (isAirdroppedSOL) {
@@ -205,7 +208,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
       setIsAirdroppedSOL(false);
     }
-  }, [isAirdroppedSOL]);
+  }, [isAirdroppedSOL, toast]);
 
   return (
     <form onSubmit={handleFormSubmit}>
