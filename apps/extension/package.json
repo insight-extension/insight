@@ -89,7 +89,7 @@
     ]
   },
   "scripts": {
-    "build": "plasmo build && copyfiles -u 1 src/pcm-processor.js build/chrome-mv3-prod/",
+    "build": "cross-env PARCEL_WORKER_BACKEND=process plasmo build && copyfiles -u 1 src/pcm-processor.js build/chrome-mv3-prod/",
     "dev": "plasmo dev && copyfiles -u 1 src/pcm-processor.js build/chrome-mv3-dev/",
     "package": "plasmo package"
   }
