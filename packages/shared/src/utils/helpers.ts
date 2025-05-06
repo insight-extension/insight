@@ -23,6 +23,8 @@ export const extractRootDomainFromURL = (url: string): string | null =>
 
 export const getDecimalMultiplier = (decimals: number) => 10 ** decimals;
 
+export const convertNumberToBN = (value: number): BN => new BN(value);
+
 export const convertNumberToBNWithDecimals = (
   value: number,
   decimals: number
