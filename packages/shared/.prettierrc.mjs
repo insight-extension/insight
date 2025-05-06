@@ -10,17 +10,15 @@ export default {
   trailingComma: "none",
   bracketSpacing: true,
   bracketSameLine: false,
-  plugins: ["@trivago/prettier-plugin-sort-imports",],
-  "importOrder": [
+  plugins: ["@trivago/prettier-plugin-sort-imports"],
+  importOrder: [
     "^react(.*)$",
     "<THIRD_PARTY_MODULES>",
-    "^@repo/(.*)$",
-    "^@/(.*)$",
+    "^@shared/(.*)$",
     "^[./]"
   ],
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
-
-}
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true
+};
 
 //todo: reuse in all packages
