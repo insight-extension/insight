@@ -20,7 +20,7 @@ export const TRANSLATIONS = {
       token: {
         required: "Please select a currency token"
       },
-      subscriptionType: {
+      usageType: {
         required: "Please select a subscription type"
       }
     },
@@ -34,11 +34,9 @@ export const TRANSLATIONS = {
       successfulAirDropDescription: "1 SOL has been airdropped to your account"
     },
     fields: {
-      subscription: {
-        perMonth: "Per month",
-        perUsage: "Per usage",
-        freeTrial: "Free trial",
-        select: "Select"
+      usageType: {
+        subscription: "Subscription",
+        perUsage: "Per usage"
       },
       token: {
         select: "Select"

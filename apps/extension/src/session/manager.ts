@@ -34,27 +34,6 @@ export class SessionManager {
     }
   }
 
-  private async _decodeTokenFN(token: string) {
-    return pipe(
-      tryCatch(
-        async () => jwtDecode<SessionTokenPayload>(token),
-        (error: any) => new InvalidAccessTokenError(error.message)
-      ),
-      fold(
-        (error) => {
-          storage.set(StorageKey.PUBLIC_KEY, null);
-
-          throw error;
-        },
-        (payload) => {
-          storage.set(StorageKey.PUBLIC_KEY, payload);
-
-          return right(void 0);
-        }
-      )
-    )();
-  }
-
   public refreshToken(refreshToken: string) {
     pipe(
       authService.refreshToken({ refreshToken }),

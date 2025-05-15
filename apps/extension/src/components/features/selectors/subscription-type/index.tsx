@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import { PRICING, SubscriptionType } from "@repo/shared/constants";
+import { PRICING, PlanType } from "@repo/shared/constants";
 
 import {
   DropdownMenu,
@@ -11,8 +11,8 @@ import {
 
 interface SubscriptionTypeSelectorProps {
   balance: number | null;
-  current: SubscriptionType;
-  onChange: (SubscriptionType: SubscriptionType) => void;
+  current: PlanType;
+  onChange: (PlanType: PlanType) => void;
   isDisabled: boolean;
 }
 
@@ -23,9 +23,9 @@ export const SubscriptionTypeSelector: React.FC<
 
   const SUBSCRIPTION_TYPE_MAP = useMemo(
     () => ({
-      [SubscriptionType.FREE_TRIAL]: getMessage("freeTrial"),
-      [SubscriptionType.PER_MINUTE]: getMessage("perMinute"),
-      [SubscriptionType.PER_HOUR]: getMessage("perHour")
+      [PlanType.FREE_TRIAL]: getMessage("freeTrial"),
+      [PlanType.PER_MINUTE]: getMessage("perMinute"),
+      [PlanType.PER_HOUR]: getMessage("perHour")
     }),
     []
   );
@@ -33,7 +33,7 @@ export const SubscriptionTypeSelector: React.FC<
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        disabled={current === SubscriptionType.FREE_TRIAL}
+        disabled={current === PlanType.FREE_TRIAL}
         className="flex justify-between items-center h-8 w-38 text-sm bg-white px-3 py-1 rounded border border-gray-300"
       >
         <span className="uppercase">{SUBSCRIPTION_TYPE_MAP[current]}</span>
@@ -49,14 +49,11 @@ export const SubscriptionTypeSelector: React.FC<
           </span>
         </DropdownMenuItem>
 
-        {Object.values(SubscriptionType)
+        {Object.values(PlanType)
           .filter((value) =>
             balance
-              ? [
-                  SubscriptionType.PER_MINUTE,
-                  SubscriptionType.PER_HOUR
-                ].includes(value)
-              : value === SubscriptionType.FREE_TRIAL
+              ? [PlanType.PER_MINUTE, PlanType.PER_HOUR].includes(value)
+              : value === PlanType.FREE_TRIAL
           )
           .map((value) => {
             const price = PRICING[value];

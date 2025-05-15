@@ -102,7 +102,7 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
               id: `${namespace}.${WalletButtonLabel.NO_WALLET}`
             })
           ),
-      [walletState, publicKey]
+      [publicKey, walletState, intl, namespace]
     );
 
     useEffect(() => {
@@ -112,13 +112,13 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
           search: { action: APP_SEARCH_PARAMS.action.default }
         });
       }
-    }, [walletState]);
+    }, [navigate, walletState]);
 
     useEffect(() => {
       if (autoconnect && walletState !== WalletButtonState.CONNECTED) {
         setIsModalVisible(true);
       }
-    }, [autoconnect, walletState]);
+    }, [autoconnect, setIsModalVisible, walletState]);
 
     const handleClick = useCallback(
       () =>
@@ -127,7 +127,7 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
           .with(WalletButtonState.HAS_WALLET, () => setIsModalVisible(true))
           .with(WalletButtonState.CONNECTED, () => setIsMenuOpen(true))
           .otherwise(() => {}),
-      [walletState]
+      [setIsModalVisible, walletState]
     );
 
     const handleDisconnect = useCallback(() => {
@@ -139,7 +139,7 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
         to: "/",
         search: { action: APP_SEARCH_PARAMS.action.default }
       });
-    }, [logout]);
+    }, [logout, navigate]);
 
     const handleCopy = useCallback(async () => {
       if (!publicKey) return;
@@ -149,12 +149,12 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
       setIsCopied(true);
 
       debounce(() => setIsCopied(false), 400)();
-    }, []);
+    }, [publicKey]);
 
     const handleOpenWallets = useCallback(() => {
       setIsModalVisible(true);
       setIsMenuOpen(false);
-    }, []);
+    }, [setIsModalVisible]);
 
     useEffect(() => {
       const mouseOrTouchListener = (event: MouseEvent | TouchEvent) => {
@@ -184,7 +184,8 @@ export const WalletMultiButton: React.FC<WalletMultiButtonProps> = memo(
           aria-expanded={isMenuOpen}
           style={{
             pointerEvents: isMenuOpen ? "none" : "auto",
-            ...props.style
+            ...props.style,
+            height: "40px !important"
           }}
           onClick={handleClick}
           walletIcon={walletIcon}

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import {
   PRICING,
+  PlanType,
   SPLToken,
-  SubscriptionType,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
 import { roundToDecimals } from "@repo/shared/utils";
@@ -20,7 +20,7 @@ interface SubscriptionInfoSelectorProps {
   balance: number | null;
   freeHoursLeft: number | null;
   paidHoursLeft: number | null;
-  current: SubscriptionType;
+  current: PlanType;
   nextFreeTime: string | null;
 }
 

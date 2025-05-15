@@ -2,8 +2,6 @@
   "name": "insight",
   "version": "1.0.0",
   "devDependencies": {
-    "@repo/eslint-config": "workspace:^",
-    "@repo/typescript-config": "workspace:^",
     "@trivago/prettier-plugin-sort-imports": "^5.2.0",
     "cross-env": "^7.0.3",
     "husky": "9.1.6",
