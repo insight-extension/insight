@@ -22,6 +22,7 @@
     "dev:extension": "turbo run dev --filter=extension",
     "build:extension": "turbo run build --filter=extension",
     "dev:web": "turbo run dev --filter=web",
+    "dev:playground": "turbo run dev --filter=playground",
     "deploy:web": "turbo run deploy --filter=web",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo lint",
