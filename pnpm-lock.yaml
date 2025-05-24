@@ -8,12 +8,6 @@ importers:
 
   .:
     devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:^
-        version: link:packages/eslint-config
-      '@repo/typescript-config':
-        specifier: workspace:^
-        version: link:packages/typescript-config
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^5.2.0
         version: 5.2.2(prettier@3.3.3)
@@ -527,6 +521,9 @@ importers:
       lucide-react:
         specifier: ^0.460.0
         version: 0.460.0(react@18.3.1)
+      prettier-plugin-tailwindcss:
+        specifier: ^0.6.8
+        version: 0.6.11(@trivago/prettier-plugin-sort-imports@5.2.2)(prettier@3.3.3)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -17095,7 +17092,6 @@ packages:
     dependencies:
       '@trivago/prettier-plugin-sort-imports': 5.2.2(prettier@3.3.3)
       prettier: 3.3.3
-    dev: true
 
   /prettier@3.3.3:
     resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}

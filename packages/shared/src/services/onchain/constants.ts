@@ -1,0 +1,8 @@
+import { DAYS_IN_MONTH, HOUR, HOURS_IN_DAY } from "@shared/constants";
+
+export enum SubscriptionDuration {
+  ONE_MONTH = HOUR * HOURS_IN_DAY * DAYS_IN_MONTH,
+  THREE_MONTHS = HOUR * HOURS_IN_DAY * DAYS_IN_MONTH * 3,
+  SIX_MONTHS = HOUR * HOURS_IN_DAY * DAYS_IN_MONTH * 6,
+  ONE_YEAR = HOUR * HOURS_IN_DAY * DAYS_IN_MONTH * 12
+}

@@ -10,16 +10,11 @@ import {
 } from "@/components";
 import { cn } from "@/lib";
 
+import { NAV_LINKS } from "./constants";
+
 export interface HeaderProps {
   className?: string;
 }
-
-export const NAV_LINKS = [
-  { title: "How It Works?", url: "#howItWork" },
-  { title: "Features", url: "#features" },
-  { title: "Pricing", url: "#pricing" },
-  { title: "FAQs", url: "#faqs" }
-];
 
 export const Header: FC<HeaderProps> = ({ className }) => {
   return (

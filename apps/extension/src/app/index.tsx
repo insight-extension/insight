@@ -6,7 +6,7 @@ import xLogo from "data-base64:../../assets/x.svg";
 import debounce from "debounce";
 import { match } from "ts-pattern";
 
-import { SubscriptionType } from "@repo/shared/constants";
+import { PlanType } from "@repo/shared/constants";
 import { formatPublicKey } from "@repo/shared/utils";
 import { Icon } from "@repo/ui/components";
 import { cn } from "@repo/ui/lib";
@@ -71,8 +71,8 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
       shouldUpdate: shouldUpdateBalance
     });
 
-  const [subscriptionType, setSubscriptionType] = useState<SubscriptionType>(
-    balance ? SubscriptionType.PER_MINUTE : SubscriptionType.FREE_TRIAL
+  const [subscriptionType, setSubscriptionType] = useState<PlanType>(
+    balance ? PlanType.PER_MINUTE : PlanType.FREE_TRIAL
   );
 
   const {
@@ -97,10 +97,10 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
   useEffect(() => {
     setSubscriptionType(
       balance
-        ? subscriptionType !== SubscriptionType.FREE_TRIAL
+        ? subscriptionType !== PlanType.FREE_TRIAL
           ? subscriptionType
-          : SubscriptionType.PER_MINUTE
-        : SubscriptionType.FREE_TRIAL
+          : PlanType.PER_MINUTE
+        : PlanType.FREE_TRIAL
     );
   }, [balance]);
 
@@ -232,7 +232,7 @@ export const App: FC<AppProps> = ({ isSidebar, width }) => {
           <SubscriptionTypeSelector
             balance={balance}
             current={subscriptionType}
-            onChange={useCallback((value: SubscriptionType) => {
+            onChange={useCallback((value: PlanType) => {
               setSubscriptionType(value);
             }, [])}
             isDisabled={isRecording || isReady}

@@ -18,16 +18,22 @@ import { useAtomValue } from "jotai";
 import {
   APP_SEARCH_PARAMS,
   SPLToken,
-  TOKEN_CURRENCIES
+  TOKEN_CURRENCIES,
+  UsageType
 } from "@repo/shared/constants";
 import { AnchorClient, relayMessenger } from "@repo/shared/services";
 import {
+  consoleLogger,
   getSOlExplorerTransactionURL,
   roundToDecimals
 } from "@repo/shared/utils";
 
+import { SubscriptionDuration } from "@shared/services/onchain/constants";
+
 import {
   Label,
+  RadioGroup,
+  RadioGroupItem,
   Select,
   SelectContent,
   SelectItem,
@@ -87,10 +93,10 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   } = useForm({
     defaultValues: {
       amount: 0,
-      token: SPLToken.USDC
-      // subscriptionType: SubscriptionType.PER_USAGE
+      token: SPLToken.USDC,
+      usageType: UsageType.SUBSCRIPTION
     } as DepositFormFields,
-    onSubmit: async ({ value: { amount, token } }) => {
+    onSubmit: async ({ value: { amount, token, usageType } }) => {
       setValidationError(null);
       if (isNaN(amount)) {
         setValidationError(TRANSLATIONS.depositForm.validation.amount.invalid);
@@ -100,12 +106,6 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
 
       if (amount < 0.1) {
         setValidationError(TRANSLATIONS.depositForm.validation.amount.minimum);
-
-        return;
-      }
-
-      if (amount > 10) {
-        setValidationError(TRANSLATIONS.depositForm.validation.amount.maximum);
 
         return;
       }
@@ -129,15 +129,31 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
           token
         });
 
-        await relayMessenger.deposit({
-          amount,
-          transactionSignature,
-          token
-        });
+        if (usageType === UsageType.SUBSCRIPTION) {
+          await anchorClient.subscribeToVault({
+            amount,
+            token,
+            duration: SubscriptionDuration.ONE_MONTH
+          });
+        } else {
+          await relayMessenger.deposit({
+            amount,
+            transactionSignature,
+            token
+          });
+        }
 
         handleSuccessSubmit(transactionSignature);
       } catch (error: unknown) {
         Sentry.captureException(error);
+
+        // TODO: complete
+        //         logger.ts:53 [depositForm] DepositToVaultError: Signature verification failed.
+        // Missing signature for public key [`71q6LEWUkPZhYChjAcZcuxVVyDqdEyjf95etzte2PzwK`].
+        //     at g1e.subscribeToVault (client.ts:108:13)
+        //     at async Object.onSubmit (index.tsx:133:11)
+
+        consoleLogger.error("depositForm", error);
 
         toast({
           title: TRANSLATIONS.depositForm.toast.transactionFailedTitle,
@@ -213,17 +229,16 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
   return (
     <form onSubmit={handleFormSubmit}>
       <div className="flex flex-col gap-5">
-        {/* not used for now */}
-        {/* <Field name="subscriptionType">
+        <Field name="usageType">
           {({ state, name, handleChange }) => (
             <RadioGroup
               name={name}
               defaultValue={state.value}
-              onValueChange={(value) => handleChange(value as SubscriptionType)}
+              onValueChange={(value) => handleChange(value as UsageType)}
               className="flex gap-8"
               disabled
             >
-              {Object.values(SubscriptionType).map((type) => (
+              {Object.values(UsageType).map((type) => (
                 <div key={type} className="flex gap-2">
                   <RadioGroupItem
                     color="green"
@@ -233,13 +248,13 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
                   />
 
                   <Label htmlFor={type}>
-                    {TRANSLATIONS.depositForm.fields.subscription[type]}
+                    {TRANSLATIONS.depositForm.fields.usageType[type]}
                   </Label>
                 </div>
               ))}
             </RadioGroup>
           )}
-        </Field> */}
+        </Field>
 
         <div className="flex gap-4">
           <Field
