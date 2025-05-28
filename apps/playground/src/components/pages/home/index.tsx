@@ -1,7 +1,8 @@
 // apps/playground/src/components/pages/home/index.tsx
-import { Box, Container, HStack, IconButton, VStack } from "@chakra-ui/react";
+import { Container, HStack, VStack } from "@chakra-ui/react";
 
-import { Icon } from "../../ui/icons/lucide";
+import { Header } from "@/components/features";
+
 import {
   ConnectWalletButton,
   InfoCard,
@@ -13,20 +14,7 @@ export const HomePage = () => {
   return (
     <Container bg="background.app" p={0}>
       <VStack gap={4}>
-        {/* Header */}
-        <Box as="header" w="full" bg="gradient" p={4}>
-          <HStack justify="space-between">
-            <Box />
-            <HStack gap={2}>
-              <IconButton aria-label="Toggle theme" variant="ghost">
-                <Icon name="Sun" size={24} />
-              </IconButton>
-              <IconButton aria-label="Close panel" variant="ghost">
-                <Icon name="PanelRightClose" size={24} />
-              </IconButton>
-            </HStack>
-          </HStack>
-        </Box>
+        <Header />
 
         {/* Main Content */}
         <VStack as="main" gap={4} w="full">

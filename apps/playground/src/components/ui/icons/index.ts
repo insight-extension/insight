@@ -1,2 +1,2 @@
-export * from "./social";
-export * from "./lucide";
+export * from "./base";
+export * from "./svg";

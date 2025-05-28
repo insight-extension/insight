@@ -1,8 +1,8 @@
 // apps/playground/src/components/pages/home/components.tsx
 import { Button, Card, HStack, Text, VStack } from "@chakra-ui/react";
 
-import { Icon } from "../../ui/icons/lucide";
-import type { IconName } from "../../ui/icons/lucide";
+import { Icon } from "../../ui/icons/base";
+import type { IconName } from "../../ui/icons/base";
 import { Language } from "./types";
 
 export const LanguageSelector = ({

@@ -1,14 +1,12 @@
-import type {
-  SpanProps,
-  SwitchControlProps,
-  SwitchRootProps,
-} from "@chakra-ui/react";
-import { Span, Switch } from "@chakra-ui/react";
+import type { IconButtonProps } from "@chakra-ui/react";
+import { ClientOnly, Skeleton } from "@chakra-ui/react";
 import { ThemeProvider, useTheme } from "next-themes";
 import type { ThemeProviderProps } from "next-themes";
 import * as React from "react";
 
-import { Icon } from "@/components/ui";
+import { IconButton } from "@/app/recipes/icon-button";
+
+import { Icon } from "./icons";
 
 export interface ColorModeProviderProps extends ThemeProviderProps {}
 
@@ -27,12 +25,13 @@ export interface UseColorModeReturn {
 }
 
 export function useColorMode(): UseColorModeReturn {
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme, forcedTheme } = useTheme();
+  const colorMode = forcedTheme || resolvedTheme;
   const toggleColorMode = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
   return {
-    colorMode: resolvedTheme as ColorMode,
+    colorMode: colorMode as ColorMode,
     setColorMode: setTheme,
     toggleColorMode,
   };
@@ -40,76 +39,38 @@ export function useColorMode(): UseColorModeReturn {
 
 export function useColorModeValue<T>(light: T, dark: T) {
   const { colorMode } = useColorMode();
+
   return colorMode === "dark" ? dark : light;
 }
 
 export function ColorModeIcon() {
   const { colorMode } = useColorMode();
 
-  return colorMode === "dark" ? (
-    <Icon name="Moon" size="20px" />
-  ) : (
-    <Icon name="Sun" size="20px" />
-  );
+  return colorMode === "dark" ? <Icon name="Moon" /> : <Icon name="Sun" />;
 }
 
-interface ColorModeSwitchProps {
-  controlProps?: SwitchControlProps;
-  rootProps?: SwitchRootProps;
-}
+interface ColorModeButtonProps extends Omit<IconButtonProps, "aria-label"> {}
 
-export const ColorModeSwitch = ({
-  controlProps,
-  rootProps,
-}: ColorModeSwitchProps) => {
-  const { toggleColorMode } = useColorMode();
+export const ColorModeButton = React.forwardRef<
+  HTMLButtonElement,
+  ColorModeButtonProps
+>(function ColorModeButton(props, ref) {
+  const { toggleColorMode, colorMode } = useColorMode();
 
   return (
-    <Switch.Root {...rootProps} onCheckedChange={toggleColorMode}>
-      <Switch.HiddenInput />
-      <Switch.Control {...controlProps}>
-        <Switch.Thumb>
-          <Switch.ThumbIndicator fallback={<Icon name="Sun" />}>
-            <Icon name="Moon" />
-          </Switch.ThumbIndicator>
-        </Switch.Thumb>
-
-        <Switch.Indicator fallback={<Icon name="Moon" />}>
-          <Icon name="Sun" />
-        </Switch.Indicator>
-      </Switch.Control>
-    </Switch.Root>
+    <ClientOnly fallback={<Skeleton boxSize="8" />}>
+      <IconButton
+        onClick={toggleColorMode}
+        variant="solid"
+        aria-label="Toggle color mode"
+        size="sm"
+        ref={ref}
+        color={colorMode === "dark" ? "white" : "black"}
+        bg={colorMode === "dark" ? "black" : "white"}
+        {...props}
+      >
+        <ColorModeIcon />
+      </IconButton>
+    </ClientOnly>
   );
-};
-
-export const LightMode = React.forwardRef<HTMLSpanElement, SpanProps>(
-  function LightMode(props, ref) {
-    return (
-      <Span
-        color="fg"
-        display="contents"
-        className="chakra-theme light"
-        colorPalette="gray"
-        colorScheme="light"
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
-
-export const DarkMode = React.forwardRef<HTMLSpanElement, SpanProps>(
-  function DarkMode(props, ref) {
-    return (
-      <Span
-        color="fg"
-        display="contents"
-        className="chakra-theme dark"
-        colorPalette="gray"
-        colorScheme="dark"
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
+});

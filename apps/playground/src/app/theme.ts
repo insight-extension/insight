@@ -19,6 +19,8 @@ const uiConfig = defineConfig({
         gradient: {
           value: "linear-gradient(130deg, #5433ff 0%, #20bdff 100%)",
         },
+        secondary: { value: "#CDCDCD" },
+
         background: {
           app: { value: "#0E0E0E" },
           surface: { value: "#010103" },
@@ -40,9 +42,9 @@ const uiConfig = defineConfig({
       sizes: {
         container: { value: "320px" },
         icon: {
-          sm: { value: "4" },
-          md: { value: "5" },
-          lg: { value: "6" },
+          sm: { value: "20px" },
+          md: { value: "24px" },
+          lg: { value: "32px" },
         },
       },
       radii: {
@@ -51,6 +53,7 @@ const uiConfig = defineConfig({
         button: { value: "md" },
       },
     },
+    // TODO: use recipes correctly
     recipes: {
       Card: {
         base: {

@@ -1,7 +1,7 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 
-import { Provider } from "@/app/providers";
+import { StyleSystemProvider } from "@/components/ui";
 
 import "./app/Fonts/WEB/css/satoshi.css";
 import { routeTree } from "./routeTree.gen";
@@ -21,9 +21,10 @@ const rootElement = document.getElementById("app")!;
 
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
+
   root.render(
-    <Provider>
+    <StyleSystemProvider>
       <RouterProvider router={router} />
-    </Provider>
+    </StyleSystemProvider>
   );
 }
