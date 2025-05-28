@@ -13,6 +13,9 @@ const uiConfig = defineConfig({
         heading: { value: "Satoshi-Variable" },
         mono: { value: "Satoshi-Variable" },
       },
+      fontSizes: {
+        xss: { value: "11px" },
+      },
       colors: {
         // semantic colors
         primary: { value: "#348BFF" },
@@ -98,6 +101,8 @@ const uiConfig = defineConfig({
     "html, body": {
       bg: "bg.dark",
       color: "text.primary",
+
+      fontFamily: "Satoshi-Variable",
     },
   },
 });

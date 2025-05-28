@@ -1,11 +1,10 @@
 // apps/playground/src/components/pages/home/index.tsx
-import { Container, HStack, VStack } from "@chakra-ui/react";
+import { Container, VStack } from "@chakra-ui/react";
 
 import { Header } from "@/components/features";
 
 import {
   ConnectWalletButton,
-  InfoCard,
   LanguageSelector,
   TranslationCard,
 } from "./components";
@@ -16,23 +15,7 @@ export const HomePage = () => {
       <VStack gap={4}>
         <Header />
 
-        {/* Main Content */}
         <VStack as="main" gap={4} w="full">
-          <HStack w="full" gap={4}>
-            <InfoCard
-              title="Free Trial"
-              valueLabel="Next Free Time in"
-              value="30.04.2025, 23:22:11"
-              iconName="Info"
-            />
-            <InfoCard
-              title="Usage Info"
-              valueLabel="Balance"
-              value="44.56 USDT"
-              iconName="Info"
-            />
-          </HStack>
-
           <ConnectWalletButton />
           <LanguageSelector activeLanguage="English" />
 

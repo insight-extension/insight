@@ -1,8 +1,6 @@
-// apps/playground/src/components/pages/home/components.tsx
-import { Button, Card, HStack, Text, VStack } from "@chakra-ui/react";
+import { Button, Card, HStack, Text } from "@chakra-ui/react";
 
 import { Icon } from "../../ui/icons/base";
-import type { IconName } from "../../ui/icons/base";
 import { Language } from "./types";
 
 export const LanguageSelector = ({
@@ -38,60 +36,6 @@ export const TranslationCard = ({
           {language}
         </Text>
       </HStack>
-    </Card.Body>
-  </Card.Root>
-);
-
-interface InfoCardProps {
-  title: string;
-  value: string;
-  valueLabel: string;
-  iconName: IconName;
-}
-
-export const InfoCard = ({
-  title,
-  value,
-  valueLabel,
-  iconName,
-}: InfoCardProps) => (
-  <Card.Root variant="elevated" size="sm" width="146px">
-    <Card.Body gap={2}>
-      <HStack justify="space-between" align="center">
-        <Text
-          fontFamily="Satoshi"
-          fontWeight="500"
-          color="text.primary"
-          fontSize="sm"
-        >
-          {title}
-        </Text>
-        <Icon name={iconName} size={16} />
-      </HStack>
-      <VStack
-        bg="bg.cardAlt"
-        borderRadius="md"
-        p={2}
-        align="flex-start"
-        gap={1}
-      >
-        <Text
-          fontFamily="Satoshi"
-          fontWeight="700"
-          color="text.primary"
-          fontSize="lg"
-        >
-          {value}
-        </Text>
-        <Text
-          fontFamily="Satoshi"
-          fontWeight="500"
-          color="text.secondary"
-          fontSize="xs"
-        >
-          {valueLabel}
-        </Text>
-      </VStack>
     </Card.Body>
   </Card.Root>
 );
