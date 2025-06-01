@@ -1,8 +1,7 @@
 {
   "extends": "plasmo/templates/tsconfig.base",
-  "exclude": [
-    "node_modules"
-  ],
+
+  "exclude": ["node_modules"],
   "include": [
     ".plasmo/index.d.ts",
     "./**/*.ts",
@@ -13,30 +12,22 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
     "verbatimModuleSyntax": false,
     "baseUrl": ".",
+
     "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "strict": true,
     "skipLibCheck": true,
     "noEmitOnError": false,
     "outDir": "build/chrome-mv3-prod",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
-    "types": [
-      "chrome",
-      "node"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": ["chrome", "node"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
