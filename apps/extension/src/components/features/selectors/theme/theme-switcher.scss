@@ -1,0 +1,67 @@
+.toggle-theme {
+  position: relative;
+  display: flex;
+  align-items: center;
+  .label {
+    width: 84px;
+    height: 30px;
+    position: relative;
+    display: block;
+    background: #f5f5f5;
+    border-radius: 200px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .label:after {
+    content: "";
+    width: 40px;
+    height: 26px;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    @apply bg-blue-300;
+    border-radius: 26px;
+    transition: 0.3s;
+  }
+  .input {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  .input:checked + .label {
+    background: #010103;
+  }
+  .input:checked + .label:after {
+    right: 2px;
+    transform: translateX(100%);
+    @apply bg-blue-300;
+  }
+
+  .input:checked + .label + .background {
+    background: #010103;
+  }
+  .label svg {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 7px;
+    z-index: 9;
+  }
+  .label svg.sun {
+    left: 13px;
+    fill: white;
+    transition: 0.3s;
+  }
+  .label svg.moon {
+    right: 13px;
+    fill: #010103;
+    stroke-width: 10px;
+    transition: 0.3s;
+  }
+  .input:checked + .label svg.sun {
+    fill: #cdcdcdcc;
+  }
+  .input:checked + .label svg.moon {
+    fill: #010103;
+  }
+}
