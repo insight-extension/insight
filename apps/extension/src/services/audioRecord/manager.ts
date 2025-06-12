@@ -30,14 +30,18 @@ import { MessageCodec } from "./validation";
 export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   private webSocket: Socket<WebSocketEventCallbackMap> | null = null;
   private audioContext: AudioContext | null = null;
+
   private streamSourceNode: MediaStreamAudioSourceNode | null = null;
   private pcmProcessor: AudioWorkletNode | null = null;
   private capturedStream: MediaStream | null = null;
-
   private paused: boolean = false;
+
+  private playbackAudioContext: AudioContext | null = null;
+  private playbackNode: AudioWorkletNode | null = null;
 
   constructor() {
     super();
+    this.initPlaybackProcessor();
   }
 
   public get isReady(): boolean {
@@ -216,6 +220,14 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
     this.webSocket.on("error", (error) => {
       this.handleException(new WebSocketError(error.message));
     });
+    this.webSocket.on("audioData", (data) => {
+      if (data instanceof ArrayBuffer) {
+        console.log("Received audio data");
+        this.playbackNode!.port.postMessage(data, [data]);
+      } else {
+        console.error("Received non-binary audio data:", data);
+      }
+    });
   }
 
   private initProcessing(stream: MediaStream): void {
@@ -348,5 +360,29 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
         this.isPaused = false;
       })
       .otherwise(() => this.handleException(new ResumeAudioProcessingError()));
+  }
+
+  private async initPlaybackProcessor(): Promise<void> {
+    try {
+      this.playbackAudioContext = new AudioContext({
+        sampleRate: SAMPLE_RATE
+      });
+
+      await this.playbackAudioContext.audioWorklet.addModule(
+        "pcm-playback-processor.js"
+      );
+
+      this.playbackNode = new AudioWorkletNode(
+        this.playbackAudioContext,
+        "pcm-playback-processor"
+      );
+      this.playbackNode.connect(this.playbackAudioContext.destination);
+    } catch (error: any) {
+      this.handleException(
+        new AudioProcessingError(
+          `Failed to initialize playback: ${error.message}`
+        )
+      );
+    }
   }
 }
