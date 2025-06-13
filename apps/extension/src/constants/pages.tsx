@@ -41,11 +41,13 @@ export const settingPages: {
   label: string;
   value: SettingPageValues;
   icon: any;
+  disabled?: boolean;
 }[] = [
   {
     label: "Support",
     value: "support",
-    icon: MessageIcon
+    icon: MessageIcon,
+    disabled: true
   },
   {
     label: "Notifications",

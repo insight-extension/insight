@@ -6,16 +6,12 @@ const ToggleTheme = () => {
   const { theme, setLightTheme, setDarkTheme } = useTheme();
 
   const setDarkThemeAction = () => {
-    console.log("setDarkThemeAction");
     setDarkTheme();
   };
 
   const setLightThemeAction = () => {
-    console.log("setLightThemeAction");
     setLightTheme();
   };
-
-  console.log(theme);
 
   return (
     <div className="toggle-theme">

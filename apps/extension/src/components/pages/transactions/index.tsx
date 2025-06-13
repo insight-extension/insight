@@ -4,74 +4,19 @@ import SearchIcon from "react:@/assets/search-lg.svg";
 import { SPLToken, TOKEN_CURRENCIES } from "@repo/shared/constants";
 import { cn } from "@repo/ui/lib";
 
-const mockTransactions = [
-  {
-    id: 1,
-    comment: "comment",
-    amount: 100,
-    fee: 10,
-    date: "2022-01-01",
-    currency: "USDT"
-  },
-  {
-    id: 2,
-    comment: "bonus",
-    amount: -123,
-    fee: 9,
-    date: "2022-01-01 10:00:00",
-    currency: "USDT"
-  },
-  {
-    id: 3,
-    comment: "comment",
-    amount: 100,
-    fee: 10,
-    date: "2025-02-06 11:33:22",
-    currency: "USDT"
-  },
-  {
-    id: 4,
-    comment: "comment",
-    amount: 100,
-    fee: 10,
-    date: "2022-01-01",
-    currency: "USDT"
-  },
-  {
-    id: 5,
-    comment: "comment",
-    amount: 100,
-    fee: 10,
-    date: "2022-01-01",
-    currency: "USDT"
-  },
-  {
-    id: 6,
-    comment: "comment",
-    amount: 100,
-    fee: 10,
-    date: "2022-01-01",
-    currency: "USDT"
-  },
-  {
-    id: 7,
-    comment: "comment",
-    amount: 100,
-    fee: 10,
-    date: "2022-01-01",
-    currency: "USDT"
-  },
-  {
-    id: 8,
-    comment: "comment",
-    amount: 100,
-    fee: 10,
-    date: "2022-01-01",
-    currency: "USDT"
-  }
-];
+interface Transaction {
+  id: number;
+  comment: string;
+  amount: number;
+  fee: number;
+  date: string;
+  currency: string;
+}
+
 export const TransactionsPage = () => {
   const [search, setSearch] = useState("");
+
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const formatDate = (date: string) => {
     const dateObj = new Date(date);
@@ -108,7 +53,12 @@ export const TransactionsPage = () => {
         <SearchIcon className="absolute left-[8px] top-1/2 h-3 w-3 -translate-y-1/2" />
       </div>
       <div className="overflow-y-auto flex flex-col gap-2">
-        {mockTransactions
+        {transactions.length === 0 && (
+          <div className="text-sm text-dark-200 font-medium dark:text-white-100">
+            No transactions found
+          </div>
+        )}
+        {transactions
           .filter((transaction) =>
             transaction.comment.toLowerCase().includes(search.toLowerCase())
           )

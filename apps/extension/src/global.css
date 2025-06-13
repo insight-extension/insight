@@ -1,4 +1,4 @@
-@import url("./fonts/Stolzl/stylesheet.css");
+@import url("./fonts/satoshi/satoshi.css");
 
 @tailwind base;
 @tailwind components;
@@ -17,7 +17,7 @@
     /*used*/
     --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;
-    --background: 0 0% 100%;
+    --background: 240, 9%, 96%, 1;
     --foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
@@ -27,7 +27,7 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 0, 0%, 5%, 1;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -54,13 +54,27 @@
   }
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-[#d1d1d1] dark:bg-[#010103];
+  border-radius: 4px;
+  /* border: 3px solid transparent; */
+}
+
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground font-stolzl;
+    @apply bg-background text-foreground font-satoshi;
   }
 }
 

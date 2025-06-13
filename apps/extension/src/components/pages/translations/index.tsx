@@ -12,61 +12,11 @@ interface Translations {
   transcription: string;
   translation: string;
 }
-const mockTranslations: Translations[] = [
-  {
-    id: 1,
-    targetLanguage: {
-      name: "English",
-      alpha2: "en",
-      countryCode: "US"
-    },
-    sourceLanguage: {
-      name: "Spanish",
-      alpha2: "es",
-      countryCode: "ES"
-    },
-    transcription:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-    translation:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
-  },
-  {
-    id: 2,
-    targetLanguage: {
-      name: "English",
-      alpha2: "en",
-      countryCode: "US"
-    },
-    sourceLanguage: {
-      name: "Spanish",
-      alpha2: "es",
-      countryCode: "ES"
-    },
-    transcription:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-    translation:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
-  },
-  {
-    id: 3,
-    targetLanguage: {
-      name: "English",
-      alpha2: "en",
-      countryCode: "US"
-    },
-    sourceLanguage: {
-      name: "Spanish",
-      alpha2: "es",
-      countryCode: "ES"
-    },
-    transcription:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-    translation:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
-  }
-];
+
 export const TranslationsPage = () => {
   const [search, setSearch] = useState("");
+
+  const [translations, setTranslations] = useState<Translations[]>([]);
 
   return (
     <div className="flex flex-col gap-3 px-3 overflow-hidden">
@@ -84,7 +34,12 @@ export const TranslationsPage = () => {
         <SearchIcon className="absolute left-[8px] top-1/2 h-3 w-3 -translate-y-1/2" />
       </div>
       <div className="overflow-y-auto flex flex-col gap-2">
-        {mockTranslations
+        {translations.length === 0 && (
+          <div className="text-sm text-dark-200 font-medium dark:text-white-100">
+            No translations found
+          </div>
+        )}
+        {translations
           .filter(
             (translations) =>
               translations.translation

@@ -1,13 +1,10 @@
 import { cn } from "@repo/ui/lib";
 
-import { PageValues, pages } from "@/constants/pages";
+import { useAppContext } from "@/app/AppContext";
+import { pages } from "@/constants/pages";
 
-interface FooterProps {
-  currentPage: PageValues;
-  setCurrentPage: (page: PageValues) => void;
-}
-export const Footer = (props: FooterProps) => {
-  const { currentPage, setCurrentPage } = props;
+export const Footer = () => {
+  const { setCurrentPage, currentPage } = useAppContext();
 
   return (
     <div className="flex justify-center items-center pt-2 pb-1">
