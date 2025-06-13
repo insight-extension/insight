@@ -2,10 +2,10 @@ import ArrowContinueIcon from "react:@/assets/arrow-continue.svg";
 
 import { SettingPageValues, settingPages } from "@/constants/pages";
 
-interface SettingsPageProps {
+interface SettingsSectionProps {
   setCurrentPage: (page: SettingPageValues) => void;
 }
-export const SettingsPage = (props: SettingsPageProps) => {
+export const SettingsSection = (props: SettingsSectionProps) => {
   const { setCurrentPage } = props;
 
   return (

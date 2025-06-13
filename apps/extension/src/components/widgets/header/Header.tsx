@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import LogoIcon from "react:@/assets/logo.svg";
+import PlayIcon from "react:@/assets/play.svg";
 import ScaleIcon from "react:@/assets/scale-02.svg";
 import CloseIcon from "react:@/assets/x-close.svg";
 
@@ -12,21 +14,14 @@ import { roundToDecimals } from "@repo/shared/utils";
 import { Icon } from "@repo/ui/components";
 
 import { useAppContext } from "@/app/AppContext";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Button,
-  Logo
-} from "@/components";
+import ToggleTheme from "@/components/features/selectors/theme";
+import { ConnectionStatus as ConnectionStatusWidget } from "@/components/widgets/connectionStatus/ConnectionStatus";
 import {
   getTimeLeft,
   getpPossibleTime
-} from "@/components/features/selectors/subscription-info/utils";
-import ToggleTheme from "@/components/features/selectors/theme";
-import { ConnectionStatus as ConnectionStatusWidget } from "@/components/widgets/connectionStatus";
-import { InfoBlock } from "@/components/widgets/infoBlock";
-import { WalletInfo } from "@/components/widgets/walletInfo";
+} from "@/components/widgets/header/utils";
+import { InfoBlock } from "@/components/widgets/infoBlock/InfoBlock";
+import { WalletInfo } from "@/components/widgets/walletInfo/WalletInfo";
 import { UI_URL } from "@/constants";
 import { useExtensionControls } from "@/hooks";
 import { GA_EVENTS, gaEmitter } from "@/services";
@@ -91,42 +86,38 @@ export const Header = () => {
   }, [balance, subscriptionType, freeHoursLeft, paidHoursLeft]);
 
   return (
-    <div className="px-3 py-2 mb-2 bg-gradient-to-r from-blue-400 dark:from-blue-500 dark:to-blue-200 to-green-300 rounded-b-2xl">
-      <div className="flex flex-row items-center justify-between mb-1 p-0 text-primary-foreground">
-        <Button className="p-0 bg-transparent hover:bg-transparent shadow-none">
+    <div className="p-3 mb-2 bg-gradient-to-r from-blue-400 dark:from-blue-500 dark:to-blue-200 to-green-300 rounded-b-2xl">
+      <div className="flex flex-row items-center justify-between p-0">
+        <button className="p-0 bg-transparent hover:bg-transparent shadow-none">
           <a href={UI_URL} target="_blank" rel="noopener noreferrer">
-            <Logo />
+            <LogoIcon />
           </a>
-        </Button>
+        </button>
 
         <div className="flex gap-1">
           <ToggleTheme />
 
           {!isSidebar && (
-            <Button
-              size="icon"
-              variant="raw"
+            <button
               className="bg-white dark:bg-dark-100 text-dark-100 dark:text-white-100 w-[30px] h-[30px] rounded-full flex justify-center items-center"
               onClick={openSidePanel}
             >
               <ScaleIcon className="w-5 h-5" />
-            </Button>
+            </button>
           )}
 
-          <Button
-            size="icon"
-            variant="raw"
+          <button
             className="bg-white dark:bg-dark-100 text-dark-100 dark:text-white-100 w-[30px] h-[30px] rounded-full flex justify-center items-center"
             onClick={close}
           >
             <CloseIcon className="w-5 h-5" />
-          </Button>
+          </button>
         </div>
       </div>
 
       {currentPage === "home" && publicKey && (
         <>
-          <div className="flex gap-1 pb-2">
+          <div className="flex gap-1 pb-2 mt-3">
             <div className="flex-1">
               <InfoBlock
                 title={SUBSCRIPTION_TYPE_MAP[subscriptionType]}
@@ -204,34 +195,28 @@ export const Header = () => {
         </>
       )}
 
-      {error && (
-        <Alert
-          variant="destructive"
-          className="my-6 w-full bg-red-500 flex flex-col items-center"
-        >
-          <div className="flex flex-col items-center mb-8">
-            <AlertTitle className="text-lg">{getMessage("error")}</AlertTitle>
+      {false && (
+        <div className="bg-white dark:bg-dark-100 w-full rounded-[17px] overflow-hidden mt-2 border-2 border-red-400">
+          <div className="w-full bg-red-400/20 flex flex-col items-center gap-1 p-3">
+            <div className="flex flex-col items-center text-md text-red-400">
+              <div>{getMessage("error")}</div>
 
-            <AlertDescription className="text-md">
-              {error.message}
-            </AlertDescription>
-          </div>
+              <div className="text-sm">{error?.message || "123123"}</div>
+            </div>
 
-          <div className="flex flex-col items-center gap-2 mb-4">
-            <Button
-              size="lg"
+            <button
+              className="flex text-sm items-center gap-1 rounded-full bg-red-400 px-3 py-1 text-white dark:text-dark-100"
               onClick={async () => {
                 await gaEmitter.emitEvent(GA_EVENTS.RETRY_TRANSLATION);
 
                 resume();
               }}
             >
-              <Icon name="Play" className="mr-2" />
-
+              <PlayIcon className="w-[17px] h-[17px]" />
               {getMessage("retry")}
-            </Button>
+            </button>
           </div>
-        </Alert>
+        </div>
       )}
     </div>
   );

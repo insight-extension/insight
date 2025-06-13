@@ -13,7 +13,6 @@ import {
   TranslationsPage
 } from "@/components/pages";
 import { Footer, Header, WalletInfo } from "@/components/widgets";
-import { pages } from "@/constants/pages";
 import "@/global.css";
 import { ThemeProvider } from "@/hooks/useTheme/ThemeContext";
 
@@ -98,13 +97,15 @@ const AppMain: FC<AppProps> = ({ isSidebar, width }) => {
   return (
     <div
       className={cn(
-        width === "sidebar" ? "w-90" : "w-84",
-        "h-full min-h-[600px] max-h-[600px] flex flex-col"
+        width === "sidebar"
+          ? "w-90 min-h-[720px] max-h-[720px]"
+          : "w-84 min-h-[600px] max-h-[600px]",
+        "h-full flex flex-col"
       )}
     >
       <Header />
 
-      <div className="grow overflow-hidden flex items-stretch">
+      <div className="grow overflow-auto flex items-stretch min-h-[270px]">
         <div className="w-full flex flex-col dark:bg-dark-100 bg-white rounded-[17px] py-3 px-1">
           <div className="w-full grow flex overflow-hidden flex-col">
             {getCurrentPage()}

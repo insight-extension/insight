@@ -6,12 +6,6 @@ import { useOnClickOutside } from "usehooks-ts";
 
 import { cn } from "@repo/ui/lib";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui";
 import { TRANSLATION_LANGUAGES } from "@/constants";
 import { Language } from "@/types";
 
@@ -55,10 +49,11 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       >
         <button
           className={cn(
-            "flex text-sm justify-between w-full items-center p-[6px] text-dark-200 dark:text-white-100",
+            "flex text-sm justify-between w-full items-center p-[6px] text-dark-200 dark:text-white-100 disabled:opacity-70 disabled:cursor-not-allowed",
             isDropdownOpen && ""
           )}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          disabled={disabled}
         >
           <div className="flex flex-row w-full items-end gap-1">
             {current ? (

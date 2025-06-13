@@ -1,14 +1,10 @@
 import { useCallback, useState } from "react";
-import ArrowContinueIcon from "react:@/assets/arrow-continue.svg";
-import BellIcon from "react:@/assets/bell.svg";
-import GlobeIcon from "react:@/assets/globe.svg";
-import MessageIcon from "react:@/assets/message-dots-square.svg";
 
 import { LanguagesPage } from "@/components/pages/settings/Languages";
 import { NotificationsPage } from "@/components/pages/settings/Notifications";
-import { SettingsPage as SettingsSection } from "@/components/pages/settings/Settings";
+import { SettingsSection } from "@/components/pages/settings/SettingsSection";
 import { SupportPage } from "@/components/pages/settings/Support";
-import { SettingPageValues, settingPages } from "@/constants/pages";
+import { SettingPageValues } from "@/constants/pages";
 
 export const SettingsPage = () => {
   const [currentPage, setCurrentPage] = useState<SettingPageValues>("main");
