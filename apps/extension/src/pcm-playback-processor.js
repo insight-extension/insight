@@ -1,7 +1,9 @@
 class PCMPlaybackProcessor extends AudioWorkletProcessor {
   buffer = [];
+  speed = 1.15;
+  readIndex = 0;
   MAX_BUFFER_SIZE = 65536;
-  MIN_BUFFER_BEFORE_PLAY = 2048; // Minimum buffer size before playback starts
+  MIN_BUFFER_BEFORE_PLAY = 4096;
 
   constructor() {
     super();
@@ -10,7 +12,6 @@ class PCMPlaybackProcessor extends AudioWorkletProcessor {
       const float32 = Array.from(int16).map((v) => v / 32768);
       this.buffer.push(...float32);
 
-      // Overflow protection
       if (this.buffer.length > this.MAX_BUFFER_SIZE) {
         this.buffer.splice(0, this.buffer.length - this.MAX_BUFFER_SIZE);
       }
@@ -19,18 +20,29 @@ class PCMPlaybackProcessor extends AudioWorkletProcessor {
 
   process(_inputs, outputs) {
     const output = outputs[0];
-    const channel = output[0]; // mono
+    const channel = output[0];
 
-    // If the buffer is not yet filled enough, fill with silence
     if (this.buffer.length < this.MIN_BUFFER_BEFORE_PLAY) {
-      for (let i = 0; i < channel.length; i++) {
-        channel[i] = 0;
-      }
+      // Заполняем тишиной
+      channel.fill(0);
       return true;
     }
 
     for (let i = 0; i < channel.length; i++) {
-      channel[i] = this.buffer.length > 0 ? this.buffer.shift() : 0;
+      const idx = Math.floor(this.readIndex);
+      if (idx < this.buffer.length) {
+        channel[i] = this.buffer[idx];
+      } else {
+        channel[i] = 0;
+      }
+      this.readIndex += this.speed;
+    }
+
+    // Удаляем уже не нужные данные из начала буфера
+    const safeIndex = Math.floor(this.readIndex) - 128;
+    if (safeIndex > 0) {
+      this.buffer.splice(0, safeIndex);
+      this.readIndex -= safeIndex;
     }
 
     return true;
