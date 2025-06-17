@@ -1,18 +1,21 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ArrowsIcon from "react:@/assets/arrows.svg";
 import CircleIcon from "react:@/assets/circle-arrows.svg";
 import PlayIcon from "react:@/assets/play.svg";
 import StopIcon from "react:@/assets/stop.svg";
 import SwitchVerticalIcon from "react:@/assets/switch-vertical.svg";
 import VolumeIcon from "react:@/assets/volume-max.svg";
+import VolumeGradientIcon from "react:@/assets/volume-max-gradient.svg";
 
 import { useAppContext } from "@/app/AppContext";
 import { LanguageSelector } from "@/components/features";
 import { GA_EVENTS, gaEmitter } from "@/services";
 import { Language } from "@/types";
+import { cn } from "@repo/ui/lib";
 
 export const HomePage = () => {
   const {
+    isSidebar,
     isRecording,
     sourceLanguage,
     targetLanguage,
@@ -32,13 +35,23 @@ export const HomePage = () => {
 
   const { getMessage } = chrome.i18n;
 
+  const transcriptionRef = useRef<HTMLDivElement>(null);
+  const translationRef = useRef<HTMLDivElement>(null);
+
   const [rotation, setRotation] = useState(-110);
+  const [volume, setVolume] = useState(50);
+
+  const [isBlocksSwapped, setIsBlocksSwapped] = useState(false);
 
   const handleSwap = () => {
     setRotation((prev) => prev - 180);
     setSourceLanguage(targetLanguage);
     setTargetLanguage(sourceLanguage);
   };
+
+  const handleSwapPosition = () => {
+    setIsBlocksSwapped((prev) => !prev);
+  }
 
   const handleStartRecording = async () => {
     await gaEmitter.emitEvent(
@@ -62,6 +75,20 @@ export const HomePage = () => {
 
     setShouldUpdateBalance(true);
   };
+
+  useEffect(() => {
+    if (transcriptionRef.current) {
+      const container = transcriptionRef.current;
+      container.scrollTop = container.scrollHeight;    
+    }
+  }, [transcription]);
+
+  useEffect(() => {
+    if (translation && translationRef.current) {
+      const container = translationRef.current;
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [translation]);
 
   return (
     <div className="flex flex-col gap-2 overflow-hidden grow">
@@ -97,27 +124,36 @@ export const HomePage = () => {
         </div>
       </div>
       <div className="relative flex flex-col gap-1 overflow-hidden flex-1">
-        <div className="flex-1 flex flex-col gap-2 overflow-hidden pt-2 px-3 pb-4 bg-blue-100 rounded-[17px] dark:bg-blue-600">
+        <div className={cn("flex-1 flex flex-col gap-2 overflow-hidden pt-2 px-3 pb-4 bg-blue-100 rounded-[17px] dark:bg-blue-600", isBlocksSwapped && "order-2")}>
           <div className="flex items-center gap-2 text-grey-400 dark:text-white-100/70 text-xs">
-            <VolumeIcon className="w-4 h-4" />
+            <VolumeGradientIcon className="w-4 h-4" />
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={volume}
+              onChange={(e) => setVolume(parseInt(e.target.value))}
+              className="range-input"
+            />
             {sourceLanguage.name}
           </div>
-          <div className="dark:text-white-100/90 text-sm text-dark-200 overflow-auto">
+          <div className={cn("dark:text-white-100/90 text-sm text-dark-200 overflow-auto", !isSidebar && 'max-h-40 h-full')} ref={transcriptionRef}>
             {transcription}
           </div>
         </div>
-        <div className="flex-1 flex flex-col gap-2 overflow-hidden pt-2 px-3 pb-4 bg-blue-100 rounded-[17px] dark:bg-blue-600">
+        <div className={cn("flex-1 flex flex-col gap-2 overflow-hidden pt-2 px-3 pb-4 bg-blue-100 rounded-[17px] dark:bg-blue-600", !isBlocksSwapped && "order-2")}>
           <div className="flex items-center gap-2 text-grey-400 dark:text-white-100/70 text-xs">
             <VolumeIcon className="w-4 h-4" />
             {targetLanguage.name}
           </div>
-          <div className="dark:text-white-100/90 text-sm text-dark-200 overflow-auto">
+          <div className={cn("dark:text-white-100/90 text-sm text-dark-200 overflow-auto", !isSidebar && 'max-h-40 h-full')} ref={translationRef}>
             {translation}
           </div>
         </div>
         <button
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px] flex justify-center items-center bg-white dark:bg-dark-100 rounded-full"
-          onClick={handleSwap}
+          onClick={handleSwapPosition}
         >
           <SwitchVerticalIcon className="h-4 w-4" />
         </button>

@@ -22,3 +22,16 @@
     @apply bg-white-300 dark:bg-dark-400 font-satoshi;
   }
 }
+
+.range-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  @apply bg-gradient-to-r dark:bg-black from-blue-400/50 to-green-300/50 rounded-full outline-none p-0 m-0 cursor-pointer w-[50px] h-1 ;
+}
+.range-input::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  @apply bg-gradient-to-r from-blue-400 to-green-300 w-2 h-2 rounded-full cursor-pointer;
+}
