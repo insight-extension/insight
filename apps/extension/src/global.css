@@ -1,82 +1,37 @@
-@import url("./fonts/Stolzl/stylesheet.css");
+@import url("./fonts/satoshi/satoshi.css");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    /* added */
-    --accent: 235, 81%, 62%;
-    --accent-foreground: 236, 83%, 70%;
-    --muted: 0, 0%, 93%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --secondary: 158, 100%, 67%;
-    --secondary-foreground: 158, 100%, 67%, 0.3;
-    --secondary-dark: 158, 67%, 43%;
-    /*used*/
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --radius: 0.5rem;
-  }
+::-webkit-scrollbar {
+  width: 5px;
+}
 
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-[#d1d1d1] dark:bg-[#010103];
+  border-radius: 4px;
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply bg-background text-foreground font-stolzl;
+    @apply bg-white-300 dark:bg-dark-400 font-satoshi;
   }
 }
 
-@layer components {
-  .button {
-    @apply rounded-[32px] px-5 py-[11px] text-lg leading-none;
-  }
-
-  .button-white {
-    @apply border bg-white text-dark transition-all hover:border-white hover:bg-dark hover:text-white;
-  }
-
-  .button-dark-border {
-    @apply border border-white bg-dark text-white transition-all hover:border-dark hover:bg-white hover:text-dark;
-  }
-  .button-dark {
-    @apply border border-dark bg-dark px-[50px] py-4 text-[30px] text-white transition-all hover:bg-white hover:text-dark;
-  }
+.range-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  @apply bg-gradient-to-r dark:bg-black from-blue-400/50 to-green-300/50 rounded-full outline-none p-0 m-0 cursor-pointer w-[50px] h-1 ;
+}
+.range-input::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  @apply bg-gradient-to-r from-blue-400 to-green-300 w-2 h-2 rounded-full cursor-pointer;
 }
