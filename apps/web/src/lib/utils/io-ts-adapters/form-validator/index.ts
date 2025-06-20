@@ -8,7 +8,7 @@ import { Params, ValidationSource } from "./types.js";
 import { defaultFormTransformer, defaultTransformErrors } from "./utils.js";
 
 export const formIoTsValidator =
-  (params: Params = {}): Validator<unknown, t.Type<any>> =>
+  (params: Params = {}): Validator<unknown, t.Type<unknown>> =>
   () => {
     const transformFieldErrors =
       params.transformErrors ?? defaultTransformErrors;
