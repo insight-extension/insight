@@ -6,7 +6,7 @@ import {
   useState
 } from "react";
 
-import { SubscriptionType } from "@repo/shared/constants";
+import { PlanType } from "@repo/shared/constants";
 
 import { ConnectionStatus, TRANSLATION_LANGUAGES } from "@/constants";
 import { PageValues, pages } from "@/constants/pages";
@@ -24,8 +24,8 @@ interface AppContextType {
   setTargetLanguage: (language: Language) => void;
   shouldUpdateBalance: boolean;
   setShouldUpdateBalance: (value: boolean) => void;
-  subscriptionType: SubscriptionType;
-  setSubscriptionType: (subscriptionType: SubscriptionType) => void;
+  subscriptionType: PlanType;
+  setSubscriptionType: (subscriptionType: PlanType) => void;
   accessToken: string | null;
   balance: number | null;
   publicKey: string | null;
@@ -65,8 +65,8 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
       shouldUpdate: shouldUpdateBalance
     });
 
-  const [subscriptionType, setSubscriptionType] = useState<SubscriptionType>(
-    balance ? SubscriptionType.PER_MINUTE : SubscriptionType.FREE_TRIAL
+  const [subscriptionType, setSubscriptionType] = useState<PlanType>(
+    balance ? PlanType.PER_MINUTE : PlanType.FREE_TRIAL
   );
 
   const {
@@ -89,10 +89,10 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     setSubscriptionType(
       balance
-        ? subscriptionType !== SubscriptionType.FREE_TRIAL
+        ? subscriptionType !== PlanType.FREE_TRIAL
           ? subscriptionType
-          : SubscriptionType.PER_MINUTE
-        : SubscriptionType.FREE_TRIAL
+          : PlanType.PER_MINUTE
+        : PlanType.FREE_TRIAL
     );
   }, [balance]);
 

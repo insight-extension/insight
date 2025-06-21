@@ -4,7 +4,7 @@ import { Socket, io } from "socket.io-client";
 import { P, match } from "ts-pattern";
 
 import { generateBearerToken } from "@repo/shared/api";
-import { SubscriptionType } from "@repo/shared/constants";
+import { PlanType } from "@repo/shared/constants";
 import { Observable, isTokenExpired } from "@repo/shared/utils";
 
 import { ConnectionStatus, WEBSOCKET_URL } from "@/constants";
@@ -176,7 +176,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
   private initWebSocketConnection(
     // todo: review usage and duplication
     accessToken: string,
-    subscriptionType: SubscriptionType,
+    subscriptionType: PlanType,
     sourceLanguageAlpha2Code: string,
     targetLanguageAlpha2Code: string
   ): void {
@@ -286,7 +286,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   public start(
     accessToken: string | null,
-    subscriptionType: SubscriptionType,
+    subscriptionType: PlanType,
     sourceLanguageAlpha2Code: string,
     targetLanguageAlpha2Code: string
   ): void {
@@ -316,7 +316,7 @@ export class AudioRecordManager extends Observable<ObservableEventCallbackMap> {
 
   public resume(
     accessToken: string | null,
-    subscriptionType: SubscriptionType,
+    subscriptionType: PlanType,
     sourceLanguageAlpha2Code: string,
     targetLanguageAlpha2Code: string
   ): void {

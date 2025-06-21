@@ -6,8 +6,8 @@ import CloseIcon from "react:@/assets/x-close.svg";
 
 import {
   PRICING,
+  PlanType,
   SPLToken,
-  SubscriptionType,
   TOKEN_CURRENCIES
 } from "@repo/shared/constants";
 import { roundToDecimals } from "@repo/shared/utils";
@@ -51,9 +51,10 @@ export const Header = () => {
 
   const SUBSCRIPTION_TYPE_MAP = useMemo(
     () => ({
-      [SubscriptionType.FREE_TRIAL]: getMessage("freeTrial"),
-      [SubscriptionType.PER_MINUTE]: getMessage("perMinute"),
-      [SubscriptionType.PER_HOUR]: getMessage("perHour")
+      [PlanType.FREE_TRIAL]: getMessage("freeTrial"),
+      [PlanType.PER_MINUTE]: getMessage("perMinute"),
+      [PlanType.PER_HOUR]: getMessage("perHour"),
+      [PlanType.PER_MONTH]: getMessage("perMonth")
     }),
     []
   );
@@ -62,7 +63,7 @@ export const Header = () => {
 
   const [isInsufficientBalance, setIsInsufficientBalance] = useState(false);
 
-  const onSubscriptionClick = useCallback((value: SubscriptionType) => {
+  const onSubscriptionClick = useCallback((value: PlanType) => {
     setSubscriptionType(value);
   }, []);
 
@@ -125,14 +126,13 @@ export const Header = () => {
                   {
                     title: getMessage("selectUsageType")
                   },
-                  ...Object.values(SubscriptionType)
+                  ...Object.values(PlanType)
                     .filter((value) =>
                       balance
-                        ? [
-                            SubscriptionType.PER_MINUTE,
-                            SubscriptionType.PER_HOUR
-                          ].includes(value)
-                        : value === SubscriptionType.FREE_TRIAL
+                        ? [PlanType.PER_MINUTE, PlanType.PER_HOUR].includes(
+                            value
+                          )
+                        : value === PlanType.FREE_TRIAL
                     )
                     .map((value) => {
                       const price = PRICING[value];

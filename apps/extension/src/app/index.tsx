@@ -50,7 +50,9 @@ const AppMain: FC<AppProps> = ({ isSidebar, width }) => {
     return (
       <div
         className={cn(
-          width === "sidebar" ? "w-90 min-h-screen max-h-screen" : "w-84 min-h-[500px] max-h-[500px]",
+          width === "sidebar"
+            ? "w-90 min-h-screen max-h-screen"
+            : "w-84 min-h-[500px] max-h-[500px]",
           "h-full flex flex-col bg-gradient-to-r from-blue-400 dark:from-blue-500 dark:to-blue-200 to-green-300"
         )}
       >
@@ -105,9 +107,19 @@ const AppMain: FC<AppProps> = ({ isSidebar, width }) => {
     >
       <Header />
 
-      <div className={cn("grow flex h-full", isSidebar && "overflow-hidden items-stretch")}>
+      <div
+        className={cn(
+          "grow flex h-full",
+          isSidebar && "overflow-hidden items-stretch"
+        )}
+      >
         <div className="w-full flex flex-col dark:bg-dark-100 bg-white rounded-[17px] py-3 px-1">
-          <div className={cn("w-full grow flex flex-col", isSidebar && "overflow-hidden")}>
+          <div
+            className={cn(
+              "w-full grow flex flex-col",
+              isSidebar && "overflow-hidden"
+            )}
+          >
             {getCurrentPage()}
           </div>
           <div className="flex justify-between items-center pt-3 px-2">

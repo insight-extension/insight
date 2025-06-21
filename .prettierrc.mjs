@@ -12,7 +12,6 @@ export default {
   bracketSameLine: false,
   plugins: [
     "@trivago/prettier-plugin-sort-imports",
-    "prettier-plugin-tailwindcss"
   ],
   "importOrder": [
     "^react(.*)$",
@@ -24,7 +23,6 @@ export default {
   ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true
-
 }
 
 //todo: reuse in all packages

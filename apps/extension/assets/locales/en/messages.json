@@ -58,6 +58,11 @@
     "description": "Label for per hour."
   },
 
+  "perMonth": {
+    "message": "Per month",
+    "description": "Label for per month."
+  },
+
   "freeTrial": {
     "message": "Free Trial",
     "description": "Label for free trial."

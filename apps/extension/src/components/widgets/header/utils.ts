@@ -1,6 +1,6 @@
 import { P, match } from "ts-pattern";
 
-import { PRICING, SubscriptionType } from "@repo/shared/constants";
+import { PRICING, PlanType } from "@repo/shared/constants";
 import { roundToDecimal } from "@repo/shared/utils";
 
 const HOURS_LABEL = "h";
@@ -12,7 +12,7 @@ export const getTimeLeft = ({
   balance,
   paidHoursLeft
 }: {
-  type: SubscriptionType;
+  type: PlanType;
   balance: number;
   freeHoursLeft?: number | null;
   paidHoursLeft?: number | null;
@@ -24,21 +24,21 @@ export const getTimeLeft = ({
   return match({ type, freeHoursLeft, balance, paidHoursLeft })
     .with(
       {
-        type: SubscriptionType.FREE_TRIAL,
+        type: PlanType.FREE_TRIAL,
         freeHoursLeft: P.intersection(P.number, P.select())
       },
       (seconds) => `${roundToDecimal(toHours(seconds), 1)}${HOURS_LABEL}`
     )
     .with(
       {
-        type: SubscriptionType.PER_HOUR,
+        type: PlanType.PER_HOUR,
         paidHoursLeft: P.intersection(P.number, P.select())
       },
       (seconds) => `${roundToDecimal(toHours(seconds), 1)}${HOURS_LABEL}`
     )
     .with(
       {
-        type: SubscriptionType.PER_MINUTE,
+        type: PlanType.PER_MINUTE,
         paidHoursLeft: P.intersection(P.number, P.select())
       },
       (seconds) => `${roundToDecimal(toMinutes(seconds), 1)}${MINUTES_LABEL}`
@@ -50,18 +50,18 @@ export const getpPossibleTime = ({
   type,
   balance
 }: {
-  type: SubscriptionType;
+  type: PlanType;
   balance: number | null;
 }) => {
   if (!balance) return "...";
 
   return match({ type, balance })
     .with(
-      { type: SubscriptionType.PER_HOUR },
+      { type: PlanType.PER_HOUR },
       () => `${roundToDecimal(balance / PRICING.perHour, 1)}${HOURS_LABEL}`
     )
     .with(
-      { type: SubscriptionType.PER_MINUTE },
+      { type: PlanType.PER_MINUTE },
       () => `${roundToDecimal(balance / PRICING.perMinute)}${MINUTES_LABEL}`
     )
     .otherwise(() => "...");

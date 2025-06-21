@@ -3,3 +3,4 @@ export * from "./jwt";
 export * from "./io-ts";
 export * from "./observable";
 export * from "./bn";
+export * from "./logger";
