@@ -1,5 +1,4 @@
 import { AnchorProvider, BN, Program } from "@coral-xyz/anchor";
-import { SPLToken, TOKEN_ADDRESSES, TOKEN_CURRENCIES } from "@shared/constants";
 import {
   TOKEN_PROGRAM_ID,
   TokenAccountNotFoundError,
@@ -11,11 +10,15 @@ import {
 import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
 import { P, match } from "ts-pattern";
 
+import { SPLToken, TOKEN_ADDRESSES, TOKEN_CURRENCIES } from "@shared/constants";
 import {
   Observable,
   convertBNToNumberWithDecimals,
+  convertNumberToBN,
   convertNumberToBNWithDecimals
-} from "../../utils";
+} from "@shared/utils";
+
+import { SubscriptionDuration } from "./constants";
 import {
   AirDropSOLError,
   AssociatedTokenAddressError,
@@ -65,6 +68,38 @@ export class AnchorClient extends Observable<EventCallbackMap> {
 
       const transactionSignature = await this.program.methods
         .deposit(normalizedAmount)
+        .accounts({ ...payload })
+        .rpc();
+
+      return transactionSignature;
+    } catch (error: any) {
+      throw new DepositToVaultError(error.message);
+    }
+  }
+
+  public async subscribeToVault({
+    token,
+    amount,
+    duration
+  }: {
+    amount: BN;
+    duration: SubscriptionDuration;
+    token: SPLToken;
+  }): Promise<string> {
+    try {
+      const payload = {
+        user: this.user,
+        token: TOKEN_ADDRESSES[token],
+        tokenProgram: this.TOKEN_PROGRAM
+      };
+
+      const normalizedAmount = convertNumberToBNWithDecimals(
+        amount,
+        TOKEN_CURRENCIES[token].decimals
+      );
+
+      const transactionSignature = await this.program.methods
+        .subscribe(normalizedAmount, convertNumberToBN(duration))
         .accounts({ ...payload })
         .rpc();
 

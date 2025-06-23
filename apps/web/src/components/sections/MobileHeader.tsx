@@ -8,14 +8,13 @@ import {
   DownloadModal,
   HeaderProps,
   Logo,
-  NAV_LINKS,
   WalletMultiButton
 } from "@/components";
 import { cn } from "@/lib";
 
-interface MobileHeaderProps extends HeaderProps {}
+import { NAV_LINKS } from "./constants";
 
-export const MobileHeader: FC<MobileHeaderProps> = ({ className }) => {
+export const MobileHeader: FC<HeaderProps> = ({ className }) => {
   const [showModal, setShowModal] = useState(false);
 
   const toggleModal = () => {
@@ -156,7 +155,9 @@ export const MobileHeader: FC<MobileHeaderProps> = ({ className }) => {
                     }
                   />
 
-                  <WalletMultiButton className="button button-dark-border" />
+                  <WalletMultiButton
+                    className={cn("button button-dark-border", "h-10 py-2")}
+                  />
                 </div>
 
                 <div className="grid h-[42px] w-[42px] shrink-0 place-items-center rounded-full bg-white">
