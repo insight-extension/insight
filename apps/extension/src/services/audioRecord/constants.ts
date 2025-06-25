@@ -4,7 +4,7 @@ export const PCM_PROCESSOR_MODULE = {
 };
 
 // todo: review quality of audio
-export const SAMPLE_RATE = 16000; // 16kHz
+export const SAMPLE_RATE = 24000; // 24kHz
 
 export enum MessageType {
   TRANSCRIPT = "transcript",

@@ -43,10 +43,20 @@ export const HomePage = () => {
 
   const [isBlocksSwapped, setIsBlocksSwapped] = useState(false);
 
+  const handleSourceLanguageChange = useCallback((language: Language) => {
+    setSourceLanguage(language);
+    chrome.storage.sync.set({ sourceLanguage: language });
+  }, [setSourceLanguage]);
+
+  const handleTargetLanguageChange = useCallback((language: Language) => {
+    setTargetLanguage(language);
+    chrome.storage.sync.set({ targetLanguage: language });
+  }, [setTargetLanguage]);
+
   const handleSwap = () => {
-    setRotation((prev) => prev - 180);
-    setSourceLanguage(targetLanguage);
-    setTargetLanguage(sourceLanguage);
+      setRotation((prev) => prev - 180);
+      setSourceLanguage(targetLanguage);
+      setTargetLanguage(sourceLanguage);
   };
 
   const handleSwapPosition = () => {
@@ -77,6 +87,13 @@ export const HomePage = () => {
   };
 
   useEffect(() => {
+    chrome.storage.sync.get(['sourceLanguage', 'targetLanguage'], (result) => {
+      if (result.sourceLanguage) setSourceLanguage(result.sourceLanguage);
+      if (result.targetLanguage) setTargetLanguage(result.targetLanguage);
+    });
+  }, [setSourceLanguage, setTargetLanguage]);
+
+  useEffect(() => {
     if (transcriptionRef.current) {
       const container = transcriptionRef.current;
       container.scrollTop = container.scrollHeight;    
@@ -98,11 +115,7 @@ export const HomePage = () => {
             disabled={isRecording}
             current={sourceLanguage}
             exclude={targetLanguage}
-            onChange={useCallback((language: Language) => {
-              setSourceLanguage(language);
-              // todo: review usage
-              // chrome.storage.sync.set({ language: language });
-            }, [])}
+            onChange={handleSourceLanguageChange} 
           />
         </div>
         <button
@@ -117,9 +130,7 @@ export const HomePage = () => {
             disabled={isRecording}
             current={targetLanguage}
             exclude={sourceLanguage}
-            onChange={useCallback((language: Language) => {
-              setTargetLanguage(language);
-            }, [])}
+            onChange={handleTargetLanguageChange}
           />
         </div>
       </div>
