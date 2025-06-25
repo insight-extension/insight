@@ -12,7 +12,8 @@ export enum UsageType {
 
 export const USAGE_TYPE_MAP = {
   [PlanType.PER_MINUTE]: "Per Minute",
-  [PlanType.PER_HOUR]: "Per Hour"
+  [PlanType.PER_HOUR]: "Per Hour",
+  [PlanType.PER_MONTH]: "Per Month"
 };
 
 // export const SUBSCRIPTION_TYPE_MAP = {

@@ -129,7 +129,7 @@ export const Header = () => {
                   ...Object.values(PlanType)
                     .filter((value) =>
                       balance
-                        ? [PlanType.PER_MINUTE, PlanType.PER_HOUR].includes(
+                        ? [PlanType.PER_MINUTE, PlanType.PER_HOUR, PlanType.PER_MONTH].includes(
                             value
                           )
                         : value === PlanType.FREE_TRIAL
