@@ -94,7 +94,7 @@ export const DepositForm: FC<DepositFormProps> = memo(({ onSuccessSubmit }) => {
     defaultValues: {
       amount: 0,
       token: SPLToken.USDC,
-      usageType: UsageType.SUBSCRIPTION
+      usageType: UsageType.PER_USAGE
     } as DepositFormFields,
     onSubmit: async ({ value: { amount, token, usageType } }) => {
       setValidationError(null);
